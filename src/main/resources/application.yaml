@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: BancoDigitalP2
+  profiles:
+    active: dev
+
+server:
+  port: ${BD_PORT:9999}
