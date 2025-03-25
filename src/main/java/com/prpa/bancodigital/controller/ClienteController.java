@@ -1,13 +1,16 @@
 package com.prpa.bancodigital.controller;
 
 import com.prpa.bancodigital.config.ApplicationConfig;
+import com.prpa.bancodigital.exception.InvalidInputParameterException;
 import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.dtos.ClienteDTO;
 import com.prpa.bancodigital.service.ClienteService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 
@@ -41,6 +44,9 @@ public class ClienteController {
 
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> getClienteById(@PathVariable("id") long id) {
+        if (id < 0)
+            throw new InvalidInputParameterException("O parametro id deve ser maior ou igual a 0");
+
         return ResponseEntity.ok(clienteService.findById(id));
     }
 

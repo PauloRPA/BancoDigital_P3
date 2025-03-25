@@ -1,6 +1,9 @@
 package com.prpa.bancodigital.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.prpa.bancodigital.exception.ApiException;
+import com.prpa.bancodigital.exception.InvalidInputParameterException;
+import com.prpa.bancodigital.exception.ResourceNotFoundException;
 import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.dtos.ClienteDTO;
@@ -11,6 +14,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.MediaType;
+import org.springframework.http.ProblemDetail;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -19,14 +24,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.IntStream;
 
 import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -91,7 +96,7 @@ public class ClienteControllerTest {
     }
 
     @Test
-    @DisplayName("FindAll retorna os clientes corretamente de acordo com a paginacao")
+    @DisplayName("FindAll retorna os clientes corretamente de acordo com a paginação")
     public void whenGETFindAllWithPaginationTestShould200OK() throws Exception {
         final int DEFAULT_PAGE = ClienteController.DEFAULT_PAGE;
         final int DEFAULT_SIZE = ClienteController.DEFAULT_SIZE;
@@ -188,9 +193,170 @@ public class ClienteControllerTest {
     // Caminhos tristes :(
     // ------------------------------------------
 
+    // GET
+    // ------------------------------------------
+
+    @Test
+    @DisplayName("Busca um cliente por um ID inexistente")
+    public void whenGETClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
+        final long INVALID_ID = 999999L;
+        String EXPECTED_DETAIL = "Id não encontrado";
+
+        ResourceNotFoundException notFoundException = new ResourceNotFoundException(EXPECTED_DETAIL);
+        when(clienteService.findById(INVALID_ID))
+                .thenThrow(notFoundException);
+
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(INVALID_ID);
+        ResultActions resultActions = mockMvc.perform(get(requestURI))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, EXPECTED_DETAIL);
+        testJsonPathEqualsToProblemDetail(expected, resultActions);
+    }
+
+    @Test
+    @DisplayName("Busca um cliente por um ID negativo")
+    public void whenGETClienteByNegativeIDTestShould400BADREQUEST() throws Exception {
+        final long INVALID_ID = -999999L;
+        String EXPECTED_DETAIL = "O parametro id deve ser maior ou igual a 0";
+
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(INVALID_ID);
+        ResultActions resultActions = mockMvc.perform(get(requestURI))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        InvalidInputParameterException invalidInputException = new InvalidInputParameterException(EXPECTED_DETAIL);
+        ProblemDetail expected = problemDetailFromException(requestURI, invalidInputException, EXPECTED_DETAIL);
+        testJsonPathEqualsToProblemDetail(expected, resultActions);
+    }
+
+    @Test
+    @DisplayName("Busca um cliente por um ID com letras")
+    public void whenGETClienteByIDWithLettersTestShould400BADREQUEST() throws Exception {
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build("923sdlfkj");
+        mockMvc.perform(get(requestURI))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+    }
+
+    @Test
+    @DisplayName("Busca por todos clientes em uma pagina negativa")
+    public void whenGETAllClientesWithNegativePageTestShouldReturnPage0200OK() throws Exception {
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
+        mockMvc.perform(get(requestURI)
+                        .param("page", "-1"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+        verify(clienteService).findAll(eq(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE)));
+    }
+
+    @Test
+    @DisplayName("Busca por todos clientes em uma pagina muito grande deve retornar vazio")
+    public void whenGETAllClientesEmptyPageTestShouldReturnEmpty200OK() throws Exception {
+        when(clienteService.findAll(any())).thenReturn(List.of());
+
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
+        mockMvc.perform(get(requestURI)
+                        .param("page", "1000"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(0)));
+
+        verify(clienteService).findAll(eq(PageRequest.of(1000, ClienteController.DEFAULT_SIZE)));
+    }
+
+    @Test
+    @DisplayName("Busca por todos clientes em uma pagina de tamanho negativo")
+    public void whenGETAllClientesWithNegativeSizeTestShouldReturnSizeDefault200OK() throws Exception {
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
+        mockMvc.perform(get(requestURI)
+                        .param("size", "-4"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+        verify(clienteService).findAll(eq(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE)));
+    }
+
+    @Test
+    @DisplayName("Busca por todos clientes em uma pagina de tamanho grande demais deve retornar tamanho padrão")
+    public void whenGETAllClientesWithSizeTooLargeTestShouldReturnSizeDefault200OK() throws Exception {
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
+        mockMvc.perform(get(requestURI)
+                        .param("size", "400000"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(APPLICATION_JSON));
+
+        verify(clienteService).findAll(eq(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE)));
+    }
+
+    // ------------------------------------------
+    // POST
+    // ------------------------------------------
+
+    // TODO: Testes para verificar como o controller advice responde a erros de validação da entidade a ser salva.
+
+    // ------------------------------------------
+    // PUT
+    // ------------------------------------------
+
+    // TODO: Testes para verificar como o controller advice responde a erros de validação da entidade a ser salva.
+
+    @Test
+    @DisplayName("Edita um cliente por um ID inexistente")
+    public void whenPUTClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
+        final long ID = 1L;
+        String EXPECTED_DETAIL = "Id não encontrado";
+
+        ResourceNotFoundException notFoundException = new ResourceNotFoundException(EXPECTED_DETAIL);
+        when(clienteService.changeById(eq(ID), any())).thenThrow(notFoundException);
+
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(ID);
+        ResultActions resultActions = mockMvc.perform(put(requestURI)
+                        .contentType(APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(ClienteDTO.from(clienteTeste1))))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, EXPECTED_DETAIL);
+        testJsonPathEqualsToProblemDetail(expected, resultActions);
+    }
+
+    // ------------------------------------------
+    // DELETE
+    // ------------------------------------------
+
+    @Test
+    @DisplayName("Remove um cliente por um ID inexistente")
+    public void whenDELETEClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
+        final long ID = 1L;
+        String EXPECTED_DETAIL = "Id não encontrado";
+
+        ResourceNotFoundException notFoundException = new ResourceNotFoundException(EXPECTED_DETAIL);
+        doThrow(notFoundException).when(clienteService).deleteById(ID);
+
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(ID);
+        ResultActions resultActions = mockMvc.perform(delete(requestURI))
+                .andExpect(status().isNotFound())
+                .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
+
+        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, EXPECTED_DETAIL);
+        testJsonPathEqualsToProblemDetail(expected, resultActions);
+    }
+
     // ------------------------------------------
     // Utils
     // ------------------------------------------
+
+    private void testJsonPathEqualsToProblemDetail(ProblemDetail expected, ResultActions onGoingTest) throws Exception {
+        URI expectedInstance = Objects.requireNonNull(expected.getInstance());
+        onGoingTest.andExpect(jsonPath("$").exists())
+                .andExpect(jsonPath("$.status", equalTo(expected.getStatus())))
+                .andExpect(jsonPath("$.detail", equalTo(expected.getDetail())))
+                .andExpect(jsonPath("$.type", equalTo(expected.getType().toString())))
+                .andExpect(jsonPath("$.instance", equalTo(expectedInstance.toString())));
+    }
 
     private void testJsonPathEqualsToCliente(Cliente target, ResultActions resultActions) throws Exception {
         testJsonPathEqualsToCliente("$", target, resultActions);
@@ -209,6 +375,13 @@ public class ClienteControllerTest {
                 .andExpect(jsonPath(jsonTarget + ".endereco.bairro", equalTo(target.getEndereco().getBairro())))
                 .andExpect(jsonPath(jsonTarget + ".endereco.cidade", equalTo(target.getEndereco().getCidade())))
                 .andExpect(jsonPath(jsonTarget + ".endereco.estado", equalTo(target.getEndereco().getEstado())));
+    }
+
+    private ProblemDetail problemDetailFromException(URI requestURI, ApiException exception, String expectedDetail) {
+        ProblemDetail expectedProblemDetail = ProblemDetail.forStatusAndDetail(exception.getStatusCode(), expectedDetail);
+        expectedProblemDetail.setType(URI.create(exception.getType()));
+        expectedProblemDetail.setInstance(requestURI);
+        return expectedProblemDetail;
     }
 
 }
