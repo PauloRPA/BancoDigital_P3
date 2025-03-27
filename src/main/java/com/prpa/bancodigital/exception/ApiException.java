@@ -8,7 +8,7 @@ import java.util.Map;
 
 public abstract class ApiException extends ResponseStatusException {
 
-    protected static final String IANA_TYPE_PREFIX = "https://iana.org/assignments/http-problem-types#";
+    public static final String IANA_TYPE_PREFIX = "https://iana.org/assignments/http-problem-types#";
     public static final String MESSAGE_FIELD_NAME = "messages";
     protected final Object messages;
 

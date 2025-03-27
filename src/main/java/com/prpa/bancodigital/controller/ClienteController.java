@@ -2,15 +2,18 @@ package com.prpa.bancodigital.controller;
 
 import com.prpa.bancodigital.config.ApplicationConfig;
 import com.prpa.bancodigital.exception.InvalidInputParameterException;
+import com.prpa.bancodigital.exception.ValidationException;
 import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.dtos.ClienteDTO;
+import com.prpa.bancodigital.model.validator.groups.PostRequired;
 import com.prpa.bancodigital.service.ClienteService;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 
@@ -21,7 +24,7 @@ import java.util.List;
 @RequestMapping(ApplicationConfig.API_V1 + "/clientes")
 public class ClienteController {
 
-    public static final int DEFAULT_PAGE = 1;
+    public static final int DEFAULT_PAGE = 0;
     public static final int DEFAULT_SIZE = 20;
     public static final int MAX_PAGE_SIZE = 100;
 
@@ -45,22 +48,34 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> getClienteById(@PathVariable("id") long id) {
         if (id < 0)
-            throw new InvalidInputParameterException("O parametro id deve ser maior ou igual a 0");
+            throw new InvalidInputParameterException("O parâmetro id deve ser maior ou igual a 0");
 
         return ResponseEntity.ok(clienteService.findById(id));
     }
 
     @PostMapping("")
-    public ResponseEntity<Cliente> postCliente(@RequestBody ClienteDTO cliente) {
-        Cliente saved = clienteService.newCliente(cliente);
+    public ResponseEntity<Cliente> postCliente(@Validated(PostRequired.class) @RequestBody ClienteDTO cliente, BindingResult result) {
+        ValidationException.throwIfHasErros(result);
+        Cliente saved = clienteService.newCliente(cliente.toCliente());
         UriComponents location = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .path("/{id}").buildAndExpand(saved.getId());
         return ResponseEntity.created(location.toUri()).body(saved);
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<Cliente> patchClienteById(@PathVariable("id") long id,
+                                                    @Valid @RequestBody ClienteDTO cliente,
+                                                    BindingResult result) {
+        ValidationException.throwIfHasErros(result);
+        return ResponseEntity.ok(clienteService.patchById(id, cliente.toCliente()));
+    }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Cliente> putClienteById(@PathVariable("id") long id, @RequestBody ClienteDTO cliente) {
-        return ResponseEntity.ok(clienteService.changeById(id, cliente));
+    public ResponseEntity<Cliente> putClienteById(@PathVariable("id") long id,
+                                                  @Validated(PostRequired.class) @RequestBody ClienteDTO cliente,
+                                                  BindingResult result) {
+        ValidationException.throwIfHasErros(result);
+        return ResponseEntity.ok(clienteService.changeById(id, cliente.toCliente()));
     }
 
     @DeleteMapping("/{id}")

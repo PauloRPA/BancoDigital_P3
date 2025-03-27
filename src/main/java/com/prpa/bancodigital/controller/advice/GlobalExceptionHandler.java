@@ -13,7 +13,7 @@ import java.util.Objects;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
-    public ResponseEntity<Object> resourceAlreadyExistsExceptionHandler(ApiException ex, WebRequest request) {
+    public ResponseEntity<Object> globalExceptionHandler(ApiException ex, WebRequest request) {
         return Objects.requireNonNull(handleExceptionInternal(ex, null, ex.getHeaders(), ex.getStatusCode(), request));
     }
 
