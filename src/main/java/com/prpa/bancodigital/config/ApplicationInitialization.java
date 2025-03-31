@@ -17,7 +17,7 @@ public class ApplicationInitialization {
     @PostConstruct
     public void initRequiredTiers() {
         for (int i = 0; i < REQUIRED_TIERS.length; i++) {
-            if (!tierRepository.existsByNome(REQUIRED_TIERS[i]))
+            if (!tierRepository.existsByNomeIgnoreCase(REQUIRED_TIERS[i]))
                 tierRepository.save(new Tier(null, REQUIRED_TIERS[i]));
         }
     }

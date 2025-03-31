@@ -2,6 +2,7 @@ package com.prpa.bancodigital.model.dtos;
 
 import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.Endereco;
+import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.model.validator.annotations.ElapsedTimeInYears;
 import com.prpa.bancodigital.model.validator.groups.PostRequired;
 import jakarta.validation.Valid;
@@ -30,11 +31,16 @@ public record ClienteDTO(
 
         @Valid
         @NotNull(message = "O endereço não pode estar vazio", groups = PostRequired.class)
-        EnderecoDTO endereco) {
+        EnderecoDTO endereco,
+
+        @Valid
+        @NotNull(message = "O tier não pode estar vazio", groups = PostRequired.class)
+        TierDTO tier) {
 
     public static ClienteDTO from(Cliente cliente) {
         EnderecoDTO enderecoDTO = EnderecoDTO.from(cliente.getEndereco());
-        return new ClienteDTO(cliente.getNome(), cliente.getCpf(), cliente.getDataNascimento(), enderecoDTO);
+        TierDTO tierDTO = TierDTO.from(cliente.getTier());
+        return new ClienteDTO(cliente.getNome(), cliente.getCpf(), cliente.getDataNascimento(), enderecoDTO, tierDTO);
     }
 
     public Cliente toCliente() {
@@ -43,7 +49,8 @@ public record ClienteDTO(
             cleanCPF = cpf.replaceAll("\\.", "").replaceAll("-", "");
         }
         Endereco enderecoCliente = endereco == null ? null : endereco.toEndereco();
-        return new Cliente(null, nome, cleanCPF, dataNascimento, enderecoCliente);
+        Tier tierCliente = tier.toTier();
+        return new Cliente(null, nome, cleanCPF, dataNascimento, enderecoCliente, tierCliente);
     }
 
     @Override

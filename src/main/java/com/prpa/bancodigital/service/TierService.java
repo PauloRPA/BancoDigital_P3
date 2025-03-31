@@ -31,7 +31,7 @@ public class TierService {
     }
 
     public Tier newTier(Tier toSave) {
-        if (tierRepository.existsByNome(toSave.getNome()))
+        if (tierRepository.existsByNomeIgnoreCase(toSave.getNome()))
             throw new ResourceAlreadyExistsException("Um tier com o nome especificado ja existe");
         return tierRepository.save(toSave);
     }

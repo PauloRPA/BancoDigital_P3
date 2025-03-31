@@ -26,15 +26,20 @@ public class Cliente {
     @JoinColumn(name = "ENDERECO_FK", referencedColumnName = "id", nullable = false)
     private Endereco endereco;
 
+    @ManyToOne
+    @JoinColumn(name = "tier_fk", referencedColumnName = "id", nullable = false)
+    private Tier tier;
+
     public Cliente() {
     }
 
-    public Cliente(Long id, String nome, String cpf, LocalDate dataNascimento, Endereco endereco) {
+    public Cliente(Long id, String nome, String cpf, LocalDate dataNascimento, Endereco endereco, Tier tier) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
+        this.tier = tier;
     }
 
     public Long getId() {
@@ -75,6 +80,14 @@ public class Cliente {
 
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
+    }
+
+    public Tier getTier() {
+        return tier;
+    }
+
+    public void setTier(Tier tier) {
+        this.tier = tier;
     }
 
     @Override

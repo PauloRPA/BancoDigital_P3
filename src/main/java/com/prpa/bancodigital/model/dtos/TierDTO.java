@@ -7,13 +7,17 @@ import jakarta.validation.constraints.Pattern;
 public class TierDTO {
 
     @NotBlank(message = "O campo de nome para um tier não pode ser vazio")
-    @Pattern(message = "Apenas são validas letras como nome para os tiers",regexp = "[A-Za-z]*")
+    @Pattern(message = "Apenas são validas letras como nome para os tiers", regexp = "[A-Za-z]*")
     private String nome;
 
     public TierDTO() { }
 
     public TierDTO(String nome) {
         this.nome = nome;
+    }
+
+    public static TierDTO from(Tier tier) {
+        return new TierDTO(tier.getNome().toUpperCase());
     }
 
     public String getNome() {
