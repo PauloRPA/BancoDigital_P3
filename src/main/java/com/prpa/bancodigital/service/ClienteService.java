@@ -7,7 +7,6 @@ import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.ClienteRepository;
-import com.prpa.bancodigital.repository.TierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,13 +20,13 @@ import static java.util.Objects.requireNonNullElse;
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
-    private final TierRepository tierRepository;
+    private final TierService tierService;
 
     @Autowired
     public ClienteService(ClienteRepository clienteRepository,
-                          TierRepository tierRepository) {
+                          TierService tierService) {
         this.clienteRepository = clienteRepository;
-        this.tierRepository = tierRepository;
+        this.tierService = tierService;
     }
 
     public List<Cliente> findAll(PageRequest pageRequest) {
@@ -46,8 +45,8 @@ public class ClienteService {
 
         Tier clienteTier = cliente.getTier();
         Tier tierFound = Optional.of(clienteTier)
-                .flatMap((t) -> t.getId() != null ? tierRepository.findById(t.getId()) : Optional.empty())
-                .or(() -> clienteTier.getNome() != null ? tierRepository.findByNomeIgnoreCase(clienteTier.getNome()) : Optional.empty())
+                .flatMap((t) -> t.getId() != null ? tierService.findById(t.getId()) : Optional.empty())
+                .or(() -> clienteTier.getNome() != null ? tierService.findByNomeIgnoreCase(clienteTier.getNome()) : Optional.empty())
                 .orElseThrow(() -> new ResourceNotFoundException("O Tier especificado não foi encontrado"));
         cliente.setTier(tierFound);
 
@@ -67,7 +66,7 @@ public class ClienteService {
         throwOnConflicts(newCliente, persisted);
 
         Tier tier = Optional.ofNullable(newCliente.getTier())
-                .flatMap(t -> t.getNome() != null ? tierRepository.findByNomeIgnoreCase(t.getNome()) : Optional.empty())
+                .flatMap(t -> t.getNome() != null ? tierService.findByNomeIgnoreCase(t.getNome()) : Optional.empty())
                 .orElseThrow(() -> new ResourceNotFoundException("O Tier especificado não foi encontrado"));
 
         persisted.setNome(getOrDefault(newCliente.getNome(), persisted.getNome()));

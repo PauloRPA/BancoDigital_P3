@@ -7,7 +7,6 @@ import com.prpa.bancodigital.exception.ResourceNotFoundException;
 import com.prpa.bancodigital.model.PoliticaTaxa;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.PoliticaTaxaRepository;
-import com.prpa.bancodigital.repository.TierRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +18,12 @@ import java.util.stream.Collectors;
 public class PoliticaTaxaService {
 
     private final PoliticaTaxaRepository politicaTaxaRepository;
-    private final TierRepository tierRepository;
+    private final TierService tierService;
 
     public PoliticaTaxaService(PoliticaTaxaRepository politicaTaxaRepository,
-                               TierRepository tierRepository) {
+                               TierService tierService) {
         this.politicaTaxaRepository = politicaTaxaRepository;
-        this.tierRepository = tierRepository;
+        this.tierService = tierService;
     }
 
     public List<PoliticaTaxa> findAll(PageRequest page) {
@@ -41,7 +40,7 @@ public class PoliticaTaxaService {
     }
 
     public List<PoliticaTaxa> findByTier(String nome) {
-        final Tier tier = tierRepository.findByNomeIgnoreCase(nome)
+        final Tier tier = tierService.findByNomeIgnoreCase(nome)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado um tier com o nome especificado"));
         return politicaTaxaRepository.findByTiers(tier);
     }
@@ -51,7 +50,7 @@ public class PoliticaTaxaService {
             throw new ResourceAlreadyExistsException("Ja existe uma politica com este nome");
 
         Set<Tier> tierSet = politicaTaxa.getTiers().stream()
-                .map(tier -> tierRepository.findByNomeIgnoreCase(tier.getNome()))
+                .map(tier -> tierService.findByNomeIgnoreCase(tier.getNome()))
                 .map(found -> found.orElseThrow(
                         () -> new ResourceNotFoundException("Não foi encontrado um tier com o nome especificado")))
                 .collect(Collectors.toSet());

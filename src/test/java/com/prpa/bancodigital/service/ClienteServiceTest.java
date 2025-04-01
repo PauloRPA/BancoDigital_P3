@@ -29,7 +29,7 @@ public class ClienteServiceTest {
     private ClienteRepository clienteRepository;
 
     @Mock
-    private TierRepository tierRepository;
+    private TierService tierService;
 
     @InjectMocks
     private ClienteService clienteService;
@@ -113,7 +113,7 @@ public class ClienteServiceTest {
     @Test
     @DisplayName("Ao tentar editar um cliente com nome do próprio cliente sendo editado")
     public void whenChangeClienteWithItsOwnNameShouldThrow() {
-        when(tierRepository.findByNomeIgnoreCase(any())).thenReturn(Optional.of(tier1));
+        when(tierService.findByNomeIgnoreCase(any())).thenReturn(Optional.of(tier1));
         when(clienteRepository.existsById(any())).thenReturn(true);
         when(clienteRepository.findById(any())).thenReturn(Optional.ofNullable(clienteTeste1));
         assertDoesNotThrow(() -> {
@@ -124,7 +124,7 @@ public class ClienteServiceTest {
     @Test
     @DisplayName("Ao tentar editar um cliente com cpf do próprio cliente sendo editado")
     public void whenChangeClienteWithItsOwnCPFShouldThrow() {
-        when(tierRepository.findByNomeIgnoreCase(any())).thenReturn(Optional.of(tier1));
+        when(tierService.findByNomeIgnoreCase(any())).thenReturn(Optional.of(tier1));
         when(clienteRepository.existsById(any())).thenReturn(true);
         when(clienteRepository.findById(any())).thenReturn(Optional.ofNullable(clienteTeste1));
         assertDoesNotThrow(() -> {
