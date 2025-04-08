@@ -18,10 +18,17 @@ public class Tier {
 
     @JsonIgnore
     @ManyToMany(mappedBy = "tiers")
+    private Set<PoliticaUso> politicasUso;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "tiers")
     private Set<PoliticaTaxa> politicasTaxa;
 
     @PreRemove
     private void removePoliticas() {
+        for (PoliticaUso politicaUso : this.politicasUso) {
+            politicaUso.getTiers().remove(this);
+        }
         for (PoliticaTaxa politicaTaxa : this.politicasTaxa) {
             politicaTaxa.getTiers().remove(this);
         }
@@ -55,4 +62,7 @@ public class Tier {
         return politicasTaxa;
     }
 
+    public Set<PoliticaUso> getPoliticasUso() {
+        return politicasUso;
+    }
 }

@@ -39,6 +39,9 @@ public abstract class ContaBancaria {
     @JoinColumn(name = "cliente_id", nullable = false)
     protected Cliente cliente;
 
+    @OneToMany(mappedBy = "conta")
+    protected List<Cartao> cartoes;
+
     public ContaBancaria() {
         this.saldo = BigDecimal.ZERO;
     }
