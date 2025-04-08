@@ -69,7 +69,7 @@ public class PoliticaTaxaService {
 
     private boolean isRequired(long id) {
         final int requiredIncomeSize = ApplicationInitialization.REQUIRED_INCOME.size();
-        final int requiredTaxSize = ApplicationInitialization.REQUIRED_MAINTENCE_TAX.size();
+        final int requiredTaxSize = ApplicationInitialization.REQUIRED_MAINTENANCE_TAX.size();
         return id < requiredIncomeSize + requiredTaxSize + 1;
     }
 

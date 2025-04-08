@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNullElse;
@@ -36,6 +37,15 @@ public class ClienteService {
     public Cliente findById(long id) {
         return clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado nenhum cliente com o id especificado"));
+    }
+
+    public Cliente findByIdOrCpfOrNomeAndDataNascimento(Cliente cliente) {
+        return Optional.ofNullable(cliente.getId()).flatMap(clienteRepository::findById)
+                .or(() -> Optional.ofNullable(cliente.getCpf()).flatMap(clienteRepository::findByCpf))
+                .or(() -> Optional.ofNullable(cliente.getNome())
+                        .filter(nome -> Objects.nonNull(cliente.getDataNascimento()))
+                        .flatMap(nome -> clienteRepository.findByNomeAndDataNascimento(nome, cliente.getDataNascimento())))
+                .orElseThrow(() -> new ResourceNotFoundException("Nenhum cliente com os dados fornecidos foi encontrado"));
     }
 
     public Cliente newCliente(Cliente cliente) {

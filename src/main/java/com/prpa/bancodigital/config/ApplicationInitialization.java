@@ -25,7 +25,7 @@ public class ApplicationInitialization {
     public static final String[] REQUIRED_TIERS = {"COMUM", "SUPER", "PREMIUM"};
 
     // Key = REQUIRED_TIER index. 0 = comum, 1 = super, 2 = premium
-    public static final Map<Integer, BigDecimal> REQUIRED_MAINTENCE_TAX = Map.of(
+    public static final Map<Integer, BigDecimal> REQUIRED_MAINTENANCE_TAX = Map.of(
             0, BigDecimal.valueOf(12),
             1, BigDecimal.valueOf(8)
     );
@@ -56,7 +56,7 @@ public class ApplicationInitialization {
                 .toList();
 
         String prefixNomeManutencao = "Manutenção conta corrente para clientes ";
-        for (var entry : REQUIRED_MAINTENCE_TAX.entrySet()) {
+        for (var entry : REQUIRED_MAINTENANCE_TAX.entrySet()) {
             String tierName = prefixNomeManutencao + REQUIRED_TIERS[entry.getKey()];
             PoliticaTaxa taxaManutencao = new PoliticaTaxa(null, tierName, entry.getValue(), FIXO, MANUTENCAO);
             taxaManutencao.getTiers().add(tiers.get(entry.getKey()));
