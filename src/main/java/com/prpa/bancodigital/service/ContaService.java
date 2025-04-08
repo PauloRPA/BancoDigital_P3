@@ -12,15 +12,18 @@ import com.prpa.bancodigital.model.dtos.TransferenciaDTO;
 import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.repository.ContaBancariaRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+@Slf4j
 @Service
 public class ContaService {
 
@@ -37,8 +40,14 @@ public class ContaService {
     }
 
     public ContaBancaria findById(long id) {
+        log.debug("Buscando conta pelo ID");
         return contaBancariaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com este id"));
+    }
+
+    private Optional<ContaBancaria> findByNumeroAndAgencia(TransferenciaDTO alvo) {
+        log.debug("Buscando conta pelo numero e agencia");
+        return contaBancariaRepository.findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia());
     }
 
     public ContaBancaria newAccount(NewContaBancariaDTO newAccount, Cliente cliente) {
@@ -84,44 +93,53 @@ public class ContaService {
     }
 
     public Transacao transferirById(long id, TransferenciaDTO alvo) {
+        log.debug("Iniciando transferencia");
         ContaBancaria fromConta = findById(id);
-        ContaBancaria contaAlvo = contaBancariaRepository.findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia())
+        ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
         if (fromConta.equals(contaAlvo))
             throw new InvalidInputParameterException("Não é possível transferir caso a conta destino seja igual a conta origem");
         Transacao transaction = fromConta.transferir(contaAlvo, alvo.getQuantia());
         contaBancariaRepository.save(contaAlvo);
         contaBancariaRepository.save(fromConta);
+        log.debug("Transferencia concluida");
         return transaction;
     }
 
     public Transacao pixById(long id, TransferenciaDTO alvo) {
+        log.debug("Iniciando PIX");
         ContaBancaria fromConta = findById(id);
-        ContaBancaria contaAlvo = contaBancariaRepository.findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia())
+        ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
         if (fromConta.equals(contaAlvo))
             throw new InvalidInputParameterException("Não é possível transferir caso a conta destino seja igual a conta origem");
         Transacao transaction = fromConta.pix(contaAlvo, alvo.getQuantia());
         contaBancariaRepository.save(contaAlvo);
         contaBancariaRepository.save(fromConta);
+        log.debug("PIX realizado");
         return transaction;
     }
 
     public Transacao depositById(long id, BigDecimal value) {
+        log.debug("Iniciando deposito");
         ContaBancaria found = findById(id);
         Transacao transaction = found.deposit(value);
         contaBancariaRepository.save(found);
+        log.debug("Deposito realizado");
         return transaction;
     }
 
     public Transacao withdrawById(long id, BigDecimal value) {
+        log.debug("Iniciando saque");
         ContaBancaria found = findById(id);
         Transacao transaction = found.withdraw(value);
         contaBancariaRepository.save(found);
+        log.debug("Saque realizado");
         return transaction;
     }
 
     public List<Transacao> manutencao(long id) {
+        log.debug("Calculando taxa de manutenção para conta pelo ID");
         ContaBancaria found = findById(id);
         List<Transacao> transactions = found.getPoliticas().stream()
                 .filter(politicaTaxa -> politicaTaxa.getTipoTaxa().equals(TipoTaxa.MANUTENCAO))
@@ -131,10 +149,12 @@ public class ContaService {
         if (transactions.isEmpty())
             throw new ResourceNotFoundException("Não há politicas de manutenção para essa conta");
         contaBancariaRepository.save(found);
+        log.debug("Taxa de manutenção aplicada");
         return transactions;
     }
 
     public List<Transacao> rendimento(long id) {
+        log.debug("Calculando rendimentos para conta pelo ID");
         ContaBancaria found = findById(id);
         List<Transacao> transactions = found.getPoliticas().stream()
                 .filter(politicaTaxa -> politicaTaxa.getTipoTaxa().equals(TipoTaxa.RENDIMENTO))
@@ -144,6 +164,7 @@ public class ContaService {
         if (transactions.isEmpty())
             throw new ResourceNotFoundException("Não há politicas de rendimento para essa conta");
         contaBancariaRepository.save(found);
+        log.debug("Rendimentos aplicados");
         return transactions;
     }
 

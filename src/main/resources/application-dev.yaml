@@ -1,5 +1,7 @@
 logging:
   level:
+    com:
+      prpa: ${LOG_APPLICATION:DEBUG}
     org:
       hibernate: ${LOG_HIBERNATE:INFO}
       springframework:
