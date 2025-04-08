@@ -1,11 +1,13 @@
 package com.prpa.bancodigital.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
 import java.util.Map;
 
+@Slf4j
 public abstract class ApiException extends ResponseStatusException {
 
     public static final String IANA_TYPE_PREFIX = "https://iana.org/assignments/http-problem-types#";
@@ -14,6 +16,7 @@ public abstract class ApiException extends ResponseStatusException {
 
     public ApiException(HttpStatusCode status, String reason) {
         this(status, reason, null);
+        log.debug("Exceção lançada com status {} motivo {}", status, reason);
     }
 
     public ApiException(HttpStatusCode status, String reason, Object messages) {

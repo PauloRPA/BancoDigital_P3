@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TierService {
@@ -28,6 +29,14 @@ public class TierService {
         List<Tier> content = new ArrayList<>(tierRepository.findAll(page).getContent());
         content.sort(Comparator.comparing(Tier::getId));
         return content;
+    }
+
+    public Optional<Tier> findById(Long id) {
+        return tierRepository.findById(id);
+    }
+
+    public Optional<Tier> findByNomeIgnoreCase(String nome) {
+        return tierRepository.findByNomeIgnoreCase(nome);
     }
 
     public Tier newTier(Tier toSave) {

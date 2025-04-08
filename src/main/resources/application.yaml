@@ -6,3 +6,7 @@ spring:
 
 server:
   port: ${BD_PORT:9999}
+
+application:
+  timezone:
+    zone_id: ${TIMEZONE:America/Sao_Paulo}
