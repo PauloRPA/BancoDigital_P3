@@ -15,6 +15,7 @@ import com.prpa.bancodigital.model.dtos.TransacaoDTO;
 import com.prpa.bancodigital.model.validator.annotations.SingleField;
 import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
