@@ -28,7 +28,8 @@ public class Tier {
 
     @PreRemove
     private void removePoliticas() {
-        politicaUso.getTiers().remove(this);
+        if (politicaUso != null)
+            politicaUso.getTiers().remove(this);
         for (PoliticaTaxa politicaTaxa : this.politicasTaxa) {
             politicaTaxa.getTiers().remove(this);
         }
