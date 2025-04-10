@@ -6,6 +6,11 @@ import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.model.dtos.TierDTO;
 import com.prpa.bancodigital.service.TierService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +38,10 @@ public class TierController {
     }
 
     @Operation(summary = "Retorna todos os Tiers cadastrados no sistema de acordo com a paginação descrita")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tiers retornados com sucesso",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Tier.class)))})})
     @GetMapping("")
     public ResponseEntity<List<Tier>> getTiers(
             @RequestParam(value = "page", defaultValue = "-1") int page,
@@ -45,6 +54,11 @@ public class TierController {
     }
 
     @Operation(summary = "Retorna o tier pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Tier encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Tier.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Tier com esse ID não encontrado", content = @Content)})
     @PostMapping("")
     public ResponseEntity<Tier> getTiers(@RequestBody @Valid TierDTO tierDTO, BindingResult result) {
         ValidationException.throwIfHasErros(result);
@@ -56,6 +70,10 @@ public class TierController {
     }
 
     @Operation(summary = "Remove o tier pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Tier removido com sucesso", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Não foi encontrado nenhum cliente com esse ID", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Requisição com ID inválido", content = @Content)})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable(value = "id") long id) {
         tierService.deleteById(id);

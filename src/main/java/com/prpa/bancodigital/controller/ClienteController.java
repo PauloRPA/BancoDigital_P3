@@ -8,6 +8,12 @@ import com.prpa.bancodigital.model.dtos.ClienteDTO;
 import com.prpa.bancodigital.model.validator.groups.PostRequired;
 import com.prpa.bancodigital.service.ClienteService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Constraint;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -36,6 +42,10 @@ public class ClienteController {
     }
 
     @Operation(summary = "Lista todos clientes cadastrados de acordo com a paginação")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente retornados com sucesso",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Cliente.class)))})})
     @GetMapping("")
     public ResponseEntity<List<Cliente>> getClientes(
             @RequestParam(defaultValue = "-1") int page,
@@ -48,6 +58,11 @@ public class ClienteController {
     }
 
     @Operation(summary = "Retorna o cliente pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cliente com esse ID não encontrado", content = @Content)})
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> getClienteById(@PathVariable("id") long id) {
         if (id < 0)
@@ -57,8 +72,13 @@ public class ClienteController {
     }
 
     @Operation(summary = "Insere um novo cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cliente adicionado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Já existe um cliente com esses dados", content = @Content)})
     @PostMapping("")
-    public ResponseEntity<Cliente> postCliente(@Validated(PostRequired.class) @RequestBody ClienteDTO cliente, BindingResult result) {
+    public ResponseEntity<Cliente> postCliente(@Validated(PostRequired.class) ClienteDTO cliente, BindingResult result) {
         ValidationException.throwIfHasErros(result);
         Cliente saved = clienteService.newCliente(cliente.toCliente());
         UriComponents location = ServletUriComponentsBuilder.fromCurrentRequestUri()
@@ -67,6 +87,11 @@ public class ClienteController {
     }
 
     @Operation(summary = "Edita as informações de um cliente cadastrado que possua o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente editado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Já existe um cliente com esses dados", content = @Content)})
     @PatchMapping("/{id}")
     public ResponseEntity<Cliente> patchClienteById(@PathVariable("id") long id,
                                                     @Valid @RequestBody ClienteDTO cliente,
@@ -76,6 +101,11 @@ public class ClienteController {
     }
 
     @Operation(summary = "Altera as informações do cliente com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente editado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Já existe um cliente com esses dados", content = @Content)})
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> putClienteById(@PathVariable("id") long id,
                                                   @Validated(PostRequired.class) @RequestBody ClienteDTO cliente,
@@ -85,6 +115,10 @@ public class ClienteController {
     }
 
     @Operation(summary = "Remove o cliente com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Cliente removido com sucesso", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Não foi encontrado nenhum cliente com esse ID", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Requisição com ID inválido", content = @Content)})
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClienteById(@PathVariable("id") long id) {
         clienteService.deleteById(id);
