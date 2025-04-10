@@ -16,6 +16,7 @@ import com.prpa.bancodigital.model.validator.annotations.SingleField;
 import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -35,6 +36,7 @@ public class CartaoController {
         this.contaService = contaService;
     }
 
+    @Operation(summary = "Retorna o cartão a partir de seu ID")
     @GetMapping("/{id}")
     public ResponseEntity<Cartao> getCartaoById(@PathVariable("id") long id) {
         if (id < 0)
@@ -43,6 +45,7 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.findById(id));
     }
 
+    @Operation(summary = "Retorna a fatura em aberto do cartão com o ID especificado")
     @GetMapping("/{id}/fatura")
     public ResponseEntity<Fatura> getFaturas(@PathVariable("id") long id) {
         if (id < 0)
@@ -53,6 +56,7 @@ public class CartaoController {
                 .orElse(ResponseEntity.noContent().build());
     }
 
+    @Operation(summary = "Altera o limite de credito do cartão com o ID especificado")
     @PutMapping("/{id}/limite")
     public ResponseEntity<Cartao> putLimite(
             @PathVariable("id") long id,
@@ -64,6 +68,7 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.setLimit(id, limite));
     }
 
+    @Operation(summary = "Altera o limite diário do cartão com o ID especificado")
     @PutMapping("/{id}/limite-diario")
     public ResponseEntity<Cartao> putLimiteDiario(
             @PathVariable("id") long id,
@@ -75,6 +80,7 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.setDailyLimit(id, limite));
     }
 
+    @Operation(summary = "Altera o status como ativo ou inativo do cartão com o ID especificado")
     @PutMapping("/{id}/status")
     public ResponseEntity<Cartao> putStatus(
             @PathVariable("id") long id,
@@ -86,6 +92,7 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.setAtivo(id, status));
     }
 
+    @Operation(summary = "Altera a senha do cartão com o ID especificado")
     @PutMapping("/{id}/senha")
     public ResponseEntity<Cartao> putSenha(
             @PathVariable("id") long id,
@@ -99,6 +106,7 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.setSenha(id, senhaDTO));
     }
 
+    @Operation(summary = "Insere um novo cartão")
     @PostMapping("")
     public ResponseEntity<Cartao> postNovoCartao(@Valid @RequestBody CartaoDTO cartaoDTO, BindingResult result) {
         ValidationException.throwIfHasErros(result);
@@ -110,6 +118,7 @@ public class CartaoController {
         return ResponseEntity.created(location.toUri()).body(saved);
     }
 
+    @Operation(summary = "Realiza um pagamento com o cartão especificado pelo ID")
     @PostMapping("/{id}/pagamento")
     public ResponseEntity<TransacaoDTO> postNovoPagamento(
             @PathVariable("id") long id,
@@ -120,6 +129,7 @@ public class CartaoController {
         return ResponseEntity.ok(TransacaoDTO.from(cartaoService.pagar(id, pagamentoDTO)));
     }
 
+    @Operation(summary = "Realiza o pagamento da fatura em aberto do cartão com o ID fornecido")
     @PostMapping("/{id}/fatura/pagamento")
     public ResponseEntity<TransacaoDTO> postPagarFatura(
             @PathVariable("id") long id,
