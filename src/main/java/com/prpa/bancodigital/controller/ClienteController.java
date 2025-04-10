@@ -7,6 +7,7 @@ import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.dtos.ClienteDTO;
 import com.prpa.bancodigital.model.validator.groups.PostRequired;
 import com.prpa.bancodigital.service.ClienteService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
@@ -34,6 +35,7 @@ public class ClienteController {
         this.clienteService = clienteService;
     }
 
+    @Operation(summary = "Lista todos clientes cadastrados de acordo com a paginação")
     @GetMapping("")
     public ResponseEntity<List<Cliente>> getClientes(
             @RequestParam(defaultValue = "-1") int page,
@@ -45,6 +47,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.findAll(PageRequest.of(pageNumber, pageSize)));
     }
 
+    @Operation(summary = "Retorna o cliente pelo ID")
     @GetMapping("/{id}")
     public ResponseEntity<Cliente> getClienteById(@PathVariable("id") long id) {
         if (id < 0)
@@ -53,6 +56,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.findById(id));
     }
 
+    @Operation(summary = "Insere um novo cliente")
     @PostMapping("")
     public ResponseEntity<Cliente> postCliente(@Validated(PostRequired.class) @RequestBody ClienteDTO cliente, BindingResult result) {
         ValidationException.throwIfHasErros(result);
@@ -62,6 +66,7 @@ public class ClienteController {
         return ResponseEntity.created(location.toUri()).body(saved);
     }
 
+    @Operation(summary = "Edita as informações de um cliente cadastrado que possua o ID especificado")
     @PatchMapping("/{id}")
     public ResponseEntity<Cliente> patchClienteById(@PathVariable("id") long id,
                                                     @Valid @RequestBody ClienteDTO cliente,
@@ -70,6 +75,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.patchById(id, cliente.toCliente()));
     }
 
+    @Operation(summary = "Altera as informações do cliente com o ID especificado")
     @PutMapping("/{id}")
     public ResponseEntity<Cliente> putClienteById(@PathVariable("id") long id,
                                                   @Validated(PostRequired.class) @RequestBody ClienteDTO cliente,
@@ -78,6 +84,7 @@ public class ClienteController {
         return ResponseEntity.ok(clienteService.changeById(id, cliente.toCliente()));
     }
 
+    @Operation(summary = "Remove o cliente com o ID especificado")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteClienteById(@PathVariable("id") long id) {
         clienteService.deleteById(id);

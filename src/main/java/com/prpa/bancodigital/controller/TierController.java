@@ -5,6 +5,7 @@ import com.prpa.bancodigital.exception.ValidationException;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.model.dtos.TierDTO;
 import com.prpa.bancodigital.service.TierService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -31,6 +32,7 @@ public class TierController {
         this.tierService = tierService;
     }
 
+    @Operation(summary = "Retorna todos os Tiers cadastrados no sistema de acordo com a paginação descrita")
     @GetMapping("")
     public ResponseEntity<List<Tier>> getTiers(
             @RequestParam(value = "page", defaultValue = "-1") int page,
@@ -42,6 +44,7 @@ public class TierController {
         return ResponseEntity.ok(tierService.findAll(PageRequest.of(page, size)));
     }
 
+    @Operation(summary = "Retorna o tier pelo ID")
     @PostMapping("")
     public ResponseEntity<Tier> getTiers(@RequestBody @Valid TierDTO tierDTO, BindingResult result) {
         ValidationException.throwIfHasErros(result);
@@ -52,6 +55,7 @@ public class TierController {
         return ResponseEntity.created(location.toUri()).body(tier);
     }
 
+    @Operation(summary = "Remove o tier pelo ID")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable(value = "id") long id) {
         tierService.deleteById(id);
