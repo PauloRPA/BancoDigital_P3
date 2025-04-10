@@ -15,10 +15,11 @@ import com.prpa.bancodigital.model.dtos.TransacaoDTO;
 import com.prpa.bancodigital.model.validator.annotations.SingleField;
 import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.media.SchemaProperty;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -71,6 +72,10 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera o limite de credito do cartão com o ID especificado")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Novo limite de credito a ser adotado", required = true,
+            content = @Content(mediaType = "application/json", schemaProperties = @SchemaProperty(name = "limite"),
+                    examples = {@ExampleObject("{ \"limite\": 123 }")}))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Limite alterado com sucesso",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
@@ -90,6 +95,10 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera o limite diário do cartão com o ID especificado")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Novo limite diário a ser adotado", required = true,
+            content = @Content(mediaType = "application/json", schemaProperties = @SchemaProperty(name = "limite"),
+                    examples = {@ExampleObject("{ \"limite\": 123 }")}))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Limite alterado com sucesso",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
@@ -109,6 +118,10 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera o status como ativo ou inativo do cartão com o ID especificado")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Se o cartão deve estar ativo ou inativo (true, false)", required = true,
+            content = @Content(mediaType = "application/json", schemaProperties = @SchemaProperty(name = "status"),
+                    examples = {@ExampleObject("{ \"status\": true }")}))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Status alterado com sucesso",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
@@ -182,6 +195,10 @@ public class CartaoController {
     }
 
     @Operation(summary = "Realiza o pagamento da fatura em aberto do cartão com o ID fornecido")
+    @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Valor a ser pago", required = true,
+            content = @Content(mediaType = "application/json", schemaProperties = @SchemaProperty(name = "valor"),
+                    examples = {@ExampleObject("{ \"valor\": 123 }")}))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pagamento realizado com sucesso",
                     content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
