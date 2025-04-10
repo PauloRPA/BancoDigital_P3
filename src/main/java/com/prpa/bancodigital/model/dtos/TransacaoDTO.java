@@ -21,20 +21,22 @@ public class TransacaoDTO {
     private ZonedDateTime doneTimestamp;
 
     private Boolean approved;
+    private Boolean processed;
     private List<String> reprovalReasons;
 
-    public TransacaoDTO(String name, BigDecimal amount, TipoTransacao type, ZonedDateTime createdTimestamp, ZonedDateTime doneTimestamp, Boolean approved, List<String> reprovalReasons) {
+    public TransacaoDTO(String name, BigDecimal amount, TipoTransacao type, ZonedDateTime createdTimestamp, ZonedDateTime doneTimestamp, Boolean processed, Boolean approved, List<String> reprovalReasons) {
         this.name = name;
         this.amount = amount;
         this.type = type;
         this.createdTimestamp = createdTimestamp;
         this.doneTimestamp = doneTimestamp;
+        this.processed = processed;
         this.approved = approved;
         this.reprovalReasons = reprovalReasons;
     }
 
     public static TransacaoDTO from(Transacao transaction) {
-        return new TransacaoDTO(transaction.getName(), transaction.getAmount(), transaction.getType(), transaction.getCreatedTimestamp(), transaction.getDoneTimestamp().orElse(null), transaction.isApproved(), transaction.getReprovalReasons());
+        return new TransacaoDTO(transaction.getName(), transaction.getAmount(), transaction.getType(), transaction.getCreatedTimestamp(), transaction.getDoneTimestamp().orElse(null), transaction.isProcessed(), transaction.isApproved(), transaction.getReprovalReasons());
     }
 
     public String getName() {
@@ -91,5 +93,13 @@ public class TransacaoDTO {
 
     public void setReprovalReasons(List<String> reprovalReasons) {
         this.reprovalReasons = reprovalReasons;
+    }
+
+    public Boolean getProcessed() {
+        return processed;
+    }
+
+    public void setProcessed(Boolean processed) {
+        this.processed = processed;
     }
 }

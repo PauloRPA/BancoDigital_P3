@@ -8,5 +8,6 @@ server:
   port: ${BD_PORT:9999}
 
 application:
+  bank_name: ${BANK_NAME:BancoBR}
   timezone:
     zone_id: ${TIMEZONE:America/Sao_Paulo}

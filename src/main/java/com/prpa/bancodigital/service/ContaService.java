@@ -45,9 +45,9 @@ public class ContaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com este id"));
     }
 
-    private Optional<ContaBancaria> findByNumeroAndAgencia(TransferenciaDTO alvo) {
+    public Optional<ContaBancaria> findByNumeroAndAgencia(String numero, String agencia) {
         log.debug("Buscando conta pelo numero e agencia");
-        return contaBancariaRepository.findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia());
+        return contaBancariaRepository.findByNumeroAndAgencia(numero, agencia);
     }
 
     public ContaBancaria newAccount(NewContaBancariaDTO newAccount, Cliente cliente) {
@@ -95,7 +95,7 @@ public class ContaService {
     public Transacao transferirById(long id, TransferenciaDTO alvo) {
         log.debug("Iniciando transferencia");
         ContaBancaria fromConta = findById(id);
-        ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo)
+        ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia())
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
         if (fromConta.equals(contaAlvo))
             throw new InvalidInputParameterException("Não é possível transferir caso a conta destino seja igual a conta origem");
@@ -109,7 +109,7 @@ public class ContaService {
     public Transacao pixById(long id, TransferenciaDTO alvo) {
         log.debug("Iniciando PIX");
         ContaBancaria fromConta = findById(id);
-        ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo)
+        ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia())
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
         if (fromConta.equals(contaAlvo))
             throw new InvalidInputParameterException("Não é possível transferir caso a conta destino seja igual a conta origem");

@@ -4,6 +4,8 @@ import com.prpa.bancodigital.model.Cartao;
 import com.prpa.bancodigital.model.CartaoCredito;
 import com.prpa.bancodigital.model.CartaoDebito;
 
+import java.util.Optional;
+
 public enum TipoCartao {
 
     CARTAO_DEBITO(CartaoDebito.class),
@@ -17,5 +19,13 @@ public enum TipoCartao {
 
     public Class<? extends Cartao> getCartaoClass() {
         return cartaoClass;
+    }
+
+    public static Optional<TipoCartao> from(String tipo) {
+        for (TipoCartao value : values()) {
+            if (value.name().equalsIgnoreCase(tipo))
+                return Optional.of(value);
+        }
+        return Optional.empty();
     }
 }

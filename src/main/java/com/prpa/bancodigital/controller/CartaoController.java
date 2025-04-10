@@ -2,14 +2,19 @@ package com.prpa.bancodigital.controller;
 
 import com.prpa.bancodigital.config.ApplicationConfig;
 import com.prpa.bancodigital.exception.InvalidInputParameterException;
+import com.prpa.bancodigital.exception.ResourceNotFoundException;
 import com.prpa.bancodigital.exception.ValidationException;
 import com.prpa.bancodigital.model.Cartao;
 import com.prpa.bancodigital.model.CartaoCredito;
+import com.prpa.bancodigital.model.ContaBancaria;
 import com.prpa.bancodigital.model.Fatura;
-import com.prpa.bancodigital.model.Transacao;
-import com.prpa.bancodigital.model.dtos.*;
+import com.prpa.bancodigital.model.dtos.CartaoDTO;
+import com.prpa.bancodigital.model.dtos.PagamentoDTO;
+import com.prpa.bancodigital.model.dtos.SenhaDTO;
+import com.prpa.bancodigital.model.dtos.TransacaoDTO;
 import com.prpa.bancodigital.model.validator.annotations.SingleField;
 import com.prpa.bancodigital.service.CartaoService;
+import com.prpa.bancodigital.service.ContaService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,9 +27,11 @@ import org.springframework.web.util.UriComponents;
 public class CartaoController {
 
     private final CartaoService cartaoService;
+    private final ContaService contaService;
 
-    public CartaoController(CartaoService cartaoService) {
+    public CartaoController(CartaoService cartaoService, ContaService contaService) {
         this.cartaoService = cartaoService;
+        this.contaService = contaService;
     }
 
     @GetMapping("/{id}")
@@ -40,7 +47,9 @@ public class CartaoController {
         if (id < 0)
             throw new InvalidInputParameterException("O parâmetro id deve ser maior ou igual a 0");
 
-        return ResponseEntity.ok(cartaoService.findById(id, CartaoCredito.class).getFaturaAtual());
+        return cartaoService.findById(id, CartaoCredito.class).getFaturaAtual()
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 
     @PutMapping("/{id}/limite")
@@ -73,7 +82,7 @@ public class CartaoController {
         if (id < 0)
             throw new InvalidInputParameterException("O parâmetro id deve ser maior ou igual a 0");
 
-        return ResponseEntity.ok(cartaoService.setStatus(id, status));
+        return ResponseEntity.ok(cartaoService.setAtivo(id, status));
     }
 
     @PutMapping("/{id}/senha")
@@ -92,7 +101,9 @@ public class CartaoController {
     @PostMapping("")
     public ResponseEntity<Cartao> postNovoCartao(@Valid @RequestBody CartaoDTO cartaoDTO, BindingResult result) {
         ValidationException.throwIfHasErros(result);
-        Cartao saved = cartaoService.save(cartaoDTO);
+        ContaBancaria conta = contaService.findByNumeroAndAgencia(cartaoDTO.getNumero(), cartaoDTO.getAgencia())
+                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
+        Cartao saved = cartaoService.newCartao(cartaoDTO, conta);
         UriComponents location = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(saved.getId());
         return ResponseEntity.created(location.toUri()).body(saved);
@@ -111,11 +122,15 @@ public class CartaoController {
     @PostMapping("/{id}/fatura/pagamento")
     public ResponseEntity<TransacaoDTO> postPagarFatura(
             @PathVariable("id") long id,
-            @Valid @RequestBody PagamentoFaturaDTO faturaDTO,
-            BindingResult result
+            @RequestBody @SingleField(name = "valor") Double valor
     ) {
-        ValidationException.throwIfHasErros(result);
-        return ResponseEntity.ok(TransacaoDTO.from(cartaoService.pagarFatura(id, faturaDTO)));
+        if (valor < 0)
+            throw new InvalidInputParameterException("O valor a pagar não pode ser menor que 0");
+
+        return cartaoService.pagarFatura(id, valor)
+                .map(TransacaoDTO::from)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
     }
 
 }

@@ -1,7 +1,10 @@
 package com.prpa.bancodigital.controller;
 
 import com.prpa.bancodigital.model.*;
+import com.prpa.bancodigital.model.dtos.CartaoDTO;
+import com.prpa.bancodigital.model.enums.TipoCartao;
 import com.prpa.bancodigital.service.CartaoService;
+import com.prpa.bancodigital.service.ContaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
 import static org.hamcrest.Matchers.containsString;
@@ -38,6 +42,9 @@ public class CartaoControllerTest {
     private MockMvc mockMvc;
 
     @MockitoBean
+    private ContaService contaService;
+
+    @MockitoBean
     private CartaoService cartaoService;
 
     @Test
@@ -52,16 +59,20 @@ public class CartaoControllerTest {
         cartaoCredito.setNumero("1293843209482");
         cartaoCredito.setVencimento(LocalDate.of(2999, 6, 12));
         cartaoCredito.setCcv("213");
-        cartaoCredito.setLimite(BigDecimal.valueOf(10));
+        cartaoCredito.setLimiteCredito(BigDecimal.valueOf(10));
         cartaoCredito.setAtivo(true);
 
-        when(cartaoService.save(any()))
+        CartaoDTO cartaoDTO = new CartaoDTO(TipoCartao.CARTAO_CREDITO.name(), "123456", "1234", "2345678", "2345678");
+
+        when(contaService.findByNumeroAndAgencia(any(), any()))
+                .thenReturn(Optional.ofNullable(cartaoCredito.getConta()));
+        when(cartaoService.newCartao(any(), any()))
                 .thenReturn(cartaoCredito);
 
         URI requestURI = UriComponentsBuilder.fromPath(CARTAO_MAPPING).build().toUri();
         ResultActions resultActions = mockMvc.perform(post(requestURI)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(cartaoCredito)))
+                        .content(objectMapper.writeValueAsString(cartaoDTO)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString(expectedLocation.toString())));
         testJsonPathEqualsToCartao(cartaoCredito, resultActions);
@@ -99,7 +110,7 @@ public class CartaoControllerTest {
         CartaoCredito cartaoCredito = new CartaoCredito();
         mockContaParaCartao(cartaoCredito);
 
-        when(cartaoService.setStatus(anyLong(), anyBoolean()))
+        when(cartaoService.setAtivo(anyLong(), anyBoolean()))
                 .thenReturn(cartaoCredito);
 
         URI requestURI = UriComponentsBuilder.fromPath(CARTAO_MAPPING)
@@ -119,8 +130,8 @@ public class CartaoControllerTest {
                     .andExpect(status().isOk());
         }
 
-        verify(cartaoService, times(2)).setStatus(eq(1L), eq(true));
-        verify(cartaoService, times(2)).setStatus(eq(1L), eq(false));
+        verify(cartaoService, times(2)).setAtivo(eq(1L), eq(true));
+        verify(cartaoService, times(2)).setAtivo(eq(1L), eq(false));
     }
 
     @Test
@@ -169,7 +180,9 @@ public class CartaoControllerTest {
 
     private static void mockContaParaCartao(CartaoCredito cartaoCredito) {
         ContaCorrente contaCorrenteMock = mock(ContaCorrente.class);
+        Tier tierMock = mock(Tier.class);
         Cliente clienteMock = mock(Cliente.class);
+        when(clienteMock.getTier()).thenReturn(tierMock);
         when(clienteMock.getNome()).thenReturn("Meu nome");
         when(contaCorrenteMock.getCliente()).thenReturn(clienteMock);
         cartaoCredito.setConta(contaCorrenteMock);
@@ -185,7 +198,6 @@ public class CartaoControllerTest {
                 .andExpect(jsonPath(jsonTarget + ".numero", equalTo(target.getNumero())))
                 .andExpect(jsonPath(jsonTarget + ".vencimento", equalTo(target.getVencimento().toString())))
                 .andExpect(jsonPath(jsonTarget + ".ccv", equalTo(target.getCcv())))
-                .andExpect(jsonPath(jsonTarget + ".limite", equalTo(target.getLimite().intValue())))
                 .andExpect(jsonPath(jsonTarget + ".ativo", equalTo(target.getAtivo())));
     }
 

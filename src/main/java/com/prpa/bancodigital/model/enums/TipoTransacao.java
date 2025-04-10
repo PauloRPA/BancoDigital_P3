@@ -8,6 +8,7 @@ public enum TipoTransacao {
     TRANSFERENCIA_DESTINO(false, true),
     TAXA(true, false),
     COMPRA(true, false),
+    FATURA(true, false),
     SAQUE(true, false),
     DEPOSITO(false, false),
     RENDIMENTO(false, false);

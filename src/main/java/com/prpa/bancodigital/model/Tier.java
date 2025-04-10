@@ -3,6 +3,7 @@ package com.prpa.bancodigital.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.util.Optional;
 import java.util.Set;
 
 @Entity
@@ -16,9 +17,10 @@ public class Tier {
     @Column(name = "nome", unique = true, updatable = false)
     private String nome;
 
+    @ManyToOne
     @JsonIgnore
-    @ManyToMany(mappedBy = "tiers")
-    private Set<PoliticaUso> politicasUso;
+    @JoinColumn(name = "politica_uso_fk")
+    private PoliticaUso politicaUso;
 
     @JsonIgnore
     @ManyToMany(mappedBy = "tiers")
@@ -26,9 +28,7 @@ public class Tier {
 
     @PreRemove
     private void removePoliticas() {
-        for (PoliticaUso politicaUso : this.politicasUso) {
-            politicaUso.getTiers().remove(this);
-        }
+        politicaUso.getTiers().remove(this);
         for (PoliticaTaxa politicaTaxa : this.politicasTaxa) {
             politicaTaxa.getTiers().remove(this);
         }
@@ -62,7 +62,15 @@ public class Tier {
         return politicasTaxa;
     }
 
-    public Set<PoliticaUso> getPoliticasUso() {
-        return politicasUso;
+    public void setPoliticasTaxa(Set<PoliticaTaxa> politicasTaxa) {
+        this.politicasTaxa = politicasTaxa;
+    }
+
+    public Optional<PoliticaUso> getPoliticaUso() {
+        return Optional.ofNullable(politicaUso);
+    }
+
+    public void setPoliticaUso(PoliticaUso politicaUso) {
+        this.politicaUso = politicaUso;
     }
 }

@@ -1,5 +1,6 @@
 package com.prpa.bancodigital.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -23,8 +24,9 @@ public class Fatura {
     private BigDecimal valor;
 
     @Column(name = "paga")
-    private Boolean paga;
+    private Boolean paid;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "cartao_fk", referencedColumnName = "id", nullable = false)
     private CartaoCredito cartao;
@@ -32,13 +34,25 @@ public class Fatura {
     public Fatura() {
     }
 
-    public Fatura(Long id, LocalDate abertura, LocalDate fechamento, BigDecimal valor, Boolean paga, CartaoCredito cartao) {
+    public Fatura(Long id, CartaoCredito cartao) {
         this.id = id;
-        this.abertura = abertura;
-        this.fechamento = fechamento;
-        this.valor = valor;
-        this.paga = paga;
+        this.abertura = LocalDate.now();
+        this.fechamento = LocalDate.now().plusMonths(1);
+        this.valor = BigDecimal.ZERO;
+        this.paid = false;
         this.cartao = cartao;
+    }
+
+    public void newTransaction(Transacao transacao) {
+        setValor(getValor().add(transacao.getAmount()));
+    }
+
+    public void pagar(BigDecimal amount) {
+        setValor(getValor().subtract(amount));
+        if (getValor().compareTo(BigDecimal.ZERO) == 0) {
+            setPaid(true);
+            setFechamento(LocalDate.now());
+        }
     }
 
     public LocalDate getAbertura() {
@@ -65,12 +79,12 @@ public class Fatura {
         this.valor = valor;
     }
 
-    public Boolean getPaga() {
-        return paga;
+    public Boolean isPaid() {
+        return paid;
     }
 
-    public void setPaga(Boolean paga) {
-        this.paga = paga;
+    public void setPaid(Boolean paid) {
+        this.paid = paid;
     }
 
     public CartaoCredito getCartao() {

@@ -1,8 +1,10 @@
 package com.prpa.bancodigital.config;
 
 import com.prpa.bancodigital.model.PoliticaTaxa;
+import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.PoliticaTaxaRepository;
+import com.prpa.bancodigital.repository.PoliticaUsoRepository;
 import com.prpa.bancodigital.repository.TierRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
 import static com.prpa.bancodigital.model.enums.TipoTaxa.MANUTENCAO;
 import static com.prpa.bancodigital.model.enums.TipoTaxa.RENDIMENTO;
 import static com.prpa.bancodigital.model.enums.UnidadeTaxa.FIXO;
@@ -37,16 +40,41 @@ public class ApplicationInitialization {
             2, BigDecimal.valueOf(0.9)
     );
 
+    // Key = REQUIRED_TIER index. 0 = comum, 1 = super, 2 = premium
+    public static final Map<Integer, BigDecimal> REQUIRED_CREDIT_LIMIT = Map.of(
+            0, BigDecimal.valueOf(1000),
+            1, BigDecimal.valueOf(5000),
+            2, BigDecimal.valueOf(10000)
+    );
+
     @Autowired
     private TierRepository tierRepository;
 
     @Autowired
     private PoliticaTaxaRepository politicaTaxaRepository;
+    @Autowired
+    private PoliticaUsoRepository politicaUsoRepository;
 
     @PostConstruct
     public void init() {
         initRequiredTiers();
         initRequiredPoliticasDeTaxas();
+        initRequiredPoliticasDeUso();
+    }
+
+    private void initRequiredPoliticasDeUso() {
+        List<Tier> tiers = Arrays.stream(REQUIRED_TIERS)
+                .map(tierRepository::findByNomeIgnoreCase)
+                .map(Optional::orElseThrow)
+                .toList();
+
+        for (var entry : REQUIRED_CREDIT_LIMIT.entrySet()) {
+            PoliticaUso politicaUso = new PoliticaUso(null, ILIMITADO, entry.getValue());
+            politicaUso.getTiers().add(tiers.get(entry.getKey()));
+            tiers.get(entry.getKey()).setPoliticaUso(politicaUso);
+            politicaUsoRepository.save(politicaUso);
+            tierRepository.save(tiers.get(entry.getKey()));
+        }
     }
 
     private void initRequiredPoliticasDeTaxas() {

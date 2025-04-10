@@ -3,31 +3,37 @@ package com.prpa.bancodigital.model;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
 @Table(name = "PoliticaUso")
 public class PoliticaUso {
 
+    public static final BigDecimal ILIMITADO = BigDecimal.valueOf(-100, 2);
+    public static final PoliticaUso SEM_POLITICA = new PoliticaUso(null, ILIMITADO, ILIMITADO);
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "limite_maximo_uso", scale = 2)
-    private BigDecimal limiteMaximo;
+    @Column(name = "limite_diario_uso", scale = 2)
+    private BigDecimal limiteDiario;
 
-    @ManyToMany
-    @JoinTable(name = "politica_uso_join_tier",
-            joinColumns = @JoinColumn(name = "politica_uso_id_fk"),
-            inverseJoinColumns = @JoinColumn(name = "tier_id_fk"))
+    @Column(name = "limite_credito", scale = 2)
+    private BigDecimal limiteCredito;
+
+    @OneToMany(mappedBy = "politicaUso")
     private Set<Tier> tiers;
 
-    public PoliticaUso() { }
+    public PoliticaUso() {
+    }
 
-    public PoliticaUso(Long id, BigDecimal limiteMaximo, Set<Tier> tiers) {
+    public PoliticaUso(Long id, BigDecimal limiteDiario, BigDecimal limiteCredito) {
         this.id = id;
-        this.limiteMaximo = limiteMaximo;
-        this.tiers = tiers;
+        this.limiteDiario = limiteDiario;
+        this.limiteCredito = limiteCredito;
+        this.tiers = new HashSet<>();
     }
 
     public Long getId() {
@@ -38,12 +44,20 @@ public class PoliticaUso {
         this.id = id;
     }
 
-    public BigDecimal getLimiteMaximo() {
-        return limiteMaximo;
+    public BigDecimal getLimiteCredito() {
+        return limiteCredito;
     }
 
-    public void setLimiteMaximo(BigDecimal limiteMaximo) {
-        this.limiteMaximo = limiteMaximo;
+    public void setLimiteCredito(BigDecimal limiteCredito) {
+        this.limiteCredito = limiteCredito;
+    }
+
+    public BigDecimal getLimiteDiario() {
+        return limiteDiario;
+    }
+
+    public void setLimiteDiario(BigDecimal limiteDiario) {
+        this.limiteDiario = limiteDiario;
     }
 
     public Set<Tier> getTiers() {

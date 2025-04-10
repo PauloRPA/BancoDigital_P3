@@ -1,6 +1,8 @@
 package com.prpa.bancodigital.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.prpa.bancodigital.exception.UnauthorizedOperationException;
+import com.prpa.bancodigital.model.dtos.PagamentoDTO;
 import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
@@ -63,6 +65,16 @@ public abstract class ContaBancaria {
         return processTransaction(new Transacao(taxa.getNome(), fee, transactionType));
     }
 
+    public Transacao pay(PagamentoDTO payment) {
+        String name = "Pagamento: %s - %s"
+                .formatted(payment.getInstituicao(), payment.getDescricao());
+        return processTransaction(new Transacao(name, payment.getValor(), COMPRA));
+    }
+
+    public Transacao pay(Transacao transacao) {
+        return processTransaction(transacao);
+    }
+
     public Transacao deposit(BigDecimal amount) {
         String name = "Deposito de %s efetuado na conta de numero: %s e agencia: %s"
                 .formatted(amount, getNumero(), getAgencia());
@@ -107,7 +119,7 @@ public abstract class ContaBancaria {
         }
 
         transacao.reprove("Saldo insuficiente");
-        return transacao;
+        throw new UnauthorizedOperationException("Saldo insuficiente");
     }
 
     public Transacao transferir(ContaBancaria alvo, BigDecimal quantia) {

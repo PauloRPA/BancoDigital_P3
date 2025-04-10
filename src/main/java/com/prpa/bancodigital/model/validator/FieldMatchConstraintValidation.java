@@ -46,12 +46,15 @@ public class FieldMatchConstraintValidation implements ConstraintValidator<Field
         }
 
         try {
-            return getterMethods.get(0).invoke(toBeValidated).equals(getterMethods.get(1).invoke(toBeValidated));
+            Object fieldValue = getterMethods.get(0).invoke(toBeValidated);
+            Object confirmFieldValue = getterMethods.get(1).invoke(toBeValidated);
+            if (fieldValue == null || confirmFieldValue == null)
+                return false;
+            return fieldValue.equals(confirmFieldValue);
         } catch (IllegalAccessException | InvocationTargetException e) {
             log.error("Não foi possível invocar os getters para verificar se os campos de senha são iguais");
             return false;
         }
     }
-
 
 }

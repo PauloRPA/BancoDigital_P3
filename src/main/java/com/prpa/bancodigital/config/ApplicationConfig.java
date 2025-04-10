@@ -15,6 +15,9 @@ import java.util.TimeZone;
 @Configuration
 public class ApplicationConfig {
 
+    @Value("${application.bank_name}")
+    public static String BANK_NAME = "";
+
     @Value("${application.timezone.zone_id}")
     public String TIMEZONE;
 

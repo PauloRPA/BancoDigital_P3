@@ -8,9 +8,12 @@ import jakarta.validation.Payload;
 
 import java.lang.annotation.*;
 
-@Documented
-@Target({ElementType.TYPE, ElementType.FIELD})
-@Retention(RetentionPolicy.RUNTIME)
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
+
+@Target({TYPE, FIELD})
+@Retention(RUNTIME)
 @Constraint(validatedBy = FieldMatchConstraintValidation.class)
 public @interface FieldMatch {
 
@@ -18,15 +21,15 @@ public @interface FieldMatch {
 
     String confirmFieldName();
 
-    String message() default "";
+    String message() default "asdf";
 
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
 
     @Documented
-    @Target(ElementType.TYPE)
-    @Retention(RetentionPolicy.RUNTIME)
+    @Target(TYPE)
+    @Retention(RUNTIME)
     public @interface List {
 
         FieldMatch[] value();
