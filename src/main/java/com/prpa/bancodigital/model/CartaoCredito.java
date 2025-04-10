@@ -16,6 +16,7 @@ import java.util.Optional;
 import static com.prpa.bancodigital.config.ApplicationConfig.BANK_NAME;
 import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
 import static com.prpa.bancodigital.model.PoliticaUso.SEM_POLITICA;
+import static com.prpa.bancodigital.model.enums.TipoTransacao.COMPRA;
 import static com.prpa.bancodigital.model.enums.TipoTransacao.FATURA;
 
 @Entity
@@ -86,7 +87,17 @@ public class CartaoCredito extends Cartao {
 
     @Override
     public Transacao pay(PagamentoDTO pagamentoDTO) {
-        Transacao transacao = super.pay(pagamentoDTO);
+        Fatura faturaAtual = getFaturaAtual().orElseThrow(() -> new UnauthorizedOperationException("Não há faturas em aberto"));
+        if (pagamentoDTO.getValor().add(faturaAtual.getValor()).compareTo(getLimiteCredito()) > 0)
+            throw new UnauthorizedOperationException("Não é possível efetuar o pagamento pois ele excederá seu limite de credito");
+        if (!isPasswordCorrect(pagamentoDTO.getSenha()))
+            throw new UnauthorizedOperationException("Senha incorreta");
+        if (!getAtivo())
+            throw new UnauthorizedOperationException("Este cartão esta inativo");
+
+        String name = "Compra " + pagamentoDTO.getInstituicao() + " - " + pagamentoDTO.getDescricao();
+        Transacao transacao = new Transacao(name, pagamentoDTO.getValor(), COMPRA);
+        transacao.approve();
         if (transacao.isApproved()) {
             getFaturaAtual().ifPresent(fatura -> fatura.newTransaction(transacao));
         }

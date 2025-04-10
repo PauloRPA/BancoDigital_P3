@@ -78,7 +78,7 @@ public class ClienteController {
             @ApiResponse(responseCode = "400", description = "Requisição inválida", content = @Content),
             @ApiResponse(responseCode = "409", description = "Já existe um cliente com esses dados", content = @Content)})
     @PostMapping("")
-    public ResponseEntity<Cliente> postCliente(@Validated(PostRequired.class) ClienteDTO cliente, BindingResult result) {
+    public ResponseEntity<Cliente> postCliente(@Validated(PostRequired.class) @RequestBody ClienteDTO cliente, BindingResult result) {
         ValidationException.throwIfHasErros(result);
         Cliente saved = clienteService.newCliente(cliente.toCliente());
         UriComponents location = ServletUriComponentsBuilder.fromCurrentRequestUri()

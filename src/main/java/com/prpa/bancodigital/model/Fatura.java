@@ -1,5 +1,6 @@
 package com.prpa.bancodigital.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
@@ -14,9 +15,11 @@ public class Fatura {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "abertura")
     private LocalDate abertura;
 
+    @JsonFormat(pattern = "dd/MM/yyyy")
     @Column(name = "fechamento")
     private LocalDate fechamento;
 
