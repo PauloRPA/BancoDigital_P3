@@ -17,6 +17,10 @@ import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -37,6 +41,11 @@ public class CartaoController {
     }
 
     @Operation(summary = "Retorna o cartão a partir de seu ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cartão encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @GetMapping("/{id}")
     public ResponseEntity<Cartao> getCartaoById(@PathVariable("id") long id) {
         if (id < 0)
@@ -46,6 +55,11 @@ public class CartaoController {
     }
 
     @Operation(summary = "Retorna a fatura em aberto do cartão com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Fatura encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Fatura.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @GetMapping("/{id}/fatura")
     public ResponseEntity<Fatura> getFaturas(@PathVariable("id") long id) {
         if (id < 0)
@@ -57,6 +71,13 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera o limite de credito do cartão com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Limite alterado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "O limite inserido é maior que o máximo permitido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PutMapping("/{id}/limite")
     public ResponseEntity<Cartao> putLimite(
             @PathVariable("id") long id,
@@ -69,6 +90,13 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera o limite diário do cartão com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Limite alterado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "O limite inserido é maior que o máximo permitido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PutMapping("/{id}/limite-diario")
     public ResponseEntity<Cartao> putLimiteDiario(
             @PathVariable("id") long id,
@@ -81,6 +109,12 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera o status como ativo ou inativo do cartão com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Status alterado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PutMapping("/{id}/status")
     public ResponseEntity<Cartao> putStatus(
             @PathVariable("id") long id,
@@ -93,6 +127,12 @@ public class CartaoController {
     }
 
     @Operation(summary = "Altera a senha do cartão com o ID especificado")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Senha alterada com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PutMapping("/{id}/senha")
     public ResponseEntity<Cartao> putSenha(
             @PathVariable("id") long id,
@@ -107,6 +147,11 @@ public class CartaoController {
     }
 
     @Operation(summary = "Insere um novo cartão")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cartão adicionado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "409", description = "Essa conta ja possui um cartão desse tipo", content = @Content)})
     @PostMapping("")
     public ResponseEntity<Cartao> postNovoCartao(@Valid @RequestBody CartaoDTO cartaoDTO, BindingResult result) {
         ValidationException.throwIfHasErros(result);
@@ -119,6 +164,13 @@ public class CartaoController {
     }
 
     @Operation(summary = "Realiza um pagamento com o cartão especificado pelo ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pagamento realizado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Saldo insuficiente", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PostMapping("/{id}/pagamento")
     public ResponseEntity<TransacaoDTO> postNovoPagamento(
             @PathVariable("id") long id,
@@ -130,6 +182,13 @@ public class CartaoController {
     }
 
     @Operation(summary = "Realiza o pagamento da fatura em aberto do cartão com o ID fornecido")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Pagamento realizado com sucesso",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+            @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Não é possível pagar um valor maior que o requerido pela fatura", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PostMapping("/{id}/fatura/pagamento")
     public ResponseEntity<TransacaoDTO> postPagarFatura(
             @PathVariable("id") long id,
