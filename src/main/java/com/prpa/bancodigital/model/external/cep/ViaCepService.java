@@ -35,11 +35,11 @@ public class ViaCepService implements CepService {
         try {
             final long start = System.currentTimeMillis();
             ResponseEntity<ViaCepResponse> response = restTemplate.getForEntity(viaCepUrl.formatted(cep), ViaCepResponse.class);
+            final long end = System.currentTimeMillis();
+            log.info("ViaCep respondeu com {}. Com tempo total para resposta de {}ms", response.getStatusCode(), end - start);
             if (!response.getStatusCode().is2xxSuccessful())
                 return Optional.empty();
 
-            final long end = System.currentTimeMillis();
-            log.info("ViaCep respondeu com {}. Com tempo total para resposta de {}ms", response.getStatusCode(), end - start);
             ViaCepResponse body = response.getBody();
             if (body.cep() == null) return Optional.empty();
             return Optional.of(new EnderecoDTO(body.complemento(), body.cep(), null, body.logradouro(), body.bairro(), body.localidade(), body.estado()));
