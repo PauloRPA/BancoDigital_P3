@@ -7,6 +7,6 @@ import java.util.Optional;
 
 public interface CepService {
 
-    Optional<EnderecoDTO> findByCep(@Valid String cep);
+    Optional<EnderecoDTO> findByCep(String cep);
 
 }
