@@ -3,7 +3,7 @@ application:
     viacep:
       url: ${CEP_SERVICE_URL:https://viacep.com.br/ws/%s/json/}
       timeout_in_millis: ${CEP_SERVICE_TIMEOUT:5000}
-  bank_name: ${BANK_NAME:BancoBR}
+  name: ${BANK_NAME:BancoBR}
   timezone:
     zone_id: ${TIMEZONE:America/Sao_Paulo}
 

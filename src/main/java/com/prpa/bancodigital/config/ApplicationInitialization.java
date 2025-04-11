@@ -27,6 +27,9 @@ public class ApplicationInitialization {
 
     public static final String[] REQUIRED_TIERS = {"COMUM", "SUPER", "PREMIUM"};
 
+    public static final double TAXA_UTILIZACAO = 0.05;
+    public static final double APLICAR_AO_EXCEDER = 0.8;
+
     // Key = REQUIRED_TIER index. 0 = comum, 1 = super, 2 = premium
     public static final Map<Integer, BigDecimal> REQUIRED_MAINTENANCE_TAX = Map.of(
             0, BigDecimal.valueOf(12),

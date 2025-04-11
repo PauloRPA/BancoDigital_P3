@@ -10,7 +10,7 @@ import com.prpa.bancodigital.repository.CartaoRepository;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 public class CartaoService {
@@ -40,9 +40,9 @@ public class CartaoService {
         return transacao;
     }
 
-    public Optional<Transacao> pagarFatura(long id, Double valor) {
+    public List<Transacao> pagarFatura(long id, Double valor) {
         CartaoCredito byId = findById(id, CartaoCredito.class);
-        Optional<Transacao> transacao = byId.pagarFatura(valor);
+        List<Transacao> transacao = byId.pagarFatura(valor);
         cartaoRepository.save(byId);
         return transacao;
     }

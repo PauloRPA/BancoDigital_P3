@@ -26,6 +26,9 @@ public class Fatura {
     @Column(name = "valor")
     private BigDecimal valor;
 
+    @Column(name = "taxa_utilizacao_cobrada")
+    private Boolean taxaUtilizacao;
+
     @Column(name = "paga")
     private Boolean paid;
 
@@ -43,6 +46,7 @@ public class Fatura {
         this.fechamento = LocalDate.now().plusMonths(1);
         this.valor = BigDecimal.ZERO;
         this.paid = false;
+        this.taxaUtilizacao = false;
         this.cartao = cartao;
     }
 
@@ -106,4 +110,15 @@ public class Fatura {
         this.id = id;
     }
 
+    public Boolean getTaxaUtilizacao() {
+        return taxaUtilizacao;
+    }
+
+    public void setTaxaUtilizacao(Boolean taxaUtilizacao) {
+        this.taxaUtilizacao = taxaUtilizacao;
+    }
+
+    public Boolean getPaid() {
+        return paid;
+    }
 }

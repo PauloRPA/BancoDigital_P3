@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.prpa.bancodigital.exception.UnauthorizedOperationException;
 import com.prpa.bancodigital.model.dtos.PagamentoDTO;
 import com.prpa.bancodigital.model.enums.TipoCartao;
+import com.prpa.bancodigital.model.enums.TipoTransacao;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
@@ -14,6 +15,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.prpa.bancodigital.config.ApplicationConfig.BANK_NAME;
+import static com.prpa.bancodigital.config.ApplicationInitialization.APLICAR_AO_EXCEDER;
+import static com.prpa.bancodigital.config.ApplicationInitialization.TAXA_UTILIZACAO;
 import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
 import static com.prpa.bancodigital.model.PoliticaUso.SEM_POLITICA;
 import static com.prpa.bancodigital.model.enums.TipoTransacao.COMPRA;
@@ -58,10 +61,11 @@ public class CartaoCredito extends Cartao {
         this.tipo = TipoCartao.CARTAO_CREDITO;
     }
 
-    public Optional<Transacao> pagarFatura(Double valor) {
+    public List<Transacao> pagarFatura(Double valor) {
+        List<Transacao> transacoes = new ArrayList<>();
         Optional<Fatura> faturaAtual = getFaturaAtual();
         if (faturaAtual.isEmpty())
-            return Optional.empty();
+            return List.of();
         if (faturaAtual.get().getValor().equals(BigDecimal.ZERO))
             throw new UnauthorizedOperationException("Não há valor a ser pago");
 
@@ -73,6 +77,16 @@ public class CartaoCredito extends Cartao {
         String name = "[" + BANK_NAME + "] Pagamento da fatura em aberto";
         Transacao transacao = new Transacao(name, BigDecimal.valueOf(valor), FATURA);
         super.pay(transacao);
+        transacoes.add(transacao);
+
+        BigDecimal excedenteTaxaUso = getPoliticaUso().getLimiteCredito().multiply(BigDecimal.valueOf(APLICAR_AO_EXCEDER));
+        if (fatura.getValor().compareTo(excedenteTaxaUso) > 0 && !fatura.getTaxaUtilizacao()) {
+            BigDecimal taxaUtilizacao = fatura.getValor().multiply(BigDecimal.valueOf(TAXA_UTILIZACAO));
+            String transactionName = "Taxa de utilização " + TAXA_UTILIZACAO * 100 + "%";
+            Transacao utilizacao = getConta().pay(new Transacao(transactionName, taxaUtilizacao, TipoTransacao.TAXA));
+            fatura.setTaxaUtilizacao(true);
+            transacoes.add(utilizacao);
+        }
 
         if (transacao.isApproved()) {
             fatura.pagar(transacao.getAmount());
@@ -82,7 +96,7 @@ public class CartaoCredito extends Cartao {
             this.faturas.add(new Fatura(null, this));
         }
 
-        return Optional.of(transacao);
+        return transacoes;
     }
 
     @Override

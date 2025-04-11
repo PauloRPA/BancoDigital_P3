@@ -29,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriComponents;
 
+import java.util.List;
+
 @RestController
 @RequestMapping(ApplicationConfig.API_V1 + "/cartoes")
 public class CartaoController {
@@ -207,17 +209,16 @@ public class CartaoController {
             @ApiResponse(responseCode = "403", description = "Não é possível pagar um valor maior que o requerido pela fatura", content = @Content),
             @ApiResponse(responseCode = "404", description = "Cartão com esse ID não encontrado", content = @Content)})
     @PostMapping("/{id}/fatura/pagamento")
-    public ResponseEntity<TransacaoDTO> postPagarFatura(
+    public ResponseEntity<List<TransacaoDTO>> postPagarFatura(
             @PathVariable("id") long id,
             @RequestBody @SingleField(name = "valor") Double valor
     ) {
         if (valor < 0)
             throw new InvalidInputParameterException("O valor a pagar não pode ser menor que 0");
 
-        return cartaoService.pagarFatura(id, valor)
-                .map(TransacaoDTO::from)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.noContent().build());
+        List<TransacaoDTO> transacoes = cartaoService.pagarFatura(id, valor).stream()
+                .map(TransacaoDTO::from).toList();
+        return transacoes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(transacoes);
     }
 
 }
