@@ -9,6 +9,7 @@ import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.model.dtos.ClienteDTO;
+import com.prpa.bancodigital.model.external.cep.CepService;
 import com.prpa.bancodigital.service.ClienteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -42,6 +43,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ClienteControllerTest {
 
     private static final String CLIENTE_MAPPING = API_V1 + "/clientes";
+
+    @MockitoBean
+    private CepService cepService;
 
     @MockitoBean
     private ClienteService clienteService;

@@ -9,6 +9,7 @@ import com.prpa.bancodigital.model.ContaCorrente;
 import com.prpa.bancodigital.model.ContaPoupanca;
 import com.prpa.bancodigital.model.dtos.NewContaBancariaDTO;
 import com.prpa.bancodigital.model.enums.TipoConta;
+import com.prpa.bancodigital.model.external.cep.CepService;
 import com.prpa.bancodigital.service.ClienteService;
 import com.prpa.bancodigital.service.ContaService;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,6 +44,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ContaControllerTest {
 
     private static final String CONTA_MAPPING = API_V1 + "/contas";
+
+    @MockitoBean
+    private CepService cepService;
 
     @MockitoBean
     private ContaService contaService;

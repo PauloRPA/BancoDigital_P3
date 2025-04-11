@@ -3,6 +3,8 @@ package com.prpa.bancodigital.controller;
 import com.prpa.bancodigital.model.*;
 import com.prpa.bancodigital.model.dtos.CartaoDTO;
 import com.prpa.bancodigital.model.enums.TipoCartao;
+import com.prpa.bancodigital.model.external.cep.CepService;
+import com.prpa.bancodigital.model.validator.annotations.Cep;
 import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +42,9 @@ public class CartaoControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockitoBean
+    private CepService cepService;
 
     @MockitoBean
     private ContaService contaService;
