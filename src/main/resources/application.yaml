@@ -8,6 +8,10 @@ server:
   port: ${BD_PORT:9999}
 
 application:
+  external:
+    viacep:
+      url: https://viacep.com.br/ws/%s/json/
+
   bank_name: ${BANK_NAME:BancoBR}
   timezone:
     zone_id: ${TIMEZONE:America/Sao_Paulo}
