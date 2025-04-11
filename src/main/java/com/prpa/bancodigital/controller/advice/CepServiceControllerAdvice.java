@@ -3,6 +3,7 @@ package com.prpa.bancodigital.controller.advice;
 import com.prpa.bancodigital.model.dtos.ClienteDTO;
 import com.prpa.bancodigital.model.dtos.EnderecoDTO;
 import com.prpa.bancodigital.model.external.cep.CepService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpInputMessage;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -14,6 +15,7 @@ import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
+@Slf4j
 @RestControllerAdvice
 public class CepServiceControllerAdvice extends RequestBodyAdviceAdapter {
 

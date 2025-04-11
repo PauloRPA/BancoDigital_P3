@@ -42,13 +42,11 @@ public class ContaService {
     }
 
     public ContaBancaria findById(long id) {
-        log.debug("Buscando conta pelo ID");
         return contaBancariaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com este id"));
     }
 
     public Optional<ContaBancaria> findByNumeroAndAgencia(String numero, String agencia) {
-        log.debug("Buscando conta pelo numero e agencia");
         return contaBancariaRepository.findByNumeroAndAgencia(numero, agencia);
     }
 
@@ -95,7 +93,6 @@ public class ContaService {
     }
 
     public Transacao transferirById(long id, TransferenciaDTO alvo) {
-        log.debug("Iniciando transferencia");
         ContaBancaria fromConta = findById(id);
         ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia())
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
@@ -104,12 +101,10 @@ public class ContaService {
         Transacao transaction = fromConta.transferir(contaAlvo, alvo.getQuantia());
         contaBancariaRepository.save(contaAlvo);
         contaBancariaRepository.save(fromConta);
-        log.debug("Transferencia concluida");
         return transaction;
     }
 
     public Transacao pixById(long id, TransferenciaDTO alvo) {
-        log.debug("Iniciando PIX");
         ContaBancaria fromConta = findById(id);
         ContaBancaria contaAlvo = findByNumeroAndAgencia(alvo.getNumero(), alvo.getAgencia())
                 .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrada nenhuma conta com o numero e agencia informados"));
@@ -118,30 +113,24 @@ public class ContaService {
         Transacao transaction = fromConta.pix(contaAlvo, alvo.getQuantia());
         contaBancariaRepository.save(contaAlvo);
         contaBancariaRepository.save(fromConta);
-        log.debug("PIX realizado");
         return transaction;
     }
 
     public Transacao depositById(long id, BigDecimal value) {
-        log.debug("Iniciando deposito");
         ContaBancaria found = findById(id);
         Transacao transaction = found.deposit(value);
         contaBancariaRepository.save(found);
-        log.debug("Deposito realizado");
         return transaction;
     }
 
     public Transacao withdrawById(long id, BigDecimal value) {
-        log.debug("Iniciando saque");
         ContaBancaria found = findById(id);
         Transacao transaction = found.withdraw(value);
         contaBancariaRepository.save(found);
-        log.debug("Saque realizado");
         return transaction;
     }
 
     public List<Transacao> manutencao(long id) {
-        log.debug("Calculando taxa de manutenção para conta pelo ID");
         ContaBancaria found = findById(id);
         List<Transacao> transactions = found.getPoliticas().stream()
                 .filter(politicaTaxa -> politicaTaxa.getTipoTaxa().equals(TipoTaxa.MANUTENCAO))
@@ -151,12 +140,10 @@ public class ContaService {
         if (transactions.isEmpty())
             throw new ResourceNotFoundException("Não há politicas de manutenção para essa conta");
         contaBancariaRepository.save(found);
-        log.debug("Taxa de manutenção aplicada");
         return transactions;
     }
 
     public List<Transacao> rendimento(long id) {
-        log.debug("Calculando rendimentos para conta pelo ID");
         ContaBancaria found = findById(id);
         List<Transacao> transactions = found.getPoliticas().stream()
                 .filter(politicaTaxa -> politicaTaxa.getTipoTaxa().equals(TipoTaxa.RENDIMENTO))
@@ -166,7 +153,6 @@ public class ContaService {
         if (transactions.isEmpty())
             throw new ResourceNotFoundException("Não há politicas de rendimento para essa conta");
         contaBancariaRepository.save(found);
-        log.debug("Rendimentos aplicados");
         return transactions;
     }
 

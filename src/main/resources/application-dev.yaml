@@ -13,6 +13,10 @@ logging:
         orm:
           jpa: ${LOG_JPA:INFO}
 
+application:
+  aop:
+    logging: true
+
 spring:
   datasource:
 #    url: jdbc:h2:file:./dev

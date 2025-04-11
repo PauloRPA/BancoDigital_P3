@@ -16,7 +16,6 @@ public abstract class ApiException extends ResponseStatusException {
 
     public ApiException(HttpStatusCode status, String reason) {
         this(status, reason, null);
-        log.debug("Exceção lançada com status {} motivo {}", status, reason);
     }
 
     public ApiException(HttpStatusCode status, String reason, Object messages) {
