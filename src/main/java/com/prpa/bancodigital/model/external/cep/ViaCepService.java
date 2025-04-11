@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
+import java.util.concurrent.CancellationException;
 
 @Component
 public class ViaCepService implements CepService {
@@ -16,9 +17,11 @@ public class ViaCepService implements CepService {
     private String viaCepUrl;
 
     private final CepValidator cepValidator;
+    private final RestTemplate restTemplate;
 
-    public ViaCepService(CepValidator cepValidator) {
+    public ViaCepService(CepValidator cepValidator, RestTemplate restTemplate) {
         this.cepValidator = cepValidator;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -26,13 +29,17 @@ public class ViaCepService implements CepService {
         if (!cepValidator.isValid(cep, null))
             return Optional.empty();
 
-        RestTemplate restTemplate = new RestTemplate();
-        ResponseEntity<ViaCepResponse> response = restTemplate.getForEntity(viaCepUrl.formatted(cep), ViaCepResponse.class);
-        if (!response.getStatusCode().is2xxSuccessful())
+        try {
+            ResponseEntity<ViaCepResponse> response = restTemplate.getForEntity(viaCepUrl.formatted(cep), ViaCepResponse.class);
+            if (!response.getStatusCode().is2xxSuccessful())
+                return Optional.empty();
+            ViaCepResponse body = response.getBody();
+            if (body.cep() == null) return Optional.empty();
+            return Optional.of(new EnderecoDTO(body.complemento(), body.cep(), null, body.logradouro(), body.bairro(), body.localidade(), body.estado()));
+        } catch (CancellationException e) {
+            e.printStackTrace();
             return Optional.empty();
-        ViaCepResponse body = response.getBody();
-        if (body.cep() == null) return Optional.empty();
-        return Optional.of(new EnderecoDTO(body.complemento(), body.cep(), null, body.logradouro(), body.bairro(), body.localidade(), body.estado()));
+        }
     }
 
 }
