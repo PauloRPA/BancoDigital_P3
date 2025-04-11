@@ -1,0 +1,144 @@
+package com.prpa.bancodigital.config;
+
+import com.prpa.bancodigital.security.config.JwtAuthenticationProvider;
+import com.prpa.bancodigital.security.config.JwtFilter;
+import com.prpa.bancodigital.security.model.BankUser;
+import com.prpa.bancodigital.security.model.Role;
+import com.prpa.bancodigital.security.repository.BankUserRepository;
+import com.prpa.bancodigital.security.service.BankUserService;
+import com.prpa.bancodigital.security.service.JwtService;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
+import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
+import static org.springframework.security.web.util.matcher.AntPathRequestMatcher.antMatcher;
+
+@Slf4j
+@Configuration
+public class SecurityConfig {
+
+    private static final String[] WHITE_LIST = {"/error/**", "/auth/**"};
+
+    private final BankUserService bankUserService;
+    private final JwtService jwtService;
+    private final AuthenticationConfiguration authConfig;
+
+
+    public SecurityConfig(BankUserService bankUserService, JwtService jwtService, AuthenticationConfiguration authConfig) {
+        this.bankUserService = bankUserService;
+        this.jwtService = jwtService;
+        this.authConfig = authConfig;
+    }
+
+    @Bean
+    public SecurityFilterChain configure(HttpSecurity http) throws Exception {
+        JwtFilter jwtFilter = new JwtFilter(antMatcher(API_V1 + "/**"), getAuthenticationManager(http), jwtService);
+        return http
+                .sessionManagement(sm -> sm.sessionCreationPolicy(STATELESS))
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(API_V1 + "/**").hasRole("ADMIN")
+                        .requestMatchers(WHITE_LIST).permitAll()
+                        .anyRequest().authenticated())
+                .build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager getAuthenticationManager(HttpSecurity http) throws Exception {
+        return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(getDaoAuthenticationProvider())
+                .authenticationProvider(getJwtAuthenticationProvider())
+                .parentAuthenticationManager(authConfig.getAuthenticationManager())
+                .eraseCredentials(true)
+                .build();
+    }
+
+    public AuthenticationProvider getJwtAuthenticationProvider() {
+        return new JwtAuthenticationProvider(jwtService);
+    }
+
+    public AuthenticationProvider getDaoAuthenticationProvider() {
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(bankUserService);
+        provider.setPasswordEncoder(passwordEncoder());
+        return provider;
+    }
+
+    @Bean
+    @Profile("dev")
+    public WebSecurityCustomizer ignoreH2() {
+        return web -> web.ignoring()
+                .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                .requestMatchers(new AntPathRequestMatcher("/swagger-ui/**"))
+                .requestMatchers(new AntPathRequestMatcher("/api-docs/**"));
+    }
+
+    @Bean
+    public CommandLineRunner insertDefaultUserAndPassword(PasswordEncoder encoder, BankUserRepository bankUserRepository) {
+        return args -> {
+            if (bankUserRepository.existsByRoles(List.of(Role.ROLE_ADMIN)))
+                return;
+            String username = "admin",
+                    email = "admin@admin.com",
+                    password = "admin";
+            String message = """
+                    GENERATED USERNAME AND PASSWORD:
+                    USERNAME: %s
+                    PASSWORD: %s
+                    """.formatted(username, password);
+
+            bankUserRepository.save(new BankUser(null, username, email, encoder.encode(password), Arrays.stream(Role.values()).toList()));
+            log.info(message);
+        };
+    }
+
+    // OpenAPI + Swagger JWT authentication
+
+    public SecurityScheme createAPIKeyScheme() {
+        return new SecurityScheme().type(SecurityScheme.Type.HTTP)
+                .bearerFormat("JWT")
+                .scheme("bearer");
+    }
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI().addSecurityItem(new SecurityRequirement().
+                        addList("Bearer Authentication"))
+                .components(new Components().addSecuritySchemes
+                        ("Bearer Authentication", createAPIKeyScheme()));
+    }
+
+}

@@ -1,4 +1,7 @@
 application:
+  security:
+    secret: ${SECRET}
+    expiration_min: ${TOKEN_EXPIRATION_MIN:120}
   external:
     viacep:
       url: ${CEP_SERVICE_URL:https://viacep.com.br/ws/%s/json/}
@@ -15,3 +18,5 @@ spring:
 
 server:
   port: ${BD_PORT:9999}
+  error:
+    include-stacktrace: never
