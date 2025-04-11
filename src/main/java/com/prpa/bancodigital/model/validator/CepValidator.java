@@ -3,11 +3,13 @@ package com.prpa.bancodigital.model.validator;
 import com.prpa.bancodigital.model.validator.annotations.Cep;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
 import static java.util.function.Predicate.not;
 
+@Component
 public class CepValidator implements ConstraintValidator<Cep, String> {
 
     @Override

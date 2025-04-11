@@ -3,6 +3,7 @@ package com.prpa.bancodigital.model.dtos;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.validator.annotations.Cep;
 import com.prpa.bancodigital.model.validator.groups.PostRequired;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -14,6 +15,7 @@ public record EnderecoDTO(
         @Cep(message = "O campo de cep possui um formato inválido")
         @NotNull(message = "O campo cep não pode ser vazio", groups = PostRequired.class)
         String cep,
+        @Min(message = "O numero deve ser um valor maior que 0", value = 1)
         @NotNull(message = "O campo numero não pode ser vazio", groups = PostRequired.class)
         Integer numero,
         @NotBlank(message = "O campo rua não pode ser vazio", groups = PostRequired.class)
