@@ -23,6 +23,8 @@ import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.prpa.bancodigital.model.enums.UnidadeTaxa.FIXO;
+
 @Slf4j
 @Service
 public class ContaService {
@@ -143,7 +145,7 @@ public class ContaService {
         ContaBancaria found = findById(id);
         List<Transacao> transactions = found.getPoliticas().stream()
                 .filter(politicaTaxa -> politicaTaxa.getTipoTaxa().equals(TipoTaxa.MANUTENCAO))
-                .map(ContaService::yearlyFeeToMonthly)
+                .map(taxa -> taxa.getUnidade().equals(FIXO) ? taxa : yearlyFeeToMonthly(taxa))
                 .map(found::applyPoliticaTaxa)
                 .toList();
         if (transactions.isEmpty())
