@@ -16,10 +16,7 @@ import com.prpa.bancodigital.model.validator.annotations.SingleField;
 import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperty;
+import io.swagger.v3.oas.annotations.media.*;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -203,7 +200,8 @@ public class CartaoController {
                     examples = {@ExampleObject("{ \"valor\": 123 }")}))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Pagamento realizado com sucesso",
-                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cartao.class))}),
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = TransacaoDTO.class)))}),
             @ApiResponse(responseCode = "400", description = "ID Inválido inserido", content = @Content),
             @ApiResponse(responseCode = "400", description = "Campo inválido", content = @Content),
             @ApiResponse(responseCode = "403", description = "Não é possível pagar um valor maior que o requerido pela fatura", content = @Content),
