@@ -100,6 +100,9 @@ public class ClienteService {
     }
 
     public void deleteById(long id) {
+        if (!clienteRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Não foi encontrado nenhum cliente com o id especificado");
+        }
         clienteRepository.deleteById(id);
     }
 
