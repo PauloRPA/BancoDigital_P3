@@ -15,6 +15,7 @@ logging:
 
 application:
   security:
+    secret: ${SECRET:123}
     secure_cookies: false
   aop:
     logging: true
