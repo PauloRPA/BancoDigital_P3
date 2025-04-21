@@ -1,7 +1,10 @@
 application:
   security:
     secret: ${SECRET}
-    expiration_min: ${TOKEN_EXPIRATION_MIN:120}
+    secure_cookies: ${SECURE_COOKIES:true}
+    expiration_sec:
+      access_token: ${ACCESS_TOKEN_EXPIRATION_SEC:1800}
+      refresh_token: ${REFRESH_TOKEN_EXPIRATION_SEC:172800}
   external:
     viacep:
       url: ${CEP_SERVICE_URL:https://viacep.com.br/ws/%s/json/}

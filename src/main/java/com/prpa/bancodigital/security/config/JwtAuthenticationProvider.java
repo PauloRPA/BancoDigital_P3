@@ -30,7 +30,7 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
             throw new AuthenticationServiceException("Apenas são suportados JwtTokens");
 
         try {
-            if (jwtService.validateToken(jwt.getToken(), jwt.getUser())) {
+            if (jwtService.validateAccessToken(jwt.getToken(), jwt.getUser())) {
                 return JwtToken.authenticated(jwt.getToken(), jwt.getUser());
             }
         } catch (ExpiredJwtException e) {

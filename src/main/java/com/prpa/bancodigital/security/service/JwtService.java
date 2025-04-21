@@ -23,16 +23,30 @@ public class JwtService {
     @Value("${application.security.secret}")
     public String SECRET;
 
-    @Value("${application.security.expiration_min}")
-    public long JWT_EXPIRATION_MIN;
+    @Value("${application.security.expiration_sec.access_token}")
+    public long ACCESS_TOKEN_EXPIRATION_SEC;
+
+    @Value("${application.security.expiration_sec.refresh_token}")
+    public long REFRESH_TOKEN_EXPIRATION_SEC;
 
     public SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateJWToken(BankUser bankUser) {
+    public String generateRefreshToken(String username) {
         Date now = new Date();
-        Date exp = new Date((new Date().getTime()) + (JWT_EXPIRATION_MIN * 60 * 1000));
+        Date exp = new Date((new Date().getTime()) + (REFRESH_TOKEN_EXPIRATION_SEC * 1000));
+        return Jwts.builder()
+                .subject(username)
+                .issuedAt(now)
+                .expiration(exp)
+                .signWith(getSigningKey())
+                .compact();
+    }
+
+    public String generateAccessToken(BankUser bankUser) {
+        Date now = new Date();
+        Date exp = new Date((new Date().getTime()) + (ACCESS_TOKEN_EXPIRATION_SEC * 1000));
         return Jwts.builder()
                 .subject(bankUser.getUsername())
                 .claim("email", bankUser.getEmail())
@@ -43,7 +57,7 @@ public class JwtService {
                 .compact();
     }
 
-    public Claims getAllClaims(String token) {
+    public Claims getAllSignedClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -52,19 +66,31 @@ public class JwtService {
     }
 
     private Boolean isTokenExpired(String token) {
-        final Date expiration = getAllClaims(token).getExpiration();
+        final Date expiration = getAllSignedClaims(token).getExpiration();
         return expiration.before(new Date());
     }
 
-    public Boolean validateToken(String token, BankUser bankUser) {
+    public Boolean validateRefreshToken(String refreshToken, Claims accessTokenClaims) {
+        if (isNull(refreshToken) || refreshToken.isBlank())
+            return false;
+
+        if (isNull(accessTokenClaims) || accessTokenClaims.isEmpty())
+            return false;
+
+        Claims refreshClaims = getAllSignedClaims(refreshToken);
+        boolean valid = refreshClaims.getSubject().equals(accessTokenClaims.getSubject());
+        return (valid) && !isTokenExpired(refreshToken);
+    }
+
+    public Boolean validateAccessToken(String token, BankUser bankUser) {
         if (isNull(token) || token.isBlank())
             return false;
 
-        Claims claims = getAllClaims(token);
-        boolean valid = true;
+        Claims claims = getAllSignedClaims(token);
 
-        valid = valid && claims.getSubject().equals(bankUser.getUsername());
+        boolean valid = claims.getSubject().equals(bankUser.getUsername());
         valid = valid && claims.get("email").equals(bankUser.getEmail());
+
         List<?> claimRoles = claims.get("roles", List.class);
         List<Role> authorities = claimRoles.stream()
                 .map(obj -> Role.fromName(obj.toString()))
@@ -73,5 +99,4 @@ public class JwtService {
         valid = valid && new HashSet<>(bankUser.getRoles()).containsAll(authorities);
         return (valid) && !isTokenExpired(token);
     }
-
 }

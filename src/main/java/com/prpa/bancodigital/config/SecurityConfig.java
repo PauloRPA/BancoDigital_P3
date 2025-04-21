@@ -41,6 +41,9 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 @Configuration
 public class SecurityConfig {
 
+    public static final String ACCESS_TOKEN_NAME = "access-token";
+    public static final String REFRESH_TOKEN_NAME = "refresh-token";
+
     private static final String[] WHITE_LIST = {"/error/**", "/auth/**"};
 
     private final BankUserService bankUserService;
