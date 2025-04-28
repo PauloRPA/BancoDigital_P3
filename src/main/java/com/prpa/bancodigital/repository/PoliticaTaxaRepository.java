@@ -12,4 +12,5 @@ public interface PoliticaTaxaRepository extends JpaRepository<PoliticaTaxa, Long
 
     List<PoliticaTaxa> findByTiers(Tier tier);
 
+    boolean existsByTiers_NomeIgnoreCase(String nome);
 }

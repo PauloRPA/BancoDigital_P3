@@ -112,10 +112,12 @@ public class SecurityConfig {
     @Bean
     public CommandLineRunner insertDefaultUserAndPassword(PasswordEncoder encoder, BankUserRepository bankUserRepository) {
         return args -> {
-            if (bankUserRepository.existsByRoles(List.of(Role.ROLE_ADMIN)))
+            String defaultUsername = "admin";
+            String defaultEmail = "admin@admin.com";
+            if (bankUserRepository.findByUsername(defaultUsername).isPresent())
                 return;
-            String username = "admin",
-                    email = "admin@admin.com",
+            String username = defaultUsername,
+                    email = defaultEmail,
                     password = "admin";
             String message = """
                     GENERATED USERNAME AND PASSWORD:
