@@ -1,16 +1,16 @@
 package com.prpa.bancodigital.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.prpa.bancodigital.model.*;
 import com.prpa.bancodigital.model.dtos.CartaoDTO;
 import com.prpa.bancodigital.model.enums.TipoCartao;
 import com.prpa.bancodigital.model.external.cep.CepService;
-import com.prpa.bancodigital.model.validator.annotations.Cep;
 import com.prpa.bancodigital.service.CartaoService;
 import com.prpa.bancodigital.service.ContaService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -29,10 +29,11 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CartaoController.class)
+@WebMvcTest(value = CartaoController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
 public class CartaoControllerTest {
 
     private static final String CARTAO_MAPPING = API_V1 + "/cartoes";
