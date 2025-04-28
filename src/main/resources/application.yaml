@@ -17,7 +17,7 @@ spring:
   application:
     name: BancoDigitalP2
   profiles:
-    active: dev
+    active: pgdev
 
 server:
   port: ${BD_PORT:9999}

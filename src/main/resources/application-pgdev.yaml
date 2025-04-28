@@ -1,0 +1,40 @@
+logging:
+  level:
+    com:
+      prpa: ${LOG_APPLICATION:DEBUG}
+    org:
+      hibernate: ${LOG_HIBERNATE:INFO}
+      springframework:
+        root: ${LOG_ROOT:INFO}
+        web: ${LOG_WEB:INFO}
+        security: ${LOG_SEC:INFO}
+        transaction:
+          interceptor: ${LOG_TRANSACTION:INFO}
+        orm:
+          jpa: ${LOG_JPA:INFO}
+
+application:
+  security:
+    secret: ${SECRET:123}
+    secure_cookies: false
+  aop:
+    logging: true
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${PG_HOST:localhost}:${PG_PORT:5432}/${PG_SCHEMA:dev}
+    username: ${PG_USERNAME}
+    password: ${PG_PASSWORD}
+
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
