@@ -27,7 +27,6 @@ public class BankUser implements UserDetails {
     @Column(name = "password")
     private String password;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "roles")
     private List<Role> roles;
 
