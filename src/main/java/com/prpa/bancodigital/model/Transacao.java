@@ -1,6 +1,8 @@
 package com.prpa.bancodigital.model;
 
 import com.prpa.bancodigital.model.enums.TipoTransacao;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
@@ -9,6 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+@Getter
+@Setter
 public class Transacao {
 
     private String name;

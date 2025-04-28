@@ -3,11 +3,15 @@ package com.prpa.bancodigital.model;
 import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.model.enums.UnidadeTaxa;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "PoliticaTaxa")
 public class PoliticaTaxa {
@@ -46,54 +50,6 @@ public class PoliticaTaxa {
         this.unidade = unidade;
         this.tipoTaxa = tipoTaxa;
         this.tiers = new HashSet<>();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public BigDecimal getQuantia() {
-        return quantia;
-    }
-
-    public void setQuantia(BigDecimal quantia) {
-        this.quantia = quantia;
-    }
-
-    public UnidadeTaxa getUnidade() {
-        return unidade;
-    }
-
-    public void setUnidade(UnidadeTaxa unidade) {
-        this.unidade = unidade;
-    }
-
-    public TipoTaxa getTipoTaxa() {
-        return tipoTaxa;
-    }
-
-    public void setTipoTaxa(TipoTaxa tipoTaxa) {
-        this.tipoTaxa = tipoTaxa;
-    }
-
-    public Set<Tier> getTiers() {
-        return tiers;
-    }
-
-    public void setTiers(Set<Tier> tiers) {
-        this.tiers = tiers;
     }
 
 }

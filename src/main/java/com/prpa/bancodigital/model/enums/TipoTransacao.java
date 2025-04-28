@@ -1,5 +1,8 @@
 package com.prpa.bancodigital.model.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum TipoTransacao {
 
     PIX_ORIGEM(true, true),
@@ -21,11 +24,4 @@ public enum TipoTransacao {
         this.doubleSided = doubleSided;
     }
 
-    public boolean isCharge() {
-        return charge;
-    }
-
-    public boolean isDoubleSided() {
-        return doubleSided;
-    }
 }

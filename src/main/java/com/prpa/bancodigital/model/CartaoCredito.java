@@ -7,6 +7,8 @@ import com.prpa.bancodigital.model.dtos.PagamentoDTO;
 import com.prpa.bancodigital.model.enums.TipoCartao;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -22,6 +24,8 @@ import static com.prpa.bancodigital.model.PoliticaUso.SEM_POLITICA;
 import static com.prpa.bancodigital.model.enums.TipoTransacao.COMPRA;
 import static com.prpa.bancodigital.model.enums.TipoTransacao.FATURA;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "Cartao_credito")
 public class CartaoCredito extends Cartao {
@@ -156,22 +160,6 @@ public class CartaoCredito extends Cartao {
     @JsonIgnore
     public BigDecimal getLimiteCredito() {
         return limiteCredito;
-    }
-
-    public List<Fatura> getFaturas() {
-        return faturas;
-    }
-
-    public void setFaturas(List<Fatura> faturas) {
-        this.faturas = faturas;
-    }
-
-    public TipoCartao getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoCartao tipo) {
-        this.tipo = tipo;
     }
 
     @Override

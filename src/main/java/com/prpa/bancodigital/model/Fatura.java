@@ -3,10 +3,14 @@ package com.prpa.bancodigital.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "Fatura")
 public class Fatura {
@@ -62,63 +66,8 @@ public class Fatura {
         }
     }
 
-    public LocalDate getAbertura() {
-        return abertura;
-    }
-
-    public void setAbertura(LocalDate abertura) {
-        this.abertura = abertura;
-    }
-
-    public LocalDate getFechamento() {
-        return fechamento;
-    }
-
-    public void setFechamento(LocalDate fechamento) {
-        this.fechamento = fechamento;
-    }
-
-    public BigDecimal getValor() {
-        return valor;
-    }
-
-    public void setValor(BigDecimal valor) {
-        this.valor = valor;
-    }
-
     public Boolean isPaid() {
         return paid;
     }
 
-    public void setPaid(Boolean paid) {
-        this.paid = paid;
-    }
-
-    public CartaoCredito getCartao() {
-        return cartao;
-    }
-
-    public void setCartao(CartaoCredito cartao) {
-        this.cartao = cartao;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Boolean getTaxaUtilizacao() {
-        return taxaUtilizacao;
-    }
-
-    public void setTaxaUtilizacao(Boolean taxaUtilizacao) {
-        this.taxaUtilizacao = taxaUtilizacao;
-    }
-
-    public Boolean getPaid() {
-        return paid;
-    }
 }

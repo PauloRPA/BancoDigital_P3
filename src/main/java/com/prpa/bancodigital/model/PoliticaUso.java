@@ -1,11 +1,15 @@
 package com.prpa.bancodigital.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "PoliticaUso")
 public class PoliticaUso {
@@ -34,38 +38,6 @@ public class PoliticaUso {
         this.limiteDiario = limiteDiario;
         this.limiteCredito = limiteCredito;
         this.tiers = new HashSet<>();
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public BigDecimal getLimiteCredito() {
-        return limiteCredito;
-    }
-
-    public void setLimiteCredito(BigDecimal limiteCredito) {
-        this.limiteCredito = limiteCredito;
-    }
-
-    public BigDecimal getLimiteDiario() {
-        return limiteDiario;
-    }
-
-    public void setLimiteDiario(BigDecimal limiteDiario) {
-        this.limiteDiario = limiteDiario;
-    }
-
-    public Set<Tier> getTiers() {
-        return tiers;
-    }
-
-    public void setTiers(Set<Tier> tiers) {
-        this.tiers = tiers;
     }
 
 }

@@ -1,10 +1,14 @@
 package com.prpa.bancodigital.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Objects;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "Cliente")
 public class Cliente {
@@ -39,54 +43,6 @@ public class Cliente {
         this.cpf = cpf;
         this.dataNascimento = dataNascimento;
         this.endereco = endereco;
-        this.tier = tier;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
-    public LocalDate getDataNascimento() {
-        return dataNascimento;
-    }
-
-    public void setDataNascimento(LocalDate dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
-
-    public Endereco getEndereco() {
-        return endereco;
-    }
-
-    public void setEndereco(Endereco endereco) {
-        this.endereco = endereco;
-    }
-
-    public Tier getTier() {
-        return tier;
-    }
-
-    public void setTier(Tier tier) {
         this.tier = tier;
     }
 

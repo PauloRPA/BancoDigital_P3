@@ -3,9 +3,11 @@ package com.prpa.bancodigital.model.enums;
 import com.prpa.bancodigital.model.Cartao;
 import com.prpa.bancodigital.model.CartaoCredito;
 import com.prpa.bancodigital.model.CartaoDebito;
+import lombok.Getter;
 
 import java.util.Optional;
 
+@Getter
 public enum TipoCartao {
 
     CARTAO_DEBITO(CartaoDebito.class),
@@ -15,10 +17,6 @@ public enum TipoCartao {
 
     TipoCartao(Class<? extends Cartao> cartao) {
         cartaoClass = cartao;
-    }
-
-    public Class<? extends Cartao> getCartaoClass() {
-        return cartaoClass;
     }
 
     public static Optional<TipoCartao> from(String tipo) {

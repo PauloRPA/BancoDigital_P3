@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.prpa.bancodigital.exception.UnauthorizedOperationException;
 import com.prpa.bancodigital.model.dtos.PagamentoDTO;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -13,6 +15,8 @@ import java.util.stream.IntStream;
 
 import static java.util.function.Predicate.not;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "Cartao",
         uniqueConstraints = @UniqueConstraint(
@@ -138,59 +142,4 @@ public abstract class Cartao {
         return getConta().getCliente().getNome();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public LocalDate getVencimento() {
-        return vencimento;
-    }
-
-    public void setVencimento(LocalDate vencimento) {
-        this.vencimento = vencimento;
-    }
-
-    public String getCcv() {
-        return ccv;
-    }
-
-    public void setCcv(String ccv) {
-        this.ccv = ccv;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String novaSenha) {
-        this.senha = novaSenha;
-    }
-
-    public Boolean getAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
-    }
-
-    public ContaBancaria getConta() {
-        return conta;
-    }
-
-    public void setConta(ContaBancaria conta) {
-        this.conta = conta;
-    }
 }

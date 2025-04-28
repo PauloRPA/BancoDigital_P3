@@ -3,11 +3,15 @@ package com.prpa.bancodigital.model.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.prpa.bancodigital.model.Transacao;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 import java.util.List;
 
+@Setter
+@Getter
 public class TransacaoDTO {
 
     private String name;
@@ -39,67 +43,4 @@ public class TransacaoDTO {
         return new TransacaoDTO(transaction.getName(), transaction.getAmount(), transaction.getType(), transaction.getCreatedTimestamp(), transaction.getDoneTimestamp().orElse(null), transaction.isProcessed(), transaction.isApproved(), transaction.getReprovalReasons());
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
-
-    public TipoTransacao getType() {
-        return type;
-    }
-
-    public void setType(TipoTransacao type) {
-        this.type = type;
-    }
-
-    public ZonedDateTime getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-
-    public void setCreatedTimestamp(ZonedDateTime createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-
-    public ZonedDateTime getDoneTimestamp() {
-        return doneTimestamp;
-    }
-
-    public void setDoneTimestamp(ZonedDateTime doneTimestamp) {
-        this.doneTimestamp = doneTimestamp;
-    }
-
-    public Boolean getApproved() {
-        return approved;
-    }
-
-    public void setApproved(Boolean approved) {
-        this.approved = approved;
-    }
-
-    public List<String> getReprovalReasons() {
-        return reprovalReasons;
-    }
-
-    public void setReprovalReasons(List<String> reprovalReasons) {
-        this.reprovalReasons = reprovalReasons;
-    }
-
-    public Boolean getProcessed() {
-        return processed;
-    }
-
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
-    }
 }

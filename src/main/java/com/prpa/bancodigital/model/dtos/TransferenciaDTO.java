@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 
+@Getter
 public class TransferenciaDTO {
 
     @NotBlank(message = "O numero da conta para a qual deve ser transferido o valor é obrigatório")
@@ -36,15 +38,4 @@ public class TransferenciaDTO {
         this.quantia = quantia;
     }
 
-    public String getNumero() {
-        return numero;
-    }
-
-    public String getAgencia() {
-        return agencia;
-    }
-
-    public BigDecimal getQuantia() {
-        return quantia;
-    }
 }

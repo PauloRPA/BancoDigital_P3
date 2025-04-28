@@ -5,7 +5,11 @@ import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.model.validator.annotations.IsEnum;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class NewContaBancariaDTO {
 
     @NotNull(message = "O cliente o qual a conta pertence deve ser informado. Insira ao menos seu CPF ou ID")
@@ -23,19 +27,4 @@ public class NewContaBancariaDTO {
         this.tipo = tipo;
     }
 
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
 }

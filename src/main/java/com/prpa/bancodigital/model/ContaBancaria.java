@@ -7,6 +7,8 @@ import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -15,6 +17,8 @@ import static com.prpa.bancodigital.model.enums.TipoTransacao.*;
 import static com.prpa.bancodigital.model.enums.UnidadeTaxa.FIXO;
 import static com.prpa.bancodigital.model.enums.UnidadeTaxa.PORCENTAGEM;
 
+@Getter
+@Setter
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ContaBancaria {
@@ -144,54 +148,6 @@ public abstract class ContaBancaria {
             alvo.processTransaction(new Transacao(targetName, quantia, PIX_DESTINO));
         }
         return charge;
-    }
-
-    public BigDecimal getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(BigDecimal saldo) {
-        this.saldo = saldo;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getAgencia() {
-        return agencia;
-    }
-
-    public void setAgencia(String agencia) {
-        this.agencia = agencia;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Cliente getCliente() {
-        return cliente;
-    }
-
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
-
-    public TipoConta getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoConta tipo) {
-        this.tipo = tipo;
     }
 
 }

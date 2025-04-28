@@ -2,8 +2,12 @@ package com.prpa.bancodigital.model.dtos;
 
 import com.prpa.bancodigital.model.validator.annotations.FieldMatch;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
 
+@Setter
+@Getter
 @FieldMatch(fieldName = "senha", confirmFieldName = "confirmarSenha", message = "Ambas senhas não conferem")
 public class SenhaDTO {
 
@@ -25,27 +29,4 @@ public class SenhaDTO {
         this.confirmarSenha = confirmarSenha;
     }
 
-    public String getSenhaAtual() {
-        return senhaAtual;
-    }
-
-    public void setSenhaAtual(String senhaAtual) {
-        this.senhaAtual = senhaAtual;
-    }
-
-    public String getSenha() {
-        return senha;
-    }
-
-    public void setSenha(String senha) {
-        this.senha = senha;
-    }
-
-    public String getConfirmarSenha() {
-        return confirmarSenha;
-    }
-
-    public void setConfirmarSenha(String confirmarSenha) {
-        this.confirmarSenha = confirmarSenha;
-    }
 }

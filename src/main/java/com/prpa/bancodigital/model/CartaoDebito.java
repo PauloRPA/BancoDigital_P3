@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.prpa.bancodigital.exception.UnauthorizedOperationException;
 import com.prpa.bancodigital.model.enums.TipoCartao;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ import java.time.LocalDate;
 import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
 import static com.prpa.bancodigital.model.PoliticaUso.SEM_POLITICA;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "Cartao_debito")
 public class CartaoDebito extends Cartao {
@@ -78,14 +82,6 @@ public class CartaoDebito extends Cartao {
     public void setConta(ContaBancaria conta) {
         this.conta = conta;
         setLimiteDiario(getPoliticaUso().getLimiteDiario());
-    }
-
-    public TipoCartao getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoCartao tipo) {
-        this.tipo = tipo;
     }
 
     @Override

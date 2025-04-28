@@ -3,7 +3,11 @@ package com.prpa.bancodigital.model.dtos;
 import com.prpa.bancodigital.model.Tier;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
+@Setter
+@Getter
 public class TierDTO {
 
     @NotBlank(message = "O campo de nome para um tier não pode ser vazio")
@@ -18,14 +22,6 @@ public class TierDTO {
 
     public static TierDTO from(Tier tier) {
         return new TierDTO(tier.getNome().toUpperCase());
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public Tier toTier() {
