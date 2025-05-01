@@ -1,0 +1,5 @@
+name: tier
+queries:
+  - findByNome: select * from tier where tier.nome = :nome;
+  - insert: insert into tier (nome, politica_uso_fk) values (:nome, :politica_uso_fk);
+
