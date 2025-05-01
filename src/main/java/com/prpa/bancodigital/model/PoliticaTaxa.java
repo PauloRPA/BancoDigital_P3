@@ -34,10 +34,11 @@ public class PoliticaTaxa {
     @Column(name = "tipo_taxa", nullable = false)
     private TipoTaxa tipoTaxa;
 
-    @ManyToMany
-    @JoinTable(name = "politica_taxa_join_tier",
-            joinColumns = @JoinColumn(name = "politica_taxa_id_fk"),
-            inverseJoinColumns = @JoinColumn(name = "tier_id_fk"))
+    //    @ManyToMany
+    //    @JoinTable(name = "politica_taxa_join_tier",
+    //            joinColumns = @JoinColumn(name = "politica_taxa_id_fk"),
+    //            inverseJoinColumns = @JoinColumn(name = "tier_id_fk"))
+    @Transient
     private Set<Tier> tiers;
 
     public PoliticaTaxa() {

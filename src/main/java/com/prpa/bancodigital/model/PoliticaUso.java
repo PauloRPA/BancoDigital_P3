@@ -27,7 +27,8 @@ public class PoliticaUso {
     @Column(name = "limite_credito", scale = 2)
     private BigDecimal limiteCredito;
 
-    @OneToMany(mappedBy = "politicaUso")
+    //    @OneToMany(mappedBy = "politicaUso")
+    @Transient
     private Set<Tier> tiers;
 
     public PoliticaUso() {

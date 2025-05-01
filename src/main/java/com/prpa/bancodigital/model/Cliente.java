@@ -30,8 +30,9 @@ public class Cliente {
     @JoinColumn(name = "ENDERECO_FK", referencedColumnName = "id", nullable = false)
     private Endereco endereco;
 
-    @ManyToOne
-    @JoinColumn(name = "tier_fk", referencedColumnName = "id", nullable = false)
+    //    @ManyToOne
+    //    @JoinColumn(name = "tier_fk", referencedColumnName = "id", nullable = false)
+    @Transient
     private Tier tier;
 
     public Cliente() {

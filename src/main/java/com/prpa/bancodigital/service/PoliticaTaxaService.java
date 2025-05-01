@@ -36,13 +36,15 @@ public class PoliticaTaxaService {
     }
 
     public List<PoliticaTaxa> findByTier(Tier tier) {
-        return findByTier(tier.getNome());
+//        return findByTier(tier.getNome());
+        return List.of();
     }
 
     public List<PoliticaTaxa> findByTier(String nome) {
-        final Tier tier = tierService.findByNomeIgnoreCase(nome)
-                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado um tier com o nome especificado"));
-        return politicaTaxaRepository.findByTiers(tier);
+//        final Tier tier = tierService.findByNomeIgnoreCase(nome)
+//                .orElseThrow(() -> new ResourceNotFoundException("Não foi encontrado um tier com o nome especificado"));
+//        return politicaTaxaRepository.findByTiers(tier);
+        return List.of();
     }
 
     public PoliticaTaxa save(PoliticaTaxa politicaTaxa) {
