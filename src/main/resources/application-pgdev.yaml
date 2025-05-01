@@ -19,6 +19,9 @@ application:
     secure_cookies: false
   aop:
     logging: true
+  repository:
+    query:
+      path: /sql/queries
 
 spring:
   datasource:
