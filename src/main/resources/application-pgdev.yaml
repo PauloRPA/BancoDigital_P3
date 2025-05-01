@@ -35,6 +35,12 @@ spring:
     hibernate:
       ddl-auto: update
 
+  sql:
+    init:
+      mode: always
+      data-locations: classpath*:sql/data/**
+      schema-locations: classpath*:sql/schemas/**
+
 springdoc:
   api-docs:
     enabled: true

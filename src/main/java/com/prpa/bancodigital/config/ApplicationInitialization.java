@@ -60,9 +60,9 @@ public class ApplicationInitialization {
 
     @PostConstruct
     public void init() {
-        initRequiredTiers();
-        initRequiredPoliticasDeTaxas();
-        initRequiredPoliticasDeUso();
+//        initRequiredTiers();
+//        initRequiredPoliticasDeTaxas();
+//        initRequiredPoliticasDeUso();
     }
 
     private void initRequiredPoliticasDeUso() {
@@ -72,8 +72,8 @@ public class ApplicationInitialization {
                 .toList();
 
         for (var entry : REQUIRED_CREDIT_LIMIT.entrySet()) {
-            if (politicaUsoRepository.existsByTiers_NomeIgnoreCase(REQUIRED_TIERS[entry.getKey()]))
-                continue;
+//            if (politicaUsoRepository.existsByTiers_NomeIgnoreCase(REQUIRED_TIERS[entry.getKey()]))
+//                continue;
             PoliticaUso politicaUso = new PoliticaUso(null, ILIMITADO, entry.getValue());
             politicaUso.getTiers().add(tiers.get(entry.getKey()));
             tiers.get(entry.getKey()).setPoliticaUso(politicaUso);
@@ -90,8 +90,8 @@ public class ApplicationInitialization {
 
         String prefixNomeManutencao = "Manutenção conta corrente para clientes ";
         for (var entry : REQUIRED_MAINTENANCE_TAX.entrySet()) {
-            if (politicaTaxaRepository.existsByTiers_NomeIgnoreCase(REQUIRED_TIERS[entry.getKey()]))
-                continue;
+//            if (politicaTaxaRepository.existsByTiers_NomeIgnoreCase(REQUIRED_TIERS[entry.getKey()]))
+//                continue;
             String tierName = prefixNomeManutencao + REQUIRED_TIERS[entry.getKey()];
             PoliticaTaxa taxaManutencao = new PoliticaTaxa(null, tierName, entry.getValue(), FIXO, MANUTENCAO);
             taxaManutencao.getTiers().add(tiers.get(entry.getKey()));
@@ -100,8 +100,8 @@ public class ApplicationInitialization {
 
         String prefixNomeRendimento = "Rendimento conta poupança para clientes ";
         for (var entry : REQUIRED_INCOME.entrySet()) {
-            if (politicaTaxaRepository.existsByTiers_NomeIgnoreCase(REQUIRED_TIERS[entry.getKey()]))
-                continue;
+//            if (politicaTaxaRepository.existsByTiers_NomeIgnoreCase(REQUIRED_TIERS[entry.getKey()]))
+//                continue;
             String tierName = prefixNomeRendimento + REQUIRED_TIERS[entry.getKey()];
             PoliticaTaxa taxaRendimento = new PoliticaTaxa(null, tierName, entry.getValue(), PORCENTAGEM, RENDIMENTO);
             taxaRendimento.getTiers().add(tiers.get(entry.getKey()));
