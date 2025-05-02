@@ -1,8 +1,10 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.repository.dao.Dao;
-import com.prpa.bancodigital.repository.dao.PoliticaTaxaDao;
 import com.prpa.bancodigital.model.PoliticaTaxa;
+import com.prpa.bancodigital.model.Tier;
+import com.prpa.bancodigital.repository.dao.Dao;
+import com.prpa.bancodigital.repository.dao.JoinTierPoliticaTaxa;
+import com.prpa.bancodigital.repository.dao.PoliticaTaxaDao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -14,14 +16,17 @@ import java.util.Optional;
 public class PoliticaTaxaRepository implements Dao<PoliticaTaxa> {
 
     private final PoliticaTaxaDao politicaTaxaDao;
+    private final JoinTierPoliticaTaxa joinTierPoliticaTaxa;
 
-    public PoliticaTaxaRepository(PoliticaTaxaDao politicaTaxaDao) {
+    public PoliticaTaxaRepository(PoliticaTaxaDao politicaTaxaDao, JoinTierPoliticaTaxa joinTierPoliticaTaxa) {
         this.politicaTaxaDao = politicaTaxaDao;
+        this.joinTierPoliticaTaxa = joinTierPoliticaTaxa;
     }
 
     @Override
     public Optional<PoliticaTaxa> findById(long id) {
-        return politicaTaxaDao.findById(id);
+        return politicaTaxaDao.findById(id)
+                .map(this::fetchRelations);
     }
 
     @Override
@@ -31,21 +36,27 @@ public class PoliticaTaxaRepository implements Dao<PoliticaTaxa> {
 
     @Override
     public List<PoliticaTaxa> findAll() {
-        return politicaTaxaDao.findAll();
+        return politicaTaxaDao.findAll().stream()
+                .map(this::fetchRelations)
+                .toList();
     }
 
     @Override
     public Page<PoliticaTaxa> findAll(Pageable page) {
-        return politicaTaxaDao.findAll(page);
+        return politicaTaxaDao.findAll(page)
+                .map(this::fetchRelations);
     }
 
     @Override
     public PoliticaTaxa save(PoliticaTaxa toSave) {
-        return politicaTaxaDao.save(toSave);
+        PoliticaTaxa saved = politicaTaxaDao.save(toSave);
+        joinTierPoliticaTaxa.insertReferencesForPoliticaTaxa(saved.getId(), toSave);
+        return saved;
     }
 
     @Override
     public void deleteById(long id) {
+        joinTierPoliticaTaxa.removeReferencesForPoliticaTaxa(id);
         politicaTaxaDao.deleteById(id);
     }
 
@@ -53,14 +64,17 @@ public class PoliticaTaxaRepository implements Dao<PoliticaTaxa> {
         return politicaTaxaDao.existsByNome(nome);
     }
 
-    // TODO: relação com Tiers
-    //    public List<PoliticaTaxa> findByTiers(Tier tier) {
-    //        return List.of();
-    //    }
+    private PoliticaTaxa fetchRelations(PoliticaTaxa politicaTaxa) {
+        if (politicaTaxa.getId() == null) return politicaTaxa;
+        joinTierPoliticaTaxa.findByPoliticaTaxaId(politicaTaxa.getId())
+                .forEach(politicaTaxa::addTier);
+        return politicaTaxa;
+    }
 
-    // TODO: relação com Tiers
-    //    public boolean existsByTiers_NomeIgnoreCase(String nome) {
-    //        return false;
-    //    }
+    public List<PoliticaTaxa> findByTiers(Tier tier) {
+        if (tier.getId() == null)
+            return List.of();
+        return joinTierPoliticaTaxa.findByTierId(tier.getId());
+    }
 
 }

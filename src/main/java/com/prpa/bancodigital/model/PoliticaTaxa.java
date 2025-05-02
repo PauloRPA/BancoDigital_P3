@@ -25,11 +25,6 @@ public class PoliticaTaxa {
 
     private TipoTaxa tipoTaxa;
 
-    // TODO: Relação com tier
-    //    @ManyToMany
-    //    @JoinTable(name = "politica_taxa_join_tier",
-    //            joinColumns = @JoinColumn(name = "politica_taxa_id_fk"),
-    //            inverseJoinColumns = @JoinColumn(name = "tier_id_fk"))
     private Set<Tier> tiers;
 
     public PoliticaTaxa(Long id, String nome, BigDecimal quantia, UnidadeTaxa unidade, TipoTaxa tipoTaxa) {
@@ -41,4 +36,9 @@ public class PoliticaTaxa {
         this.tiers = new HashSet<>();
     }
 
+    public void addTier(Tier tier) {
+        if (this.tiers == null)
+            this.tiers = new HashSet<>();
+        this.tiers.add(tier);
+    }
 }

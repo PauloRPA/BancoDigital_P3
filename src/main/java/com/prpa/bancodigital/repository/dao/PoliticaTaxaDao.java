@@ -49,6 +49,8 @@ public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
 
     @Override
     public PoliticaTaxa save(PoliticaTaxa toSave) {
+        if (toSave.getId() != null && findById(toSave.getId()).isPresent())
+            return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(resolver.get(getTableName(), "insert"))
                 .param("nome", toSave.getNome())
@@ -56,6 +58,22 @@ public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
                 .param("tipo_taxa", toSave.getTipoTaxa().name())
                 .param("unidade_quantia", toSave.getUnidade().name())
                 .update(generatedKeyHolder);
+        return mapKeyHolderToPoliticaTaxa(generatedKeyHolder);
+    }
+
+    private PoliticaTaxa update(PoliticaTaxa toUpdate) {
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        jdbcClient.sql(resolver.get(getTableName(), "update"))
+                .param("id", toUpdate.getId())
+                .param("nome", toUpdate.getNome())
+                .param("quantidade", toUpdate.getQuantia())
+                .param("tipo_taxa", toUpdate.getTipoTaxa().name())
+                .param("unidade_quantia", toUpdate.getUnidade().name())
+                .update(generatedKeyHolder);
+        return mapKeyHolderToPoliticaTaxa(generatedKeyHolder);
+    }
+
+    private static PoliticaTaxa mapKeyHolderToPoliticaTaxa(GeneratedKeyHolder generatedKeyHolder) {
         Map<String, Object> fields = generatedKeyHolder.getKeys();
         requireNonNull(fields);
         return PoliticaTaxa.builder()

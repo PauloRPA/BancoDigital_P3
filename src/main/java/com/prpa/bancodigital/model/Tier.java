@@ -24,18 +24,16 @@ public class Tier {
     @JsonIgnore
     private Set<PoliticaTaxa> politicasTaxa;
 
-//    private void removePoliticas() {
-//        if (politicaUso != null)
-//            politicaUso.getTiers().remove(this);
-//        for (PoliticaTaxa politicaTaxa : this.politicasTaxa) {
-//            politicaTaxa.getTiers().remove(this);
-//        }
-//    }
-
     public Tier(Long id, String nome) {
         this.id = id;
         this.nome = nome.toUpperCase();
         this.politicasTaxa = new HashSet<>();
+    }
+
+    public void addPoliticaTaxa(PoliticaTaxa politicaTaxa) {
+        if (this.politicasTaxa == null)
+            this.politicasTaxa = new HashSet<>();
+        this.politicasTaxa.add(politicaTaxa);
     }
 
     public void setNome(String nome) {
