@@ -28,8 +28,6 @@ public class PoliticaUsoDaoTest {
     @Autowired
     private JdbcTemplate template;
 
-    private QueryResolver resolver;
-
     @Value("${application.repository.query.path}")
     public String QUERY_PATH;
 
@@ -37,7 +35,7 @@ public class PoliticaUsoDaoTest {
 
     @BeforeEach
     void setUp() {
-        resolver = new SpringYamlQueryResolver(new Yaml(), QUERY_PATH);
+        QueryResolver resolver = new SpringYamlQueryResolver(new Yaml(), QUERY_PATH);
         politicaUsoDao = new PoliticaUsoDao(client, template, resolver);
     }
 
