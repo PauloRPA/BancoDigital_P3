@@ -2,6 +2,7 @@ package com.prpa.bancodigital.repository;
 
 import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.repository.dao.PoliticaUsoDao;
+import com.prpa.bancodigital.repository.dao.TierDao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -13,21 +14,27 @@ import java.util.Optional;
 public class PoliticaUsoRepository {
 
     private final PoliticaUsoDao politicaUsoDao;
+    private final TierDao tierDao;
 
-    public PoliticaUsoRepository(PoliticaUsoDao politicaUsoDao) {
+    public PoliticaUsoRepository(PoliticaUsoDao politicaUsoDao, TierDao tierDao) {
         this.politicaUsoDao = politicaUsoDao;
+        this.tierDao = tierDao;
     }
 
     public Optional<PoliticaUso> findById(long id) {
-        return politicaUsoDao.findById(id);
+        return politicaUsoDao.findById(id)
+                .map(this::fetchRelations);
     }
 
     public List<PoliticaUso> findAll() {
-        return politicaUsoDao.findAll();
+        return politicaUsoDao.findAll().stream()
+                .map(this::fetchRelations)
+                .toList();
     }
 
     public Page<PoliticaUso> findAll(Pageable page) {
-        return politicaUsoDao.findAll(page);
+        return politicaUsoDao.findAll(page)
+                .map(this::fetchRelations);
     }
 
     public PoliticaUso save(PoliticaUso toSave) {
@@ -38,7 +45,11 @@ public class PoliticaUsoRepository {
         politicaUsoDao.deleteById(id);
     }
 
-    // TODO: Relação com Tier
-    //    boolean existsByTiers_NomeIgnoreCase(String requiredTier);
+    private PoliticaUso fetchRelations(PoliticaUso politicaUso) {
+        if (politicaUso.getId() == null) return politicaUso;
+        tierDao.findByPoliticaUsoId(politicaUso.getId())
+                .forEach(politicaUso::addTier);
+        return politicaUso;
+    }
 
 }

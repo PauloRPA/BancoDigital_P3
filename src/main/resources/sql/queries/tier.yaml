@@ -3,3 +3,7 @@ queries:
   - findByNome: select * from tier where tier.nome = :nome;
   - insert: insert into tier (nome, politica_uso_fk) values (:nome, :politica_uso_fk);
 
+  - findByPoliticaUsoId: >-
+      select t.* from tier t
+      inner join politica_uso p on p.id = t.politica_uso_fk
+      where p.id = :id;

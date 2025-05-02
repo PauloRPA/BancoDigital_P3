@@ -10,6 +10,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.Objects.requireNonNull;
@@ -35,11 +36,27 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
 
     @Override
     public PoliticaUso save(PoliticaUso toSave) {
+        if (toSave.getId() != null && findById(toSave.getId()).isPresent())
+            return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(resolver.get(getTableName(), "insert"))
                 .param("limite_credito", toSave.getLimiteCredito())
                 .param("limite_diario_uso", toSave.getLimiteDiario())
                 .update(generatedKeyHolder);
+        return mapKeyHolderToPoliticaUso(generatedKeyHolder);
+    }
+
+    private PoliticaUso update(PoliticaUso toSave) {
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        jdbcClient.sql(resolver.get(getTableName(), "update"))
+                .param("id", toSave.getId())
+                .param("limite_credito", toSave.getLimiteCredito())
+                .param("limite_diario_uso", toSave.getLimiteDiario())
+                .update(generatedKeyHolder);
+        return mapKeyHolderToPoliticaUso(generatedKeyHolder);
+    }
+
+    private static PoliticaUso mapKeyHolderToPoliticaUso(GeneratedKeyHolder generatedKeyHolder) {
         Map<String, Object> fields = generatedKeyHolder.getKeys();
         requireNonNull(fields);
         return PoliticaUso.builder()

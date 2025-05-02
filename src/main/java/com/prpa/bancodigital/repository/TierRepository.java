@@ -13,13 +13,25 @@ import java.util.Optional;
 public class TierRepository {
 
     private final TierDao tierDao;
+    private final PoliticaUsoDao politicaUsoDao;
 
-    public TierRepository(TierDao tierDao) {
+    public TierRepository(TierDao tierDao, PoliticaUsoDao politicaUsoDao) {
         this.tierDao = tierDao;
+        this.politicaUsoDao = politicaUsoDao;
     }
 
     public Optional<Tier> findById(long id) {
         return tierDao.findById(id);
+        Optional<Tier> found = tierDao.findById(id);
+        return found.map(this::fetchRelations);
+    }
+
+    private Tier fetchRelations(Tier tier) {
+        tier.getPoliticaUso()
+                .map(PoliticaUso::getId)
+                .flatMap(politicaUsoDao::findById)
+                .ifPresent(tier::setPoliticaUso);
+        return tier;
     }
 
     public boolean existsById(long id) {
@@ -27,11 +39,14 @@ public class TierRepository {
     }
 
     public List<Tier> findAll() {
-        return tierDao.findAll();
+        return tierDao.findAll().stream()
+                .map(this::fetchRelations)
+                .toList();
     }
 
     public Page<Tier> findAll(Pageable page) {
-        return tierDao.findAll(page);
+        return tierDao.findAll(page)
+                .map(this::fetchRelations);
     }
 
     public Tier save(Tier toSave) {

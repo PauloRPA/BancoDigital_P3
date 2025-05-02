@@ -22,9 +22,6 @@ public class PoliticaUso {
 
     private BigDecimal limiteCredito;
 
-    // TODO: Relação com Tier
-    //    @OneToMany(mappedBy = "politicaUso")
-    //    @Transient
     private Set<Tier> tiers;
 
     public PoliticaUso(Long id, BigDecimal limiteDiario, BigDecimal limiteCredito) {
@@ -34,4 +31,9 @@ public class PoliticaUso {
         this.tiers = new HashSet<>();
     }
 
+    public void addTier(Tier tier) {
+        if (this.tiers == null)
+            this.tiers = new HashSet<>();
+        this.tiers.add(tier);
+    }
 }

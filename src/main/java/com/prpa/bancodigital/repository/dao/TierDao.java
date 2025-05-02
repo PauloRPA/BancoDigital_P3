@@ -46,11 +46,34 @@ public class TierDao extends AbstractDao<Tier>{
     }
 
     public Tier save(Tier toSave) {
+        if (toSave.getId() != null && findById(toSave.getId()).isPresent())
+            return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(resolver.get(getTableName(), "insert"))
                 .param("nome", toSave.getNome())
                 .param("politica_uso_fk", toSave.getPoliticaUso().map(PoliticaUso::getId).orElse(null))
                 .update(generatedKeyHolder);
+        return mapKeyHolderToTier(generatedKeyHolder);
+    }
+
+    private Tier update(Tier toUpdate) {
+        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        jdbcClient.sql(resolver.get(getTableName(), "update"))
+                .param("id", toUpdate.getId())
+                .param("nome", toUpdate.getNome())
+                .param("politica_uso_fk", toUpdate.getPoliticaUso().map(PoliticaUso::getId).orElse(null))
+                .update(generatedKeyHolder);
+        return mapKeyHolderToTier(generatedKeyHolder);
+    }
+
+    public List<Tier> findByPoliticaUsoId(Long politicaUsoId) {
+        return jdbcClient.sql(resolver.get(getTableName(), "findByPoliticaUsoId"))
+                .param("id", politicaUsoId)
+                .query(getRowMapper())
+                .list();
+    }
+
+    private static Tier mapKeyHolderToTier(GeneratedKeyHolder generatedKeyHolder) {
         Map<String, Object> fields = generatedKeyHolder.getKeys();
         requireNonNull(fields);
         PoliticaUso politicaUso = new PoliticaUso();
@@ -61,4 +84,5 @@ public class TierDao extends AbstractDao<Tier>{
                 .politicaUso(politicaUso)
                 .build();
     }
+
 }
