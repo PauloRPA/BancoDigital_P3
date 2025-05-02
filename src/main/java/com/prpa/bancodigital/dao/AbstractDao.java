@@ -9,7 +9,10 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 @Getter
 public abstract class AbstractDao<T> implements Dao<T> {
@@ -66,6 +69,11 @@ public abstract class AbstractDao<T> implements Dao<T> {
         jdbcClient.sql(query)
                 .param("id", id)
                 .update();
+    }
+
+    protected static Long parseId(Map<String, Object> fields, String fieldName) {
+        Object fieldValue = fields.get(fieldName);
+        return isNull(fieldValue) ? null : Long.parseLong(fieldValue.toString());
     }
 
 }

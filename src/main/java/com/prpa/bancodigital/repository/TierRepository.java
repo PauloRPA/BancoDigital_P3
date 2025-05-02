@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 import java.util.Map;
 import java.util.Optional;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 
 @Component
@@ -64,8 +63,4 @@ public class TierRepository extends AbstractDao<Tier> {
                 .build();
     }
 
-    private static Long parseId(Map<String, Object> fields, String fieldName) {
-        Object fieldValue = fields.get(fieldName);
-        return isNull(fieldValue) ? null : Long.parseLong(fieldValue.toString());
-    }
 }
