@@ -1,66 +1,53 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.repository.dao.AbstractDao;
-import com.prpa.bancodigital.config.respository.QueryResolver;
-import com.prpa.bancodigital.repository.dao.mapper.TierMapper;
-import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.model.Tier;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
+import com.prpa.bancodigital.repository.dao.TierDao;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 
-import static java.util.Objects.requireNonNull;
-
 @Component
-public class TierRepository extends AbstractDao<Tier> {
+public class TierRepository {
 
-    public static final String TIER_TABLE_NAME = "tier";
+    private final TierDao tierDao;
 
-    public TierRepository(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
-        super(jdbcClient, jdbcTemplate, resolver);
+    public TierRepository(TierDao tierDao) {
+        this.tierDao = tierDao;
     }
 
-    public boolean existsByNomeIgnoreCase(String nome) {
-        return findByNomeIgnoreCase(nome).isPresent();
+    public Optional<Tier> findById(long id) {
+        return tierDao.findById(id);
     }
 
-    public Optional<Tier> findByNomeIgnoreCase(String nome) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByNome"))
-                .param("nome", nome)
-                .query(getRowMapper())
-                .optional();
+    public boolean existsById(long id) {
+        return tierDao.existsById(id);
     }
 
-    @Override
-    protected String getTableName() {
-        return TIER_TABLE_NAME;
+    public List<Tier> findAll() {
+        return tierDao.findAll();
     }
 
-    @Override
-    protected RowMapper<Tier> getRowMapper() {
-        return new TierMapper();
+    public Page<Tier> findAll(Pageable page) {
+        return tierDao.findAll(page);
     }
 
     public Tier save(Tier toSave) {
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "insert"))
-                .param("nome", toSave.getNome())
-                .param("politica_uso_fk", toSave.getPoliticaUso().map(PoliticaUso::getId).orElse(null))
-                .update(generatedKeyHolder);
-        Map<String, Object> fields = generatedKeyHolder.getKeys();
-        requireNonNull(fields);
-        PoliticaUso politicaUso = new PoliticaUso();
-        politicaUso.setId(parseId(fields, "politica_uso_fk"));
-        return Tier.builder()
-                .id(parseId(fields, "id"))
-                .nome(fields.get("nome").toString())
-                .politicaUso(politicaUso)
-                .build();
+        return tierDao.save(toSave);
+    }
+
+    public void deleteById(long id) {
+        tierDao.deleteById(id);
+    }
+
+    public boolean existsByNomeIgnoreCase(String nome) {
+        return tierDao.existsByNomeIgnoreCase(nome);
+    }
+
+    public Optional<Tier> findByNomeIgnoreCase(String nome) {
+        return tierDao.findByNomeIgnoreCase(nome);
     }
 
 }
