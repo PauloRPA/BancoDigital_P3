@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.dao.mapper;
+package com.prpa.bancodigital.repository.dao.mapper;
 
 import com.prpa.bancodigital.model.PoliticaTaxa;
 import com.prpa.bancodigital.model.enums.TipoTaxa;

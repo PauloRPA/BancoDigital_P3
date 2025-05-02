@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.dao;
+package com.prpa.bancodigital.config.respository;
 
 public interface QueryResolver {
 

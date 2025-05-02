@@ -1,6 +1,5 @@
-package com.prpa.bancodigital.config;
+package com.prpa.bancodigital.config.respository;
 
-import com.prpa.bancodigital.dao.SpringYamlQueryResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

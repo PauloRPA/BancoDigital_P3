@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.dao;
+package com.prpa.bancodigital.config.respository;
 
 import org.yaml.snakeyaml.Yaml;
 

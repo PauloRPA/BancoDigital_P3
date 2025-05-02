@@ -1,7 +1,7 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.dao.Dao;
-import com.prpa.bancodigital.dao.PoliticaTaxaDao;
+import com.prpa.bancodigital.repository.dao.Dao;
+import com.prpa.bancodigital.repository.dao.PoliticaTaxaDao;
 import com.prpa.bancodigital.model.PoliticaTaxa;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

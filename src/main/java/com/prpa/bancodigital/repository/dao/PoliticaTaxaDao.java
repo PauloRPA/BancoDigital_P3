@@ -1,6 +1,7 @@
-package com.prpa.bancodigital.dao;
+package com.prpa.bancodigital.repository.dao;
 
-import com.prpa.bancodigital.dao.mapper.PoliticaTaxaMapper;
+import com.prpa.bancodigital.config.respository.QueryResolver;
+import com.prpa.bancodigital.repository.dao.mapper.PoliticaTaxaMapper;
 import com.prpa.bancodigital.model.PoliticaTaxa;
 import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.model.enums.UnidadeTaxa;

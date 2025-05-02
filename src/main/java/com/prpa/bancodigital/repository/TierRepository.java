@@ -1,8 +1,8 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.dao.AbstractDao;
-import com.prpa.bancodigital.dao.QueryResolver;
-import com.prpa.bancodigital.dao.mapper.TierMapper;
+import com.prpa.bancodigital.repository.dao.AbstractDao;
+import com.prpa.bancodigital.config.respository.QueryResolver;
+import com.prpa.bancodigital.repository.dao.mapper.TierMapper;
 import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.model.Tier;
 import org.springframework.jdbc.core.JdbcTemplate;
