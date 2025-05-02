@@ -26,10 +26,11 @@ public class Cliente {
     @Column(name = "data_nascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "ENDERECO_FK", referencedColumnName = "id", nullable = false)
+    //TODO: Relação Endereco
+    @Transient
     private Endereco endereco;
 
+    //TODO: Relação Tier
     //    @ManyToOne
     //    @JoinColumn(name = "tier_fk", referencedColumnName = "id", nullable = false)
     @Transient

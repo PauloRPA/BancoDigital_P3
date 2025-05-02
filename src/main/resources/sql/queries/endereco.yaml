@@ -1,0 +1,9 @@
+name: endereco
+queries:
+  - insert: >-
+      insert into endereco (cep, complemento, numero, rua, bairro, cidade, estado)
+      values (:cep, :complemento, :numero, :rua, :bairro, :cidade, :estado)
+  - update: >-
+      update endereco e set 
+      cep = :cep, complemento = :complemento, numero = :numero, rua = :rua, bairro = :bairro, cidade = :cidade, estado = :estado
+      where e.id = :id
