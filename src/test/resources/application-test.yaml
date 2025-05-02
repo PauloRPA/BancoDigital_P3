@@ -1,0 +1,53 @@
+logging:
+  level:
+    com:
+      prpa: ${LOG_APPLICATION:DEBUG}
+    org:
+      hibernate: ${LOG_HIBERNATE:INFO}
+      springframework:
+        root: ${LOG_ROOT:INFO}
+        web: ${LOG_WEB:INFO}
+        security: ${LOG_SEC:INFO}
+        transaction:
+          interceptor: ${LOG_TRANSACTION:INFO}
+        orm:
+          jpa: ${LOG_JPA:INFO}
+
+application:
+  security:
+    secret: ${SECRET:123}
+    secure_cookies: false
+  aop:
+    logging: true
+  repository:
+    query:
+      path: /test_sql/queries
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:dev
+    username: dev
+    password:
+
+  jpa:
+    show-sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath*:test_sql/data/**
+      schema-locations: classpath*:test_sql/schemas/**
+
+  h2:
+    console:
+      enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

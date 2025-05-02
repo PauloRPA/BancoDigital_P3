@@ -1,0 +1,6 @@
+name: generic
+queries:
+  - findAll: select * from %1$s;
+  - findAllPageable: select * from %1$s offset :offset limit :size;
+  - findById: select * from %1$s where %1$s.id = :id;
+  - deleteById: delete from %1$s where %1$s.id = :id;
