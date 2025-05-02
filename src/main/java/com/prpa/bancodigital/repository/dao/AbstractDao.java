@@ -49,7 +49,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
 
     @Override
     public List<T> findAll() {
-        String query = resolver.get(GENERIC_QUERY, "findById").formatted(getTableName());
+        String query = resolver.get(GENERIC_QUERY, "findAll").formatted(getTableName());
         return jdbcClient.sql(query)
                 .param("table", getTableName())
                 .query(getRowMapper()).list();
