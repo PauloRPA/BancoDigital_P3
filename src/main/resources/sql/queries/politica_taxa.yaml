@@ -1,0 +1,4 @@
+name: politica_taxa
+queries:
+  - insert: insert into politica_taxa (nome, quantidade, tipo_taxa, unidade_quantia) values (:nome, :quantidade, :tipo_taxa, :unidade_quantia);
+  - findByNome: select * from politica_taxa where politica_taxa.nome = :nome;
