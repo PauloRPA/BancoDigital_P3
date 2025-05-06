@@ -77,4 +77,8 @@ public abstract class AbstractDao<T> implements Dao<T> {
         return isNull(fieldValue) ? null : Long.parseLong(fieldValue.toString());
     }
 
+    protected JdbcClient.StatementSpec sql(String queryName) {
+        return jdbcClient.sql(resolver.get(getTableName(), queryName));
+    }
+
 }
