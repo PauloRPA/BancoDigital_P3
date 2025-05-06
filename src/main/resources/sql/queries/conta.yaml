@@ -1,0 +1,11 @@
+name: conta
+queries:
+  - findByAgencia: select * from conta c where c.agencia = :agencia;
+  - findByNumero: select * from conta c where c.numero = :numero;
+  - findByCliente: select * from conta c where c.cliente_fk = :cliente;
+  - findByNumeroAndAgencia: select * from conta c where c.numero = :numero and c.agencia = :agencia;
+  - insert: insert into conta (agencia, numero, saldo, tipo, cliente_fk) values (:agencia, :numero, :saldo, :tipo, :cliente);
+  - update: >-
+      update conta c
+      set agencia = :agencia, numero = :numero, saldo = :saldo, tipo = :tipo, cliente_fk = :cliente
+      where c.id = :id;
