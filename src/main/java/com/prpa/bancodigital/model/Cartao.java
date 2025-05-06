@@ -48,9 +48,11 @@ public abstract class Cartao {
     @Column(name = "ativo")
     protected Boolean ativo;
 
-    @JsonIgnore
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinColumn(name = "conta_fk", referencedColumnName = "id", nullable = false)
+//   TODO: relação conta
+//    @JsonIgnore
+//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+//    @JoinColumn(name = "conta_fk", referencedColumnName = "id", nullable = false)
+    @Transient
     protected ContaBancaria conta;
 
     public Cartao() {

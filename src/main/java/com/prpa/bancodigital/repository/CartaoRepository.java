@@ -8,7 +8,8 @@ import java.util.List;
 
 public interface CartaoRepository extends JpaRepository<Cartao, Long> {
 
-  List<Cartao> findByConta(ContaBancaria conta);
+//  TODO: relação conta
+//  List<Cartao> findByConta(ContaBancaria conta);
 
   boolean existsByNumero(String number);
 
