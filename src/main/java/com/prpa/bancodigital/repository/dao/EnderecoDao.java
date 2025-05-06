@@ -18,6 +18,14 @@ public class EnderecoDao extends AbstractDao<Endereco> {
 
     public static final String ENDERECO_TABLE_NAME = "endereco";
 
+    public static final String ENDERECO_FIELD_COMPLEMENTO = "complemento";
+    public static final String ENDERECO_FIELD_NUMERO = "numero";
+    public static final String ENDERECO_FIELD_RUA = "rua";
+    public static final String ENDERECO_FIELD_BAIRRO = "bairro";
+    public static final String ENDERECO_FIELD_CIDADE = "cidade";
+    public static final String ENDERECO_FIELD_ESTADO = "estado";
+    public static final String ENDERECO_FIELD_CEP = "cep";
+
     public EnderecoDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         super(jdbcClient, jdbcTemplate, resolver);
     }
@@ -38,13 +46,13 @@ public class EnderecoDao extends AbstractDao<Endereco> {
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(resolver.get(getTableName(), "insert"))
-                .param("cep", toSave.getCep())
-                .param("complemento", toSave.getComplemento())
-                .param("numero", toSave.getNumero())
-                .param("rua", toSave.getRua())
-                .param("bairro", toSave.getBairro())
-                .param("cidade", toSave.getCidade())
-                .param("estado", toSave.getEstado())
+                .param(ENDERECO_FIELD_CEP, toSave.getCep())
+                .param(ENDERECO_FIELD_COMPLEMENTO, toSave.getComplemento())
+                .param(ENDERECO_FIELD_NUMERO, toSave.getNumero())
+                .param(ENDERECO_FIELD_RUA, toSave.getRua())
+                .param(ENDERECO_FIELD_BAIRRO, toSave.getBairro())
+                .param(ENDERECO_FIELD_CIDADE, toSave.getCidade())
+                .param(ENDERECO_FIELD_ESTADO, toSave.getEstado())
                 .update(generatedKeyHolder);
         return mapKeyHolderToEndereco(generatedKeyHolder);
     }
@@ -53,13 +61,13 @@ public class EnderecoDao extends AbstractDao<Endereco> {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(resolver.get(getTableName(), "update"))
                 .param("id", toUpdate.getId())
-                .param("cep", toUpdate.getCep())
-                .param("complemento", toUpdate.getComplemento())
-                .param("numero", toUpdate.getNumero())
-                .param("rua", toUpdate.getRua())
-                .param("bairro", toUpdate.getBairro())
-                .param("cidade", toUpdate.getCidade())
-                .param("estado", toUpdate.getEstado())
+                .param(ENDERECO_FIELD_CEP, toUpdate.getCep())
+                .param(ENDERECO_FIELD_COMPLEMENTO, toUpdate.getComplemento())
+                .param(ENDERECO_FIELD_NUMERO, toUpdate.getNumero())
+                .param(ENDERECO_FIELD_RUA, toUpdate.getRua())
+                .param(ENDERECO_FIELD_BAIRRO, toUpdate.getBairro())
+                .param(ENDERECO_FIELD_CIDADE, toUpdate.getCidade())
+                .param(ENDERECO_FIELD_ESTADO, toUpdate.getEstado())
                 .update(generatedKeyHolder);
         return mapKeyHolderToEndereco(generatedKeyHolder);
     }
@@ -68,13 +76,28 @@ public class EnderecoDao extends AbstractDao<Endereco> {
         Map<String, Object> fields = generatedKeyHolder.getKeys();
         requireNonNull(fields);
         return Endereco.builder()
-                .cep(fields.get("cep").toString())
-                .complemento(fields.get("complemento").toString())
-                .numero((Integer) fields.get("numero"))
-                .rua(fields.get("rua").toString())
-                .bairro(fields.get("bairro").toString())
-                .cidade(fields.get("cidade").toString())
-                .estado(fields.get("estado").toString())
+                .id(parseId(fields, "id"))
+                .cep(fields.get(ENDERECO_FIELD_CEP).toString())
+                .complemento(fields.get(ENDERECO_FIELD_COMPLEMENTO).toString())
+                .numero((Integer) fields.get(ENDERECO_FIELD_NUMERO))
+                .rua(fields.get(ENDERECO_FIELD_RUA).toString())
+                .bairro(fields.get(ENDERECO_FIELD_BAIRRO).toString())
+                .cidade(fields.get(ENDERECO_FIELD_CIDADE).toString())
+                .estado(fields.get(ENDERECO_FIELD_ESTADO).toString())
                 .build();
     }
+
+    public Endereco saveIfNotExists(Endereco endereco) {
+        return jdbcClient.sql(resolver.get(getTableName(), "selectByEndereco"))
+                .param(ENDERECO_FIELD_CEP, endereco.getCep())
+                .param(ENDERECO_FIELD_COMPLEMENTO, endereco.getComplemento())
+                .param(ENDERECO_FIELD_NUMERO, endereco.getNumero())
+                .param(ENDERECO_FIELD_RUA, endereco.getRua())
+                .param(ENDERECO_FIELD_BAIRRO, endereco.getBairro())
+                .param(ENDERECO_FIELD_CIDADE, endereco.getCidade())
+                .param(ENDERECO_FIELD_ESTADO, endereco.getEstado())
+                .query(getRowMapper())
+                .optional().orElseGet(() -> save(endereco));
+    }
+
 }
