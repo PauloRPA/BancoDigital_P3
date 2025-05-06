@@ -1,0 +1,12 @@
+name: cliente
+queries:
+  - findByNome: select * from cliente where cliente.nome = :nome;
+  - findByCpf: select * from cliente where cliente.cpf = :cpf;
+  - findByNomeAndDataNascimento: select * from cliente where cliente.nome = :nome and cliente.data_nascimento = :dataNascimento;
+  - insert: >-
+      insert into cliente (nome, cpf, data_nascimento, endereco_fk, tier_fk)
+      values (:nome, :cpf, :dataNascimento, :endereco, :tier);
+  - update: >-
+      update cliente c
+      set nome = :nome, cpf = :cpf, data_nascimento = :dataNascimento, endereco_fk = :endereco, tier_fk = :tier
+      where c.id = :id;
