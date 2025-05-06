@@ -10,7 +10,6 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
 public class Tier {
 
@@ -24,10 +23,14 @@ public class Tier {
     @JsonIgnore
     private Set<PoliticaTaxa> politicasTaxa;
 
+    public Tier() {
+        this.politicasTaxa = new HashSet<>();
+    }
+
     public Tier(Long id, String nome) {
+        this();
         this.id = id;
         this.nome = nome.toUpperCase();
-        this.politicasTaxa = new HashSet<>();
     }
 
     public void addPoliticaTaxa(PoliticaTaxa politicaTaxa) {

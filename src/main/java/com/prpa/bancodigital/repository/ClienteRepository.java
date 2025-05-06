@@ -5,7 +5,6 @@ import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.dao.ClienteDao;
 import com.prpa.bancodigital.repository.dao.EnderecoDao;
-import com.prpa.bancodigital.repository.dao.TierDao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -19,12 +18,12 @@ public class ClienteRepository {
 
     private final ClienteDao clienteDao;
     private final EnderecoDao enderecoDao;
-    private final TierDao tierDao;
+    private final TierRepository tierRepository;
 
-    public ClienteRepository(ClienteDao clienteDao, EnderecoDao enderecoDao, TierDao tierDao) {
+    public ClienteRepository(ClienteDao clienteDao, EnderecoDao enderecoDao, TierRepository tierRepository) {
         this.clienteDao = clienteDao;
         this.enderecoDao = enderecoDao;
-        this.tierDao = tierDao;
+        this.tierRepository = tierRepository;
     }
 
     public Optional<Cliente> findById(long id) {
@@ -61,7 +60,7 @@ public class ClienteRepository {
 
     public Cliente update(Cliente toUpdate) {
         Endereco savedEndereco = enderecoDao.save(toUpdate.getEndereco());
-        Tier savedTier = tierDao.save(toUpdate.getTier());
+        Tier savedTier = tierRepository.save(toUpdate.getTier());
         Cliente savedCliente = save(toUpdate);
         savedCliente.setEndereco(savedEndereco);
         savedCliente.setTier(savedTier);
@@ -97,7 +96,7 @@ public class ClienteRepository {
                 .ifPresent(cliente::setEndereco);
 
         Optional.ofNullable(cliente.getTier().getId())
-                .flatMap(tierDao::findById)
+                .flatMap(tierRepository::findById)
                 .ifPresent(cliente::setTier);
 
         return cliente;

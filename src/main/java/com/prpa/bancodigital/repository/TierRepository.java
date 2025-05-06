@@ -38,7 +38,10 @@ public class TierRepository {
 
         if (tier.getId() == null) return tier;
         joinTierPoliticaTaxa.findByTierId(tier.getId())
-                .forEach(tier::addPoliticaTaxa);
+                .forEach(politicaTaxa -> {
+                    tier.addPoliticaTaxa(politicaTaxa);
+                    politicaTaxa.addTier(tier);
+                });
         return tier;
     }
 
