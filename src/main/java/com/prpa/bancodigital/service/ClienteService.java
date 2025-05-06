@@ -55,7 +55,7 @@ public class ClienteService {
 
         Tier clienteTier = cliente.getTier();
         Tier tierFound = Optional.of(clienteTier)
-                .flatMap((t) -> t.getId() != null ? tierService.findById(t.getId()) : Optional.empty())
+                .flatMap(t -> t.getId() != null ? tierService.findById(t.getId()) : Optional.empty())
                 .or(() -> clienteTier.getNome() != null ? tierService.findByNomeIgnoreCase(clienteTier.getNome()) : Optional.empty())
                 .orElseThrow(() -> new ResourceNotFoundException("O Tier especificado não foi encontrado"));
         cliente.setTier(tierFound);
@@ -85,7 +85,7 @@ public class ClienteService {
         persisted.setTier(requireNonNullElse(tier, persisted.getTier()));
 
         if (newCliente.getEndereco() == null)
-            return clienteRepository.save(persisted);
+            return clienteRepository.update(persisted);
 
         Endereco persistedEndereco = persisted.getEndereco();
         persistedEndereco.setCep(getOrDefault(newCliente.getEndereco().getCep(), persistedEndereco.getCep()));
@@ -96,7 +96,7 @@ public class ClienteService {
         persistedEndereco.setCidade(getOrDefault(newCliente.getEndereco().getCidade(), persistedEndereco.getCidade()));
         persistedEndereco.setEstado(getOrDefault(newCliente.getEndereco().getEstado(), persistedEndereco.getEstado()));
         persisted.setEndereco(persistedEndereco);
-        return clienteRepository.save(persisted);
+        return clienteRepository.update(persisted);
     }
 
     public void deleteById(long id) {
