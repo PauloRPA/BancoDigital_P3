@@ -1,6 +1,6 @@
 package com.prpa.bancodigital.repository.dao;
 
-import com.prpa.bancodigital.config.respository.QueryResolver;
+import com.prpa.bancodigital.config.repository.QueryResolver;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.repository.dao.mapper.EnderecoMapper;
 import org.springframework.jdbc.core.JdbcTemplate;

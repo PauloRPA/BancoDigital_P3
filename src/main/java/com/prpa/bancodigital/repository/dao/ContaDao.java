@@ -1,6 +1,6 @@
 package com.prpa.bancodigital.repository.dao;
 
-import com.prpa.bancodigital.config.respository.QueryResolver;
+import com.prpa.bancodigital.config.repository.QueryResolver;
 import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.ContaBancaria;
 import com.prpa.bancodigital.model.ContaCorrente;

@@ -1,6 +1,6 @@
 package com.prpa.bancodigital.repository.dao;
 
-import com.prpa.bancodigital.config.respository.QueryResolver;
+import com.prpa.bancodigital.config.repository.QueryResolver;
 import com.prpa.bancodigital.model.PoliticaTaxa;
 import com.prpa.bancodigital.model.Tier;
 import org.springframework.jdbc.core.simple.JdbcClient;

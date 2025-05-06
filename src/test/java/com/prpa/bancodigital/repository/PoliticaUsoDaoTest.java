@@ -1,7 +1,7 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.config.respository.QueryResolver;
-import com.prpa.bancodigital.config.respository.SpringYamlQueryResolver;
+import com.prpa.bancodigital.config.repository.QueryResolver;
+import com.prpa.bancodigital.config.repository.SpringYamlQueryResolver;
 import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.repository.dao.PoliticaUsoDao;
 import org.junit.jupiter.api.BeforeEach;

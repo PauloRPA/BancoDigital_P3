@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.config.respository;
+package com.prpa.bancodigital.config.repository;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,6 +1,6 @@
 package com.prpa.bancodigital.repository.dao;
 
-import com.prpa.bancodigital.config.respository.QueryResolver;
+import com.prpa.bancodigital.config.repository.QueryResolver;
 import lombok.Getter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;

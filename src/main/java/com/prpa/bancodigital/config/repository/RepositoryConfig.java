@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.config.respository;
+package com.prpa.bancodigital.config.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
