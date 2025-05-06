@@ -59,10 +59,13 @@ public class TierDao extends AbstractDao<Tier> {
 
     private Tier update(Tier toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
+        Optional<Long> politicaUsoId = toUpdate.getPoliticaUso()
+                .map(PoliticaUso::getId)
+                .filter(id -> id != 0);
         jdbcClient.sql(resolver.get(getTableName(), "update"))
                 .param("id", toUpdate.getId())
                 .param("nome", toUpdate.getNome())
-                .param("politica_uso_fk", toUpdate.getPoliticaUso().map(PoliticaUso::getId).orElse(null))
+                .param("politica_uso_fk", politicaUsoId.orElse(null))
                 .update(generatedKeyHolder);
         return mapKeyHolderToTier(generatedKeyHolder);
     }
