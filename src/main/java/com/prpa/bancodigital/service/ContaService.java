@@ -75,12 +75,11 @@ public class ContaService {
             throw new InvalidInputParameterException("Não foi possível criar uma nova conta");
         }
 
-//TODO: Relação Cliente
-//        for (ContaBancaria contaBancaria : contaBancariaRepository.findByCliente(cliente)) {
-//            if (tipoConta.getContaBancariaClass().equals(contaBancaria.getClass())) {
-//                throw new ResourceAlreadyExistsException("Este Cliente ja possui uma conta deste tipo");
-//            }
-//        }
+        for (ContaBancaria contaBancaria : contaBancariaRepository.findByCliente(cliente)) {
+            if (tipoConta.getContaBancariaClass().equals(contaBancaria.getClass())) {
+                throw new ResourceAlreadyExistsException("Este Cliente ja possui uma conta deste tipo");
+            }
+        }
 
         return contaBancariaRepository.save(conta);
     }

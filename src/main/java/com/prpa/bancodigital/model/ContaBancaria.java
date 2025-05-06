@@ -6,11 +6,11 @@ import com.prpa.bancodigital.model.dtos.PagamentoDTO;
 import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.prpa.bancodigital.model.enums.TipoTransacao.*;
@@ -19,39 +19,25 @@ import static com.prpa.bancodigital.model.enums.UnidadeTaxa.PORCENTAGEM;
 
 @Getter
 @Setter
-@Entity
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ContaBancaria {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column(nullable = false)
     private Long id;
-
-    @Column(name = "numero", unique = true)
     protected String numero;
-
-    @Column(name = "agencia")
     protected String agencia;
-
-    @Column(name = "saldo", scale = 4)
     protected BigDecimal saldo;
-
-    @Column(name = "tipo")
     protected TipoConta tipo;
 
-    //TODO: Relação cliente
-    //@ManyToOne
-    //@JsonIgnore
-    //@JoinColumn(name = "cliente_id", nullable = false)
-    @Transient
     protected Cliente cliente;
 
-    @OneToMany(mappedBy = "conta")
+    //TODO: Relação cartao
+    //@OneToMany(mappedBy = "conta")
     protected List<Cartao> cartoes;
+
+    protected List<PoliticaTaxa> politicas;
 
     public ContaBancaria() {
         this.saldo = BigDecimal.ZERO;
+        this.politicas = new ArrayList<>();
     }
 
     public ContaBancaria(Long id, String numero, String agencia, Cliente cliente) {
@@ -64,6 +50,12 @@ public abstract class ContaBancaria {
 
     @JsonIgnore
     public abstract List<PoliticaTaxa> getPoliticas();
+
+    public void addPolitica(PoliticaTaxa politicaTaxa) {
+        if (this.politicas == null)
+            this.politicas = new ArrayList<>();
+        this.politicas.add(politicaTaxa);
+    }
 
     public Transacao applyPoliticaTaxa(PoliticaTaxa taxa) {
         BigDecimal fee = calculateFeeValue(taxa);
