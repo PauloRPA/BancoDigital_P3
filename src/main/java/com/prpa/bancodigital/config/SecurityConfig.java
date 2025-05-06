@@ -31,7 +31,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -101,7 +100,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile("dev")
+    @Profile("pgdev || h2dev")
     public WebSecurityCustomizer ignoreH2() {
         return web -> web.ignoring()
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
