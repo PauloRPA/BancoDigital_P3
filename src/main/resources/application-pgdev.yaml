@@ -14,6 +14,10 @@ logging:
           jpa: ${LOG_JPA:INFO}
 
 application:
+  default:
+    user: ${DEFAULT_USER:admin}
+    password: ${DEFAULT_PASSWORD:admin}
+    email: ${DEFAULT_EMAIL:admin@admin.com}
   security:
     secret: ${SECRET:123}
     secure_cookies: false

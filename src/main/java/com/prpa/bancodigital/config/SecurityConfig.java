@@ -12,6 +12,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -44,6 +45,15 @@ public class SecurityConfig {
     public static final String REFRESH_TOKEN_NAME = "refresh-token";
 
     private static final String[] WHITE_LIST = {"/error/**", "/auth/**"};
+
+    @Value("${application.default.user}")
+    private String defaultUser;
+
+    @Value("${application.default.password}")
+    private String defaultPassword;
+
+    @Value("${application.default.email}")
+    private String defaultEmail;
 
     private final BankUserService bankUserService;
     private final JwtService jwtService;
@@ -111,20 +121,15 @@ public class SecurityConfig {
     @Bean
     public CommandLineRunner insertDefaultUserAndPassword(PasswordEncoder encoder, BankUserRepository bankUserRepository) {
         return args -> {
-            String defaultUsername = "admin";
-            String defaultEmail = "admin@admin.com";
-            if (bankUserRepository.findByUsername(defaultUsername).isPresent())
+            if (bankUserRepository.findByUsername(defaultUser).isPresent())
                 return;
-            String username = defaultUsername,
-                    email = defaultEmail,
-                    password = "admin";
             String message = """
                     GENERATED USERNAME AND PASSWORD:
                     USERNAME: %s
                     PASSWORD: %s
-                    """.formatted(username, password);
+                    """.formatted(defaultUser, defaultPassword);
 
-            bankUserRepository.save(new BankUser(null, username, email, encoder.encode(password), Arrays.stream(Role.values()).toList()));
+            bankUserRepository.save(new BankUser(null, defaultUser, defaultEmail, encoder.encode(defaultPassword), Arrays.stream(Role.values()).toList()));
             log.info(message);
         };
     }
