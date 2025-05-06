@@ -1,17 +1,15 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.ContaBancaria;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface ContaBancariaRepository extends JpaRepository<ContaBancaria, Long> {
 
-    List<ContaBancaria> findByCliente(Cliente cliente);
+//    List<ContaBancaria> findByCliente(Cliente cliente);
 
     boolean existsByNumero(String accountNumber);
 

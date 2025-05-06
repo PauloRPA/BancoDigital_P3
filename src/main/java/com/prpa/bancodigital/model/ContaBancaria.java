@@ -40,9 +40,11 @@ public abstract class ContaBancaria {
     @Column(name = "tipo")
     protected TipoConta tipo;
 
-    @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "cliente_id", nullable = false)
+    //TODO: Relação cliente
+    //@ManyToOne
+    //@JsonIgnore
+    //@JoinColumn(name = "cliente_id", nullable = false)
+    @Transient
     protected Cliente cliente;
 
     @OneToMany(mappedBy = "conta")
