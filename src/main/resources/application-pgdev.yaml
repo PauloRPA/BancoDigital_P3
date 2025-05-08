@@ -43,7 +43,7 @@ spring:
     init:
       mode: always
       data-locations: classpath*:sql/data/politica_uso.sql,classpath*:sql/data/tier.sql,classpath*:sql/data/**
-      schema-locations: classpath*:sql/schemas/politica_uso.sql,classpath*:sql/schemas/tier.sql,classpath*:sql/schemas/endereco.sql,classpath*:sql/schemas/**
+      schema-locations: classpath*:sql/schemas/politica_uso.sql,classpath*:sql/schemas/tier.sql,classpath*:sql/schemas/endereco.sql,classpath*:sql/schemas/cliente.sql,classpath*:sql/schemas/conta.sql,classpath*:sql/schemas/**
 
 springdoc:
   api-docs:
