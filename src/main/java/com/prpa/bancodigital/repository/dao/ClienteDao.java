@@ -12,7 +12,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Optional;
 
@@ -23,11 +22,21 @@ public class ClienteDao extends AbstractDao<Cliente> {
 
     public static final String CLIENTE_TABLE_NAME = "cliente";
 
-    public static final String QUERY_PARAM_DATA_NASCIMENTO = "dataNascimento";
-    public static final String QUERY_PARAM_CPF = "cpf";
+    public static final String QUERY_PARAM_ID = "id";
     public static final String QUERY_PARAM_NOME = "nome";
+    public static final String QUERY_PARAM_CPF = "cpf";
+    public static final String QUERY_PARAM_DATA_NASCIMENTO = "dataNascimento";
     public static final String QUERY_PARAM_ENDERECO = "endereco";
     public static final String QUERY_PARAM_TIER = "tier";
+
+    public static final String TABLE_COLUMN_ID = "id";
+    public static final String TABLE_COLUMN_NOME = "nome";
+    public static final String TABLE_COLUMN_CPF = "cpf";
+    public static final String TABLE_COLUMN_ENDERECO = "endereco_fk";
+    public static final String TABLE_COLUMN_TIER_FK = "tier_fk";
+    public static final String TABLE_COLUMN_DATA_NASCIMENTO = "data_nascimento";
+
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
 
     public ClienteDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         super(jdbcClient, jdbcTemplate, resolver);
@@ -48,7 +57,7 @@ public class ClienteDao extends AbstractDao<Cliente> {
         if (toSave.getId() != null && findById(toSave.getId()).isPresent())
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "insert"))
+        sql("insert")
                 .param(QUERY_PARAM_NOME, toSave.getNome())
                 .param(QUERY_PARAM_CPF, toSave.getCpf())
                 .param(QUERY_PARAM_DATA_NASCIMENTO, toSave.getDataNascimento())
@@ -63,8 +72,8 @@ public class ClienteDao extends AbstractDao<Cliente> {
 
     private Cliente update(Cliente toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "update"))
-                .param("id", toUpdate.getId())
+        sql("update")
+                .param(QUERY_PARAM_ID, toUpdate.getId())
                 .param(QUERY_PARAM_NOME, toUpdate.getNome())
                 .param(QUERY_PARAM_CPF, toUpdate.getCpf())
                 .param(QUERY_PARAM_DATA_NASCIMENTO, toUpdate.getDataNascimento())
@@ -74,42 +83,42 @@ public class ClienteDao extends AbstractDao<Cliente> {
         return mapKeyHolderToTier(generatedKeyHolder);
     }
 
-    private static Cliente mapKeyHolderToTier(GeneratedKeyHolder generatedKeyHolder) {
-        Map<String, Object> fields = generatedKeyHolder.getKeys();
-        requireNonNull(fields);
-        Endereco endereco = new Endereco();
-        endereco.setId(parseId(fields, "endereco_fk"));
-        Tier tier = new Tier();
-        tier.setId(parseId(fields, "tier_fk"));
-        return Cliente.builder()
-                .id(parseId(fields, "id"))
-                .nome(fields.get("nome").toString())
-                .cpf(fields.get("cpf").toString())
-                .dataNascimento(LocalDate.from(DateTimeFormatter.ofPattern("yyyy-MM-dd").parse(fields.get("data_nascimento").toString())))
-                .tier(tier)
-                .endereco(endereco)
-                .build();
-    }
-
     public Optional<Cliente> findByNome(String nome) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByNome"))
+        return sql("findByNome")
                 .param(QUERY_PARAM_NOME, nome)
                 .query(getRowMapper())
                 .optional();
     }
 
     public Optional<Cliente> findByCpf(String cpf) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByCpf"))
+        return sql("findByCpf")
                 .param(QUERY_PARAM_CPF, cpf)
                 .query(getRowMapper())
                 .optional();
     }
 
     public Optional<Cliente> findByNomeAndDataNascimento(String nome, LocalDate dataNascimento) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByNomeAndDataNascimento"))
+        return sql("findByNomeAndDataNascimento")
                 .param(QUERY_PARAM_NOME, nome)
                 .param(QUERY_PARAM_DATA_NASCIMENTO, dataNascimento)
                 .query(getRowMapper())
                 .optional();
     }
+
+    private static Cliente mapKeyHolderToTier(GeneratedKeyHolder generatedKeyHolder) {
+        Map<String, Object> fields = generatedKeyHolder.getKeys();
+        requireNonNull(fields);
+        Endereco endereco = new Endereco();
+        endereco.setId(parseId(fields, TABLE_COLUMN_ENDERECO));
+        Tier tier = new Tier();
+        tier.setId(parseId(fields, TABLE_COLUMN_TIER_FK));
+        return Cliente.builder()
+                .id(parseId(fields, TABLE_COLUMN_ID))
+                .nome(fields.get(TABLE_COLUMN_NOME).toString())
+                .cpf(fields.get(TABLE_COLUMN_CPF).toString())
+                .dataNascimento(parseLocalDate(fields, TABLE_COLUMN_DATA_NASCIMENTO, DATE_FORMAT))
+                .tier(tier)
+                .build();
+    }
+
 }

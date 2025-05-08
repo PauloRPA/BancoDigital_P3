@@ -19,6 +19,14 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
 
     public static final String POLITICA_USO_TABLE_NAME = "politica_uso";
 
+    public static final String QUERY_PARAM_ID = "id";
+    public static final String QUERY_PARAM_LIMITE_CREDITO = "limite_credito";
+    public static final String QUERY_PARAM_LIMITE_DIARIO_USO = "limite_diario_uso";
+
+    public static final String TABLE_COLUMN_ID = "id";
+    public static final String TABLE_COLUMN_LIMITE_CREDITO = "limite_credito";
+    public static final String TABLE_COLUMN_LIMITE_DIARIO_USO = "limite_diario_uso";
+
     public PoliticaUsoDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         super(jdbcClient, jdbcTemplate, resolver);
     }
@@ -38,19 +46,19 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
         if (toSave.getId() != null && findById(toSave.getId()).isPresent())
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "insert"))
-                .param("limite_credito", toSave.getLimiteCredito())
-                .param("limite_diario_uso", toSave.getLimiteDiario())
+        sql("insert")
+                .param(QUERY_PARAM_LIMITE_CREDITO, toSave.getLimiteCredito())
+                .param(QUERY_PARAM_LIMITE_DIARIO_USO, toSave.getLimiteDiario())
                 .update(generatedKeyHolder);
         return mapKeyHolderToPoliticaUso(generatedKeyHolder);
     }
 
     private PoliticaUso update(PoliticaUso toSave) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "update"))
-                .param("id", toSave.getId())
-                .param("limite_credito", toSave.getLimiteCredito())
-                .param("limite_diario_uso", toSave.getLimiteDiario())
+        sql("update")
+                .param(QUERY_PARAM_ID, toSave.getId())
+                .param(QUERY_PARAM_LIMITE_CREDITO, toSave.getLimiteCredito())
+                .param(QUERY_PARAM_LIMITE_DIARIO_USO, toSave.getLimiteDiario())
                 .update(generatedKeyHolder);
         return mapKeyHolderToPoliticaUso(generatedKeyHolder);
     }
@@ -59,9 +67,9 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
         Map<String, Object> fields = generatedKeyHolder.getKeys();
         requireNonNull(fields);
         return PoliticaUso.builder()
-                .id(parseId(fields, "id"))
-                .limiteCredito(((BigDecimal) fields.get("limite_credito")))
-                .limiteDiario(((BigDecimal) fields.get("limite_diario_uso")))
+                .id(parseId(fields, TABLE_COLUMN_ID))
+                .limiteCredito(((BigDecimal) fields.get(TABLE_COLUMN_LIMITE_CREDITO)))
+                .limiteDiario(((BigDecimal) fields.get(TABLE_COLUMN_LIMITE_DIARIO_USO)))
                 .build();
     }
 }

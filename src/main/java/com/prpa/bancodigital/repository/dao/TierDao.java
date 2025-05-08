@@ -21,6 +21,14 @@ public class TierDao extends AbstractDao<Tier> {
 
     public static final String TIER_TABLE_NAME = "tier";
 
+    public static final String QUERY_PARAM_ID = "id";
+    public static final String QUERY_PARAM_NOME = "nome";
+    public static final String QUERY_PARAM_POLITICA_USO = "politica_uso_fk";
+
+    public static final String TABLE_COLUMN_POLITICA_USO = "politica_uso_fk";
+    public static final String TABLE_COLUMN_ID = "id";
+    public static final String TABLE_COLUMN_NOME = "nome";
+
     public TierDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         super(jdbcClient, jdbcTemplate, resolver);
     }
@@ -30,8 +38,8 @@ public class TierDao extends AbstractDao<Tier> {
     }
 
     public Optional<Tier> findByNomeIgnoreCase(String nome) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByNome"))
-                .param("nome", nome)
+        return sql("findByNome")
+                .param(QUERY_PARAM_NOME, nome)
                 .query(getRowMapper())
                 .optional();
     }
@@ -50,9 +58,9 @@ public class TierDao extends AbstractDao<Tier> {
         if (toSave.getId() != null && findById(toSave.getId()).isPresent())
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "insert"))
-                .param("nome", toSave.getNome())
-                .param("politica_uso_fk", toSave.getPoliticaUso().map(PoliticaUso::getId).orElse(null))
+        sql("insert")
+                .param(QUERY_PARAM_NOME, toSave.getNome())
+                .param(QUERY_PARAM_POLITICA_USO, toSave.getPoliticaUso().map(PoliticaUso::getId).orElse(null))
                 .update(generatedKeyHolder);
         return mapKeyHolderToTier(generatedKeyHolder);
     }
@@ -62,17 +70,17 @@ public class TierDao extends AbstractDao<Tier> {
         Optional<Long> politicaUsoId = toUpdate.getPoliticaUso()
                 .map(PoliticaUso::getId)
                 .filter(id -> id != 0);
-        jdbcClient.sql(resolver.get(getTableName(), "update"))
-                .param("id", toUpdate.getId())
-                .param("nome", toUpdate.getNome())
-                .param("politica_uso_fk", politicaUsoId.orElse(null))
+        sql("update")
+                .param(QUERY_PARAM_ID, toUpdate.getId())
+                .param(QUERY_PARAM_NOME, toUpdate.getNome())
+                .param(QUERY_PARAM_POLITICA_USO, politicaUsoId.orElse(null))
                 .update(generatedKeyHolder);
         return mapKeyHolderToTier(generatedKeyHolder);
     }
 
     public List<Tier> findByPoliticaUsoId(Long politicaUsoId) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByPoliticaUsoId"))
-                .param("id", politicaUsoId)
+        return sql("findByPoliticaUsoId")
+                .param(QUERY_PARAM_ID, politicaUsoId)
                 .query(getRowMapper())
                 .list();
     }
@@ -81,10 +89,10 @@ public class TierDao extends AbstractDao<Tier> {
         Map<String, Object> fields = generatedKeyHolder.getKeys();
         requireNonNull(fields);
         PoliticaUso politicaUso = new PoliticaUso();
-        politicaUso.setId(parseId(fields, "politica_uso_fk"));
+        politicaUso.setId(parseId(fields, TABLE_COLUMN_POLITICA_USO));
         return Tier.builder()
-                .id(parseId(fields, "id"))
-                .nome(fields.get("nome").toString())
+                .id(parseId(fields, TABLE_COLUMN_ID))
+                .nome(fields.get(TABLE_COLUMN_NOME).toString())
                 .politicaUso(politicaUso)
                 .build();
     }

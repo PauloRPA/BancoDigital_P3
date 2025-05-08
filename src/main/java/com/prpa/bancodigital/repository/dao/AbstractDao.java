@@ -21,6 +21,11 @@ import static java.util.Objects.isNull;
 public abstract class AbstractDao<T> implements Dao<T> {
 
     public static final String GENERIC_QUERY = "generic";
+
+    public static final String QUERY_PARAM_ID = "id";
+    public static final String QUERY_PARAM_OFFSET = "offset";
+    public static final String QUERY_PARAM_SIZE = "size";
+
     protected final JdbcClient jdbcClient;
     protected final JdbcTemplate jdbcTemplate;
     protected final QueryResolver resolver;
@@ -44,8 +49,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
     public Optional<T> findById(long id) {
         String query = resolver.get(GENERIC_QUERY, "findById").formatted(getTableName());
         return jdbcClient.sql(query)
-                .param("table", getTableName())
-                .param("id", id)
+                .param(QUERY_PARAM_ID, id)
                 .query(getRowMapper()).optional();
     }
 
@@ -53,7 +57,6 @@ public abstract class AbstractDao<T> implements Dao<T> {
     public List<T> findAll() {
         String query = resolver.get(GENERIC_QUERY, "findAll").formatted(getTableName());
         return jdbcClient.sql(query)
-                .param("table", getTableName())
                 .query(getRowMapper()).list();
     }
 
@@ -61,8 +64,8 @@ public abstract class AbstractDao<T> implements Dao<T> {
     public Page<T> findAll(Pageable page) {
         String query = resolver.get(GENERIC_QUERY, "findAllPageable").formatted(getTableName());
         return new PageImpl<>(jdbcClient.sql(query)
-                .param("offset", page.getOffset())
-                .param("size", page.getPageSize())
+                .param(QUERY_PARAM_OFFSET, page.getOffset())
+                .param(QUERY_PARAM_SIZE, page.getPageSize())
                 .query(getRowMapper()).list());
     }
 
@@ -70,7 +73,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
     public void deleteById(long id) {
         String query = resolver.get(GENERIC_QUERY, "deleteById").formatted(getTableName());
         jdbcClient.sql(query)
-                .param("id", id)
+                .param(QUERY_PARAM_ID, id)
                 .update();
     }
 
