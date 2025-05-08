@@ -138,12 +138,14 @@ public abstract class Cartao {
         this.conta = conta;
         final boolean isCurrentCreditLimitGreaterThanMaxLimit = getPoliticaUso().getLimiteCredito().compareTo(getLimiteCredito()) < 0;
         final boolean isMaxCreditLimitUnlimited = getPoliticaUso().getLimiteCredito().equals(ILIMITADO);
-        if (!isMaxCreditLimitUnlimited && isCurrentCreditLimitGreaterThanMaxLimit) {
+        final boolean isCurrentCreditLimitUnlimited = getLimiteCredito().equals(ILIMITADO);
+        if (!isMaxCreditLimitUnlimited && (isCurrentCreditLimitGreaterThanMaxLimit || isCurrentCreditLimitUnlimited)) {
             setLimiteCredito(getPoliticaUso().getLimiteCredito());
         }
         final boolean isCurrentUseLimitGreaterThanMaxLimit = getPoliticaUso().getLimiteDiario().compareTo(getLimiteDiario()) < 0;
         final boolean isMaxUseLimitUnlimited = getPoliticaUso().getLimiteDiario().equals(ILIMITADO);
-        if (!isMaxUseLimitUnlimited && isCurrentUseLimitGreaterThanMaxLimit) {
+        final boolean isCurrentUseLimitUnlimited = getLimiteDiario().equals(ILIMITADO);
+        if (!isMaxUseLimitUnlimited && (isCurrentUseLimitGreaterThanMaxLimit || isCurrentUseLimitUnlimited)) {
             setLimiteDiario(getPoliticaUso().getLimiteDiario());
         }
     }
