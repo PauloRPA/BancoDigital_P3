@@ -1,12 +1,10 @@
 package com.prpa.bancodigital.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.prpa.bancodigital.exception.UnauthorizedOperationException;
 import com.prpa.bancodigital.model.dtos.PagamentoDTO;
 import com.prpa.bancodigital.model.enums.TipoCartao;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
-import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,32 +17,18 @@ import java.util.Optional;
 import static com.prpa.bancodigital.config.ApplicationConfig.BANK_NAME;
 import static com.prpa.bancodigital.config.ApplicationInitialization.APLICAR_AO_EXCEDER;
 import static com.prpa.bancodigital.config.ApplicationInitialization.TAXA_UTILIZACAO;
-import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
-import static com.prpa.bancodigital.model.PoliticaUso.SEM_POLITICA;
 import static com.prpa.bancodigital.model.enums.TipoTransacao.COMPRA;
 import static com.prpa.bancodigital.model.enums.TipoTransacao.FATURA;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "Cartao_credito")
 public class CartaoCredito extends Cartao {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
-
-    @Column(name = "limite_credito", scale = 2)
-    protected BigDecimal limiteCredito;
-
+    //TODO: relação fatura
+    //@OneToMany(mappedBy = "cartao", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    //@Column(name = "fatura", scale = 2)
     @JsonIgnore
-    @OneToMany(mappedBy = "cartao", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @Column(name = "fatura", scale = 2)
     protected List<Fatura> faturas;
-
-    @Column(name = "tipo")
-    protected TipoCartao tipo;
-
 
     public CartaoCredito() {
         super();
@@ -126,56 +110,6 @@ public class CartaoCredito extends Cartao {
     public Optional<Fatura> getFaturaAtual() {
         if (faturas.isEmpty()) return Optional.empty();
         return Optional.ofNullable(faturas.get(faturas.size() - 1));
-    }
-
-    @JsonIgnore
-    public PoliticaUso getPoliticaUso() {
-        return getConta().getCliente().getTier().getPoliticaUso().orElse(SEM_POLITICA);
-    }
-
-    public String getLimiteMaximoCredito() {
-        BigDecimal limiteCreditoMax = getPoliticaUso().getLimiteCredito();
-        return limiteCreditoMax.equals(ILIMITADO) ? "Sem limite" : limiteCreditoMax.toString();
-    }
-
-    public void setLimiteCredito(BigDecimal limiteCredito) {
-        BigDecimal limiteCreditoMax = getPoliticaUso().getLimiteCredito();
-        if (limiteCreditoMax.equals(ILIMITADO)) {
-            this.limiteCredito = limiteCredito;
-            return;
-        }
-
-        if (limiteCreditoMax.compareTo(limiteCredito) < 0)
-            throw new UnauthorizedOperationException("Não é possível definir um limite de credito acima do máximo permitido");
-
-        this.limiteCredito = limiteCredito;
-    }
-
-
-    @JsonProperty("limiteCredito")
-    private String jsonGetLimiteCredito() {
-        return this.limiteCredito.equals(ILIMITADO) ? "Sem limite" : this.limiteCredito.toString();
-    }
-
-    @JsonIgnore
-    public BigDecimal getLimiteCredito() {
-        return limiteCredito;
-    }
-
-    @Override
-    public void setConta(ContaBancaria conta) {
-        this.conta = conta;
-        setLimiteCredito(getPoliticaUso().getLimiteCredito());
-    }
-
-    @Override
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    @Override
-    public Long getId() {
-        return id;
     }
 
 }

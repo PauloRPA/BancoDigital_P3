@@ -83,12 +83,11 @@ public class CartaoService {
                 .map(TipoCartao::getCartaoClass)
                 .orElseThrow(() -> new InvalidInputParameterException("O tipo de cartão é inválido"));
 
-        //TODO: relação conta
-//        for (Cartao cartao : cartaoRepository.findByConta(conta)) {
-//            if (cartao.getClass().equals(cartaoClass)) {
-//                throw new ResourceAlreadyExistsException("Esta conta ja tem um cartão deste tipo");
-//            }
-//        }
+        for (Cartao cartao : cartaoRepository.findByConta(conta)) {
+            if (cartao.getClass().equals(cartaoClass)) {
+                throw new ResourceAlreadyExistsException("Esta conta ja tem um cartão deste tipo");
+            }
+        }
 
         Cartao newCartao;
         try {

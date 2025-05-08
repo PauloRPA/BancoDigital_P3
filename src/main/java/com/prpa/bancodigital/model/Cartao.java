@@ -1,62 +1,52 @@
 package com.prpa.bancodigital.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.prpa.bancodigital.exception.UnauthorizedOperationException;
 import com.prpa.bancodigital.model.dtos.PagamentoDTO;
-import jakarta.persistence.*;
+import com.prpa.bancodigital.model.enums.TipoCartao;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
+import static com.prpa.bancodigital.model.PoliticaUso.SEM_POLITICA;
 import static java.util.function.Predicate.not;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "Cartao",
-        uniqueConstraints = @UniqueConstraint(
-                name = "numero_vencimento_ccv_constraint",
-                columnNames = {"numero", "vencimento", "ccv"}))
-@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Cartao {
 
     public static final int YEARS_TO_EXPIRE = 4;
     private static final Boolean DEFAULT_INITIAL_STATUS = false;
+    public static final String SEM_LIMITE = "Sem limite";
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
-
-    @Column(name = "numero", unique = true, nullable = false)
     protected String numero;
-
-    @Column(name = "vencimento", nullable = false)
     protected LocalDate vencimento;
-
-    @Column(name = "ccv", nullable = false)
     protected String ccv;
+    protected Boolean ativo;
+    protected TipoCartao tipo;
+    protected BigDecimal limiteDiario;
+    protected BigDecimal limiteCredito;
 
     @JsonIgnore
-    @Column(name = "senha")
     protected String senha;
 
-    @Column(name = "ativo")
-    protected Boolean ativo;
-
-//   TODO: relação conta
-//    @JsonIgnore
-//    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-//    @JoinColumn(name = "conta_fk", referencedColumnName = "id", nullable = false)
-    @Transient
+    @JsonIgnore
     protected ContaBancaria conta;
 
     public Cartao() {
         this.ativo = DEFAULT_INITIAL_STATUS;
+        this.limiteDiario = ILIMITADO;
+        this.limiteCredito = ILIMITADO;
     }
 
     public Cartao(Long id, String numero, LocalDate vencimento, String ccv, String senha, ContaBancaria conta) {
@@ -142,6 +132,85 @@ public abstract class Cartao {
 
     public String getNome() {
         return getConta().getCliente().getNome();
+    }
+
+    public void setConta(ContaBancaria conta) {
+        this.conta = conta;
+        final boolean isCurrentCreditLimitGreaterThanMaxLimit = getPoliticaUso().getLimiteCredito().compareTo(getLimiteCredito()) < 0;
+        final boolean isMaxCreditLimitUnlimited = getPoliticaUso().getLimiteCredito().equals(ILIMITADO);
+        if (!isMaxCreditLimitUnlimited && isCurrentCreditLimitGreaterThanMaxLimit) {
+            setLimiteCredito(getPoliticaUso().getLimiteCredito());
+        }
+        final boolean isCurrentUseLimitGreaterThanMaxLimit = getPoliticaUso().getLimiteDiario().compareTo(getLimiteDiario()) < 0;
+        final boolean isMaxUseLimitUnlimited = getPoliticaUso().getLimiteDiario().equals(ILIMITADO);
+        if (!isMaxUseLimitUnlimited && isCurrentUseLimitGreaterThanMaxLimit) {
+            setLimiteDiario(getPoliticaUso().getLimiteDiario());
+        }
+    }
+
+    @JsonIgnore
+    public PoliticaUso getPoliticaUso() {
+        return Optional.ofNullable(getConta())
+                .map(ContaBancaria::getCliente)
+                .map(Cliente::getTier)
+                .flatMap(Tier::getPoliticaUso)
+                .orElse(SEM_POLITICA);
+    }
+
+    @JsonProperty("limiteCredito")
+    private String jsonGetLimiteCredito() {
+        return this.limiteCredito.equals(ILIMITADO) ? SEM_LIMITE : this.limiteCredito.toString();
+    }
+
+    @JsonProperty("limiteDiario")
+    public String jsonGetLimiteDiario() {
+        return this.limiteDiario.equals(ILIMITADO) ? SEM_LIMITE : this.limiteDiario.toString();
+    }
+
+    @JsonIgnore
+    public BigDecimal getLimiteDiario() {
+        return this.limiteDiario;
+    }
+
+    @JsonIgnore
+    public BigDecimal getLimiteCredito() {
+        return limiteCredito;
+    }
+
+    public void setLimiteDiario(BigDecimal limiteDiario) {
+        BigDecimal limiteDiarioMax = getPoliticaUso().getLimiteDiario();
+        if (limiteDiarioMax.equals(ILIMITADO)) {
+            this.limiteDiario = limiteDiario;
+            return;
+        }
+
+        if (limiteDiarioMax.compareTo(limiteDiario) < 0)
+            throw new UnauthorizedOperationException("Não é possível definir um limite diário acima do máximo permitido");
+
+        this.limiteDiario = limiteDiario;
+    }
+
+    public void setLimiteCredito(BigDecimal limiteCredito) {
+        BigDecimal limiteCreditoMax = getPoliticaUso().getLimiteCredito();
+        if (limiteCreditoMax.equals(ILIMITADO)) {
+            this.limiteCredito = limiteCredito;
+            return;
+        }
+
+        if (limiteCreditoMax.compareTo(limiteCredito) < 0)
+            throw new UnauthorizedOperationException("Não é possível definir um limite de credito acima do máximo permitido");
+
+        this.limiteCredito = limiteCredito;
+    }
+
+    public String getLimiteMaximoCredito() {
+        BigDecimal limiteCreditoMax = getPoliticaUso().getLimiteCredito();
+        return limiteCreditoMax.equals(ILIMITADO) ? SEM_LIMITE : limiteCreditoMax.toString();
+    }
+
+    public String getLimiteDiarioMaximo() {
+        BigDecimal limiteDiarioMax = getPoliticaUso().getLimiteDiario();
+        return limiteDiarioMax.equals(PoliticaUso.ILIMITADO) ? SEM_LIMITE : limiteDiarioMax.toString();
     }
 
 }
