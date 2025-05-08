@@ -25,16 +25,12 @@ import static com.prpa.bancodigital.model.enums.TipoTransacao.FATURA;
 @Setter
 public class CartaoCredito extends Cartao {
 
-    //TODO: relação fatura
-    //@OneToMany(mappedBy = "cartao", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    //@Column(name = "fatura", scale = 2)
     @JsonIgnore
     protected List<Fatura> faturas;
 
     public CartaoCredito() {
         super();
         this.faturas = new ArrayList<>();
-        this.faturas.add(new Fatura(null, this));
         this.tipo = TipoCartao.CARTAO_CREDITO;
     }
 
@@ -46,8 +42,11 @@ public class CartaoCredito extends Cartao {
     public CartaoCredito(Long id, String numero, LocalDate vencimento, String ccv, String senha, ContaBancaria conta) {
         super(id, numero, vencimento, ccv, senha, conta);
         this.faturas = new ArrayList<>();
-        this.faturas.add(new Fatura(null, this));
         this.tipo = TipoCartao.CARTAO_CREDITO;
+    }
+
+    public void addFatura(Fatura fatura) {
+        this.faturas.add(fatura);
     }
 
     public List<Transacao> pagarFatura(Double valor) {

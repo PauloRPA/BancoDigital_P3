@@ -79,6 +79,8 @@ public class CartaoDao extends AbstractDao<Cartao> {
                 .update(generatedKeyHolder);
         Cartao cartao = mapKeyHolderToTier(generatedKeyHolder);
         cartao.setConta(toSave.getConta());
+        if (toSave instanceof CartaoCredito toSaveCredito && cartao instanceof CartaoCredito savedCredito)
+            savedCredito.setFaturas(toSaveCredito.getFaturas());
         return cartao;
     }
 
@@ -96,9 +98,11 @@ public class CartaoDao extends AbstractDao<Cartao> {
                 .param(QUERY_PARAM_TIPO, toUpdate.getTipo().name())
                 .param(QUERY_PARAM_CONTA, toUpdate.getConta().getId())
                 .update(generatedKeyHolder);
-        Cartao cartao = mapKeyHolderToTier(generatedKeyHolder);
-        cartao.setConta(toUpdate.getConta());
-        return cartao;
+        Cartao saved = mapKeyHolderToTier(generatedKeyHolder);
+        saved.setConta(toUpdate.getConta());
+        if (toUpdate instanceof CartaoCredito toUpdateCredito && saved instanceof CartaoCredito savedCredito)
+            savedCredito.setFaturas(toUpdateCredito.getFaturas());
+        return saved;
     }
 
     private static Cartao mapKeyHolderToTier(GeneratedKeyHolder generatedKeyHolder) {
