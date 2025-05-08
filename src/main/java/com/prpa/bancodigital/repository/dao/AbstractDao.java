@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -70,6 +72,10 @@ public abstract class AbstractDao<T> implements Dao<T> {
         jdbcClient.sql(query)
                 .param("id", id)
                 .update();
+    }
+
+    protected static LocalDate parseLocalDate(Map<String, Object> fields, String fieldName, String dateFormat) {
+        return LocalDate.from(DateTimeFormatter.ofPattern(dateFormat).parse(fields.get(fieldName).toString()));
     }
 
     protected static Long parseId(Map<String, Object> fields, String fieldName) {

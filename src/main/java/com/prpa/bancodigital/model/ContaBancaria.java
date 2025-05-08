@@ -29,8 +29,6 @@ public abstract class ContaBancaria {
 
     protected Cliente cliente;
 
-    //TODO: Relação cartao
-    //@OneToMany(mappedBy = "conta")
     protected List<Cartao> cartoes;
 
     protected List<PoliticaTaxa> politicas;
@@ -55,6 +53,10 @@ public abstract class ContaBancaria {
         if (this.politicas == null)
             this.politicas = new ArrayList<>();
         this.politicas.add(politicaTaxa);
+    }
+
+    public void addCartao(Cartao cartao) {
+        this.cartoes.add(cartao);
     }
 
     public Transacao applyPoliticaTaxa(PoliticaTaxa taxa) {
