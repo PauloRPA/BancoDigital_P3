@@ -1,0 +1,10 @@
+name: fatura
+queries:
+  - findByCartao: select * from fatura f where f.cartao_fk = :cartao;
+  - insert: >-
+      insert into fatura (abertura, fechamento, valor, taxa_utilizacao_cobrada, pago, cartao_fk)
+      values (:abertura, :fechamento, :valor, :taxaUtilizacao, :pago, :cartao);
+  - update: >-
+      update fatura f
+      set abertura = :abertura, fechamento = :fechamento, valor = :valor, taxa_utilizacao_cobrada = :taxaUtilizacao, pago = :pago, cartao_fk = :cartao
+      where f.id = :id;
