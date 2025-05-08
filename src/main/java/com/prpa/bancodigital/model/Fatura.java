@@ -36,9 +36,11 @@ public class Fatura {
     @Column(name = "paga")
     private Boolean paid;
 
+    //TODO: relação cartao
+    //@ManyToOne
+    //@JoinColumn(name = "cartao_fk", referencedColumnName = "id", nullable = false)
     @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "cartao_fk", referencedColumnName = "id", nullable = false)
+    @Transient
     private CartaoCredito cartao;
 
     public Fatura() {
