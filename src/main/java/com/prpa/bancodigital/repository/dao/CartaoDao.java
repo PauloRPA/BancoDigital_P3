@@ -6,6 +6,7 @@ import com.prpa.bancodigital.model.enums.TipoCartao;
 import com.prpa.bancodigital.repository.dao.mapper.CartaoMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -23,16 +24,7 @@ public class CartaoDao extends AbstractDao<Cartao> {
 
     public static final String CARTAO_TABLE_NAME = "cartao";
 
-    public static final String QUERY_PARAM_NUMERO = "numero";
-    public static final String QUERY_PARAM_VENCIMENTO = "vencimento";
-    public static final String QUERY_PARAM_CCV = "ccv";
-    public static final String QUERY_PARAM_ATIVO = "ativo";
-    public static final String QUERY_PARAM_SENHA = "senha";
-    public static final String QUERY_PARAM_TIPO = "tipo";
     public static final String QUERY_PARAM_CONTA = "conta";
-    public static final String QUERY_PARAM_LIMITE_CREDITO = "limiteCredito";
-    public static final String QUERY_PARAM_LIMITE_DIARIO = "limiteDiario";
-    public static final String QUERY_PARAM_ID = "id";
 
     public static final String TABLE_COLUMN_ID = "id";
     public static final String TABLE_COLUMN_NUMERO = "numero";
@@ -67,15 +59,7 @@ public class CartaoDao extends AbstractDao<Cartao> {
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("insert")
-                .param(QUERY_PARAM_NUMERO, toSave.getNumero())
-                .param(QUERY_PARAM_VENCIMENTO, toSave.getVencimento())
-                .param(QUERY_PARAM_CCV, toSave.getCcv())
-                .param(QUERY_PARAM_ATIVO, toSave.getAtivo())
-                .param(QUERY_PARAM_SENHA, toSave.getSenha())
-                .param(QUERY_PARAM_LIMITE_CREDITO, toSave.getLimiteCredito())
-                .param(QUERY_PARAM_LIMITE_DIARIO, toSave.getLimiteDiario())
-                .param(QUERY_PARAM_TIPO, toSave.getTipo().name())
-                .param(QUERY_PARAM_CONTA, toSave.getConta().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         Cartao cartao = mapKeyHolderToTier(generatedKeyHolder);
         cartao.setConta(toSave.getConta());
@@ -87,16 +71,7 @@ public class CartaoDao extends AbstractDao<Cartao> {
     private Cartao update(Cartao toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("update")
-                .param(QUERY_PARAM_ID, toUpdate.getId())
-                .param(QUERY_PARAM_NUMERO, toUpdate.getNumero())
-                .param(QUERY_PARAM_VENCIMENTO, toUpdate.getVencimento())
-                .param(QUERY_PARAM_CCV, toUpdate.getCcv())
-                .param(QUERY_PARAM_ATIVO, toUpdate.getAtivo())
-                .param(QUERY_PARAM_SENHA, toUpdate.getSenha())
-                .param(QUERY_PARAM_LIMITE_CREDITO, toUpdate.getLimiteCredito())
-                .param(QUERY_PARAM_LIMITE_DIARIO, toUpdate.getLimiteDiario())
-                .param(QUERY_PARAM_TIPO, toUpdate.getTipo().name())
-                .param(QUERY_PARAM_CONTA, toUpdate.getConta().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toUpdate))
                 .update(generatedKeyHolder);
         Cartao saved = mapKeyHolderToTier(generatedKeyHolder);
         saved.setConta(toUpdate.getConta());

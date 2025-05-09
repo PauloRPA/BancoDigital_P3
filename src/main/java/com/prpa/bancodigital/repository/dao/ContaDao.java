@@ -9,6 +9,7 @@ import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.repository.dao.mapper.ContaMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -27,11 +28,8 @@ public class ContaDao extends AbstractDao<ContaBancaria> {
 
     public static final String CONTA_TABLE_NAME = "conta";
 
-    public static final String QUERY_PARAM_ID = "id";
     public static final String QUERY_PARAM_AGENCIA = "agencia";
     public static final String QUERY_PARAM_NUMERO = "numero";
-    public static final String QUERY_PARAM_SALDO = "saldo";
-    public static final String QUERY_PARAM_TIPO = "tipo";
     public static final String QUERY_PARAM_CLIENTE = "cliente";
 
     public static final String TABLE_COLUMN_ID = "id";
@@ -61,11 +59,7 @@ public class ContaDao extends AbstractDao<ContaBancaria> {
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("insert")
-                .param(QUERY_PARAM_AGENCIA, toSave.getAgencia())
-                .param(QUERY_PARAM_NUMERO, toSave.getNumero())
-                .param(QUERY_PARAM_SALDO, toSave.getSaldo())
-                .param(QUERY_PARAM_TIPO, toSave.getTipo().name())
-                .param(QUERY_PARAM_CLIENTE, toSave.getCliente().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         ContaBancaria contaBancaria = mapKeyHolderToTier(generatedKeyHolder);
         contaBancaria.setCliente(toSave.getCliente());
@@ -75,12 +69,7 @@ public class ContaDao extends AbstractDao<ContaBancaria> {
     private ContaBancaria update(ContaBancaria toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("update")
-                .param(QUERY_PARAM_ID, toUpdate.getId())
-                .param(QUERY_PARAM_AGENCIA, toUpdate.getAgencia())
-                .param(QUERY_PARAM_NUMERO, toUpdate.getNumero())
-                .param(QUERY_PARAM_SALDO, toUpdate.getSaldo())
-                .param(QUERY_PARAM_TIPO, toUpdate.getTipo().name())
-                .param(QUERY_PARAM_CLIENTE, toUpdate.getCliente().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toUpdate))
                 .update(generatedKeyHolder);
         return mapKeyHolderToTier(generatedKeyHolder);
     }

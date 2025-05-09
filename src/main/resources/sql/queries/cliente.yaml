@@ -5,8 +5,8 @@ queries:
   - findByNomeAndDataNascimento: select * from cliente where cliente.nome = :nome and cliente.data_nascimento = :dataNascimento;
   - insert: >-
       insert into cliente (nome, cpf, data_nascimento, endereco_fk, tier_fk)
-      values (:nome, :cpf, :dataNascimento, :endereco, :tier);
+      values (:nome, :cpf, :dataNascimento, :endereco.id, :tier.id);
   - update: >-
       update cliente c
-      set nome = :nome, cpf = :cpf, data_nascimento = :dataNascimento, endereco_fk = :endereco, tier_fk = :tier
+      set nome = :nome, cpf = :cpf, data_nascimento = :dataNascimento, endereco_fk = :endereco.id, tier_fk = :tier.id
       where c.id = :id;

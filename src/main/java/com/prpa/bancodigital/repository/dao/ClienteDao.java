@@ -7,6 +7,7 @@ import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.dao.mapper.ClienteMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -22,12 +23,9 @@ public class ClienteDao extends AbstractDao<Cliente> {
 
     public static final String CLIENTE_TABLE_NAME = "cliente";
 
-    public static final String QUERY_PARAM_ID = "id";
     public static final String QUERY_PARAM_NOME = "nome";
     public static final String QUERY_PARAM_CPF = "cpf";
     public static final String QUERY_PARAM_DATA_NASCIMENTO = "dataNascimento";
-    public static final String QUERY_PARAM_ENDERECO = "endereco";
-    public static final String QUERY_PARAM_TIER = "tier";
 
     public static final String TABLE_COLUMN_ID = "id";
     public static final String TABLE_COLUMN_NOME = "nome";
@@ -58,11 +56,7 @@ public class ClienteDao extends AbstractDao<Cliente> {
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("insert")
-                .param(QUERY_PARAM_NOME, toSave.getNome())
-                .param(QUERY_PARAM_CPF, toSave.getCpf())
-                .param(QUERY_PARAM_DATA_NASCIMENTO, toSave.getDataNascimento())
-                .param(QUERY_PARAM_ENDERECO, toSave.getEndereco().getId())
-                .param(QUERY_PARAM_TIER, toSave.getTier().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         Cliente saved = mapKeyHolderToTier(generatedKeyHolder);
         saved.setTier(toSave.getTier());
@@ -73,12 +67,7 @@ public class ClienteDao extends AbstractDao<Cliente> {
     private Cliente update(Cliente toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("update")
-                .param(QUERY_PARAM_ID, toUpdate.getId())
-                .param(QUERY_PARAM_NOME, toUpdate.getNome())
-                .param(QUERY_PARAM_CPF, toUpdate.getCpf())
-                .param(QUERY_PARAM_DATA_NASCIMENTO, toUpdate.getDataNascimento())
-                .param(QUERY_PARAM_ENDERECO, toUpdate.getEndereco().getId())
-                .param(QUERY_PARAM_TIER, toUpdate.getTier().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toUpdate))
                 .update(generatedKeyHolder);
         return mapKeyHolderToTier(generatedKeyHolder);
     }

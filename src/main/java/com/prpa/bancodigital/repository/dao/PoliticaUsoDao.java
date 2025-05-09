@@ -5,6 +5,7 @@ import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.repository.dao.mapper.PoliticaUsoMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -18,10 +19,6 @@ import static java.util.Objects.requireNonNull;
 public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
 
     public static final String POLITICA_USO_TABLE_NAME = "politica_uso";
-
-    public static final String QUERY_PARAM_ID = "id";
-    public static final String QUERY_PARAM_LIMITE_CREDITO = "limite_credito";
-    public static final String QUERY_PARAM_LIMITE_DIARIO_USO = "limite_diario_uso";
 
     public static final String TABLE_COLUMN_ID = "id";
     public static final String TABLE_COLUMN_LIMITE_CREDITO = "limite_credito";
@@ -47,8 +44,7 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("insert")
-                .param(QUERY_PARAM_LIMITE_CREDITO, toSave.getLimiteCredito())
-                .param(QUERY_PARAM_LIMITE_DIARIO_USO, toSave.getLimiteDiario())
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         return mapKeyHolderToPoliticaUso(generatedKeyHolder);
     }
@@ -56,9 +52,7 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
     private PoliticaUso update(PoliticaUso toSave) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("update")
-                .param(QUERY_PARAM_ID, toSave.getId())
-                .param(QUERY_PARAM_LIMITE_CREDITO, toSave.getLimiteCredito())
-                .param(QUERY_PARAM_LIMITE_DIARIO_USO, toSave.getLimiteDiario())
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         return mapKeyHolderToPoliticaUso(generatedKeyHolder);
     }

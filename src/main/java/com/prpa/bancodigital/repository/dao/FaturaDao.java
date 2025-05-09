@@ -7,6 +7,7 @@ import com.prpa.bancodigital.model.Fatura;
 import com.prpa.bancodigital.repository.dao.mapper.FaturaMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -31,12 +32,6 @@ public class FaturaDao extends AbstractDao<Fatura> {
     public static final String TABLE_COLUMN_PAGA = "pago";
     public static final String TABLE_COLUMN_CARTAO = "cartao_fk";
 
-    public static final String QUERY_PARAM_ID = "id";
-    public static final String QUERY_PARAM_ABERTURA = "abertura";
-    public static final String QUERY_PARAM_FECHAMENTO = "fechamento";
-    public static final String QUERY_PARAM_VALOR = "valor";
-    public static final String QUERY_PARAM_TAXA_UTILIZACAO = "taxaUtilizacao";
-    public static final String QUERY_PARAM_PAID = "pago";
     public static final String QUERY_PARAM_CARTAO = "cartao";
     public static final String DATABASE_DATE_FORMAT = "yyyy-MM-dd";
 
@@ -69,12 +64,7 @@ public class FaturaDao extends AbstractDao<Fatura> {
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("insert")
-                .param(QUERY_PARAM_ABERTURA, toSave.getAbertura())
-                .param(QUERY_PARAM_FECHAMENTO, toSave.getFechamento())
-                .param(QUERY_PARAM_VALOR, toSave.getValor())
-                .param(QUERY_PARAM_TAXA_UTILIZACAO, toSave.getTaxaUtilizacao())
-                .param(QUERY_PARAM_PAID, toSave.getPago())
-                .param(QUERY_PARAM_CARTAO, toSave.getCartao().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         Fatura fatura = mapKeyHolderToTier(generatedKeyHolder);
         fatura.setCartao(toSave.getCartao());
@@ -84,13 +74,7 @@ public class FaturaDao extends AbstractDao<Fatura> {
     private Fatura update(Fatura toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         sql("update")
-                .param(QUERY_PARAM_ID, toUpdate.getId())
-                .param(QUERY_PARAM_ABERTURA, toUpdate.getAbertura())
-                .param(QUERY_PARAM_FECHAMENTO, toUpdate.getFechamento())
-                .param(QUERY_PARAM_VALOR, toUpdate.getValor())
-                .param(QUERY_PARAM_TAXA_UTILIZACAO, toUpdate.getTaxaUtilizacao())
-                .param(QUERY_PARAM_PAID, toUpdate.getPago())
-                .param(QUERY_PARAM_CARTAO, toUpdate.getCartao().getId())
+                .paramSource(new BeanPropertySqlParameterSource(toUpdate))
                 .update(generatedKeyHolder);
         Fatura fatura = mapKeyHolderToTier(generatedKeyHolder);
         fatura.setCartao(toUpdate.getCartao());
