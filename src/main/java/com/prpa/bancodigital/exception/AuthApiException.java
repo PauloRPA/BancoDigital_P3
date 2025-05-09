@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.security.model.exceptions;
+package com.prpa.bancodigital.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

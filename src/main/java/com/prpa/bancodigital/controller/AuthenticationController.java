@@ -1,9 +1,9 @@
-package com.prpa.bancodigital.security.controller;
+package com.prpa.bancodigital.controller;
 
 import com.prpa.bancodigital.config.ApplicationConfig;
-import com.prpa.bancodigital.security.model.BankUser;
-import com.prpa.bancodigital.security.model.dtos.BankUserDTO;
-import com.prpa.bancodigital.security.service.JwtService;
+import com.prpa.bancodigital.model.BankUser;
+import com.prpa.bancodigital.model.dtos.BankUserDTO;
+import com.prpa.bancodigital.service.JwtService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;

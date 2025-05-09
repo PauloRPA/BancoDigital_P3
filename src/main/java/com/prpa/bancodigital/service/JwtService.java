@@ -1,7 +1,7 @@
-package com.prpa.bancodigital.security.service;
+package com.prpa.bancodigital.service;
 
-import com.prpa.bancodigital.security.model.BankUser;
-import com.prpa.bancodigital.security.model.Role;
+import com.prpa.bancodigital.model.BankUser;
+import com.prpa.bancodigital.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;

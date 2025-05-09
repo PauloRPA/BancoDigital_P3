@@ -1,7 +1,7 @@
-package com.prpa.bancodigital.security.service;
+package com.prpa.bancodigital.service;
 
-import com.prpa.bancodigital.security.model.BankUser;
-import com.prpa.bancodigital.security.repository.BankUserRepository;
+import com.prpa.bancodigital.model.BankUser;
+import com.prpa.bancodigital.repository.BankUserRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.userdetails.UserDetails;

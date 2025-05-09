@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.security.model;
+package com.prpa.bancodigital.model;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;

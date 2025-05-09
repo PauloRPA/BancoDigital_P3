@@ -1,7 +1,7 @@
-package com.prpa.bancodigital.security.config;
+package com.prpa.bancodigital.config.security;
 
-import com.prpa.bancodigital.security.model.JwtToken;
-import com.prpa.bancodigital.security.service.JwtService;
+import com.prpa.bancodigital.model.JwtToken;
+import com.prpa.bancodigital.service.JwtService;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import org.springframework.security.authentication.AccountExpiredException;

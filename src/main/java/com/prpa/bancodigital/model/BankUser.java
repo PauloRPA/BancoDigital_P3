@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.security.model;
+package com.prpa.bancodigital.model;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;

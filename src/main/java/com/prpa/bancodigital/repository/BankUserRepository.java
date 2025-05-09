@@ -1,6 +1,6 @@
-package com.prpa.bancodigital.security.repository;
+package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.security.model.BankUser;
+import com.prpa.bancodigital.model.BankUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

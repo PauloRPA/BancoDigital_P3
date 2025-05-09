@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.security.config;
+package com.prpa.bancodigital.config.security;
 
 import com.prpa.bancodigital.exception.ApiException;
 import org.springframework.boot.web.error.ErrorAttributeOptions;

@@ -1,12 +1,12 @@
 package com.prpa.bancodigital.config;
 
-import com.prpa.bancodigital.security.config.JwtAuthenticationProvider;
-import com.prpa.bancodigital.security.config.JwtFilter;
-import com.prpa.bancodigital.security.model.BankUser;
-import com.prpa.bancodigital.security.model.Role;
-import com.prpa.bancodigital.security.repository.BankUserRepository;
-import com.prpa.bancodigital.security.service.BankUserService;
-import com.prpa.bancodigital.security.service.JwtService;
+import com.prpa.bancodigital.config.security.JwtAuthenticationProvider;
+import com.prpa.bancodigital.config.security.JwtFilter;
+import com.prpa.bancodigital.model.BankUser;
+import com.prpa.bancodigital.model.Role;
+import com.prpa.bancodigital.repository.BankUserRepository;
+import com.prpa.bancodigital.service.BankUserService;
+import com.prpa.bancodigital.service.JwtService;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;

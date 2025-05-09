@@ -1,4 +1,4 @@
-package com.prpa.bancodigital.security.model.dtos;
+package com.prpa.bancodigital.model.dtos;
 
 import jakarta.validation.constraints.NotBlank;
 
