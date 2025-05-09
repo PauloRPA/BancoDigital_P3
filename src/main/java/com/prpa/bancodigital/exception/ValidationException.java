@@ -28,9 +28,9 @@ public class ValidationException extends ApiException {
     public static void throwIfHasErros(BindingResult result) {
         if (!result.hasErrors()) return;
         Map<String, Object> fieldsAndValues = new HashMap<>();
-        result.getFieldErrors().forEach(fieldError -> {
-            fieldsAndValues.put(fieldError.getField(), fieldError.getDefaultMessage());
-        });
+        result.getFieldErrors().forEach(fieldError ->
+                fieldsAndValues.put(fieldError.getField(), fieldError.getDefaultMessage())
+        );
 
         if (result.hasGlobalErrors()) {
             List<String> globalErrorMessages = result.getGlobalErrors().stream()

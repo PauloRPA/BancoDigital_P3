@@ -46,7 +46,7 @@ public record ClienteDTO(
     public Cliente toCliente() {
         String cleanCPF = cpf;
         if (cpf != null && cpf.length() == 14) {
-            cleanCPF = cpf.replaceAll("\\.", "").replaceAll("-", "");
+            cleanCPF = cpf.replace("\\.", "").replace("-", "");
         }
         Endereco enderecoCliente = endereco == null ? null : endereco.toEndereco();
         Tier tierCliente = tier.toTier();

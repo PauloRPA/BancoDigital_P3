@@ -55,7 +55,7 @@ public class TierService {
     }
 
     private boolean isRequiredTier(long id) {
-        return id < ApplicationInitialization.REQUIRED_TIERS.length + 1;
+        return id < ApplicationInitialization.REQUIRED_TIERS_LENGTH + 1;
     }
 
 }

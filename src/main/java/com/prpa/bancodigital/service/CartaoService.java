@@ -95,7 +95,7 @@ public class CartaoService {
             while (cartaoRepository.existsByNumero(number))
                 number = Cartao.generateCardNumber();
 
-            newCartao = cartaoClass.getDeclaredConstructor(new Class[0]).newInstance(new Object[0]);
+            newCartao = cartaoClass.getDeclaredConstructor().newInstance();
             newCartao.setSenha(cartaoDTO.getSenha());
             newCartao.setNumero(number);
             newCartao.setCcv(Cartao.generateCCV());

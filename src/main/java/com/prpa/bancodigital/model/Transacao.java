@@ -21,8 +21,8 @@ public class Transacao {
 
     private final ZonedDateTime createdTimestamp;
     private ZonedDateTime doneTimestamp;
-    private Boolean approved;
-    private Boolean processed;
+    private boolean approved;
+    private boolean processed;
     private final List<String> reprovalReasons;
 
     public Transacao(String name, BigDecimal amount, TipoTransacao type) {
@@ -55,34 +55,6 @@ public class Transacao {
         this.processed = true;
         this.approved = true;
         this.doneTimestamp = ZonedDateTime.now();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public TipoTransacao getType() {
-        return type;
-    }
-
-    public ZonedDateTime getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-
-    public Boolean isApproved() {
-        return approved;
-    }
-
-    public Boolean isProcessed() {
-        return processed;
     }
 
     public Optional<ZonedDateTime> getDoneTimestamp() {

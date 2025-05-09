@@ -10,7 +10,7 @@ import org.yaml.snakeyaml.Yaml;
 public class RepositoryConfig {
 
     @Value("${application.repository.query.path}")
-    public String QUERY_PATH;
+    public String queryPath;
 
     @Bean
     public Yaml getYamlParser() {
@@ -19,7 +19,7 @@ public class RepositoryConfig {
 
     @Bean
     public SpringYamlQueryResolver getSpringYamlQueryResolver(@Autowired Yaml parser) {
-        return new SpringYamlQueryResolver(parser, QUERY_PATH);
+        return new SpringYamlQueryResolver(parser, queryPath);
     }
 
 }

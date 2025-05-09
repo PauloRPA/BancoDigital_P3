@@ -30,7 +30,7 @@ public abstract class AbstractDao<T> implements Dao<T> {
     protected final JdbcTemplate jdbcTemplate;
     protected final QueryResolver resolver;
 
-    public AbstractDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
+    protected AbstractDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         this.jdbcClient = jdbcClient;
         this.jdbcTemplate = jdbcTemplate;
         this.resolver = resolver;

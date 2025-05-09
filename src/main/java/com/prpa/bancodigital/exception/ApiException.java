@@ -12,17 +12,17 @@ public abstract class ApiException extends ResponseStatusException {
 
     public static final String IANA_TYPE_PREFIX = "https://iana.org/assignments/http-problem-types#";
     public static final String MESSAGE_FIELD_NAME = "messages";
-    protected final Object messages;
+    protected final transient Object messages;
 
-    public ApiException(HttpStatusCode status, String reason) {
+    protected ApiException(HttpStatusCode status, String reason) {
         this(status, reason, null);
     }
 
-    public ApiException(HttpStatusCode status, String reason, Object messages) {
+    protected ApiException(HttpStatusCode status, String reason, Object messages) {
         this(status, reason, MESSAGE_FIELD_NAME, messages);
     }
 
-    public ApiException(HttpStatusCode status, String reason, String messageFieldName, Object messages) {
+    protected ApiException(HttpStatusCode status, String reason, String messageFieldName, Object messages) {
         super(status, reason);
         setDetail(reason);
         setType(URI.create(getType()));

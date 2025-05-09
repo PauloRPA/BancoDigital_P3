@@ -7,10 +7,9 @@ import jakarta.validation.ConstraintValidatorContext;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class isEnumConstraintValidator implements ConstraintValidator<IsEnum, String> {
+public class IsEnumConstraintValidator implements ConstraintValidator<IsEnum, String> {
 
     private List<String> enumNames;
-    public final String unit = "sdf";
 
     @Override
     public void initialize(IsEnum annotation) {

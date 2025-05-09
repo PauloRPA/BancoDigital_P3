@@ -45,7 +45,7 @@ public class Fatura {
         }
     }
 
-    public Boolean isPaid() {
+    public boolean isPaid() {
         return pago;
     }
 

@@ -27,7 +27,7 @@ import static com.prpa.bancodigital.config.SecurityConfig.REFRESH_TOKEN_NAME;
 public class AuthenticationController {
 
     @Value("${application.security.secure_cookies}")
-    public Boolean SHOULD_COOKIES_BE_SECURE = true;
+    public Boolean shouldCookiesBeSecure = true;
 
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -47,12 +47,12 @@ public class AuthenticationController {
 
             Cookie refreshCookie = new Cookie(REFRESH_TOKEN_NAME, refreshToken);
             refreshCookie.setHttpOnly(true);
-            refreshCookie.setSecure(SHOULD_COOKIES_BE_SECURE);
+            refreshCookie.setSecure(shouldCookiesBeSecure);
             refreshCookie.setPath(ApplicationConfig.API_V1);
             response.addCookie(refreshCookie);
 
             Cookie accessCookie = new Cookie(ACCESS_TOKEN_NAME, accessToken);
-            accessCookie.setSecure(SHOULD_COOKIES_BE_SECURE);
+            accessCookie.setSecure(shouldCookiesBeSecure);
             accessCookie.setPath(ApplicationConfig.API_V1);
             response.addCookie(accessCookie);
 

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.prpa.bancodigital.config.ApplicationConfig.BANK_NAME;
 import static com.prpa.bancodigital.config.ApplicationInitialization.APLICAR_AO_EXCEDER;
 import static com.prpa.bancodigital.config.ApplicationInitialization.TAXA_UTILIZACAO;
 import static com.prpa.bancodigital.model.PoliticaUso.ILIMITADO;
@@ -62,13 +61,13 @@ public class CartaoCredito extends Cartao {
             throw new UnauthorizedOperationException("Não é possível pagar um valor maior que o da fatura");
         }
 
-        String name = "[" + BANK_NAME + "] Pagamento da fatura em aberto";
+        String name = "Pagamento da fatura em aberto";
         Transacao transacao = new Transacao(name, BigDecimal.valueOf(valor), FATURA);
         super.pay(transacao);
         transacoes.add(transacao);
 
         BigDecimal excedenteTaxaUso = getPoliticaUso().getLimiteCredito().multiply(BigDecimal.valueOf(APLICAR_AO_EXCEDER));
-        if (fatura.getValor().compareTo(excedenteTaxaUso) > 0 && !fatura.getTaxaUtilizacao()) {
+        if (fatura.getValor().compareTo(excedenteTaxaUso) > 0 && Boolean.TRUE.equals(!fatura.getTaxaUtilizacao())) {
             BigDecimal taxaUtilizacao = fatura.getValor().multiply(BigDecimal.valueOf(TAXA_UTILIZACAO));
             String transactionName = "Taxa de utilização " + TAXA_UTILIZACAO * 100 + "%";
             Transacao utilizacao = getConta().pay(new Transacao(transactionName, taxaUtilizacao, TipoTransacao.TAXA));
@@ -96,7 +95,7 @@ public class CartaoCredito extends Cartao {
             throw new UnauthorizedOperationException("Não é possível efetuar o pagamento pois ele excederá seu limite de credito");
         if (!isPasswordCorrect(pagamentoDTO.getSenha()))
             throw new UnauthorizedOperationException("Senha incorreta");
-        if (!getAtivo())
+        if (!isAtivo())
             throw new UnauthorizedOperationException("Este cartão esta inativo");
 
         String name = "Compra " + pagamentoDTO.getInstituicao() + " - " + pagamentoDTO.getDescricao();

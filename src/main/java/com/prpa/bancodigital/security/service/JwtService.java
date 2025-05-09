@@ -21,21 +21,21 @@ import static java.util.Objects.isNull;
 public class JwtService {
 
     @Value("${application.security.secret}")
-    public String SECRET;
+    public String secret;
 
     @Value("${application.security.expiration_sec.access_token}")
-    public long ACCESS_TOKEN_EXPIRATION_SEC;
+    public long accessTokenExpirationSec;
 
     @Value("${application.security.expiration_sec.refresh_token}")
-    public long REFRESH_TOKEN_EXPIRATION_SEC;
+    public long refreshTokenExpirationSec;
 
     public SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateRefreshToken(String username) {
         Date now = new Date();
-        Date exp = new Date((new Date().getTime()) + (REFRESH_TOKEN_EXPIRATION_SEC * 1000));
+        Date exp = new Date((new Date().getTime()) + (refreshTokenExpirationSec * 1000));
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(now)
@@ -46,7 +46,7 @@ public class JwtService {
 
     public String generateAccessToken(BankUser bankUser) {
         Date now = new Date();
-        Date exp = new Date((new Date().getTime()) + (ACCESS_TOKEN_EXPIRATION_SEC * 1000));
+        Date exp = new Date((new Date().getTime()) + (accessTokenExpirationSec * 1000));
         return Jwts.builder()
                 .subject(bankUser.getUsername())
                 .claim("email", bankUser.getEmail())
@@ -65,12 +65,12 @@ public class JwtService {
                 .getPayload();
     }
 
-    private Boolean isTokenExpired(String token) {
+    private boolean isTokenExpired(String token) {
         final Date expiration = getAllSignedClaims(token).getExpiration();
         return expiration.before(new Date());
     }
 
-    public Boolean validateRefreshToken(String refreshToken, Claims accessTokenClaims) {
+    public boolean validateRefreshToken(String refreshToken, Claims accessTokenClaims) {
         if (isNull(refreshToken) || refreshToken.isBlank())
             return false;
 
@@ -82,7 +82,7 @@ public class JwtService {
         return (valid) && !isTokenExpired(refreshToken);
     }
 
-    public Boolean validateAccessToken(String token, BankUser bankUser) {
+    public boolean validateAccessToken(String token, BankUser bankUser) {
         if (isNull(token) || token.isBlank())
             return false;
 

@@ -39,7 +39,8 @@ public class SpringYamlQueryResolver implements QueryResolver {
         return filenames.stream()
                 .map(filename -> this.getClass().getResourceAsStream(queriesPath + "/" + filename))
                 .filter(Objects::nonNull)
-                .map(inputStream -> (QueryDefinition) yaml.loadAs(inputStream, QueryDefinition.class))
+                .map(inputStream -> yaml.loadAs(inputStream, QueryDefinition.class))
+                .map(QueryDefinition.class::cast)
                 .toList();
     }
 

@@ -7,7 +7,6 @@ import com.prpa.bancodigital.repository.PoliticaTaxaRepository;
 import com.prpa.bancodigital.repository.PoliticaUsoRepository;
 import com.prpa.bancodigital.repository.TierRepository;
 import jakarta.annotation.PostConstruct;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 
 import java.math.BigDecimal;
@@ -25,7 +24,8 @@ import static com.prpa.bancodigital.model.enums.UnidadeTaxa.PORCENTAGEM;
 @Configuration
 public class ApplicationInitialization {
 
-    public static final String[] REQUIRED_TIERS = {"COMUM", "SUPER", "PREMIUM"};
+    private static final String[] REQUIRED_TIERS = {"COMUM", "SUPER", "PREMIUM"};
+    public static final int REQUIRED_TIERS_LENGTH = REQUIRED_TIERS.length;
 
     public static final double TAXA_UTILIZACAO = 0.05;
     public static final double APLICAR_AO_EXCEDER = 0.8;
@@ -50,13 +50,15 @@ public class ApplicationInitialization {
             2, BigDecimal.valueOf(10000)
     );
 
-    @Autowired
-    private TierRepository tierRepository;
+    private final TierRepository tierRepository;
+    private final PoliticaTaxaRepository politicaTaxaRepository;
+    private final PoliticaUsoRepository politicaUsoRepository;
 
-    @Autowired
-    private PoliticaTaxaRepository politicaTaxaRepository;
-    @Autowired
-    private PoliticaUsoRepository politicaUsoRepository;
+    public ApplicationInitialization(TierRepository tierRepository, PoliticaTaxaRepository politicaTaxaRepository, PoliticaUsoRepository politicaUsoRepository) {
+        this.tierRepository = tierRepository;
+        this.politicaTaxaRepository = politicaTaxaRepository;
+        this.politicaUsoRepository = politicaUsoRepository;
+    }
 
     @PostConstruct
     public void init() {

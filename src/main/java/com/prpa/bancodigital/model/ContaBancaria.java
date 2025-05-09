@@ -33,12 +33,12 @@ public abstract class ContaBancaria {
 
     protected List<PoliticaTaxa> politicas;
 
-    public ContaBancaria() {
+    protected ContaBancaria() {
         this.saldo = BigDecimal.ZERO;
         this.politicas = new ArrayList<>();
     }
 
-    public ContaBancaria(Long id, String numero, String agencia, Cliente cliente) {
+    protected ContaBancaria(Long id, String numero, String agencia, Cliente cliente) {
         this();
         this.id = id;
         this.numero = numero;

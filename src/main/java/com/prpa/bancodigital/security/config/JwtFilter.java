@@ -36,7 +36,7 @@ import static java.util.Objects.isNull;
 public class JwtFilter extends AbstractAuthenticationProcessingFilter {
 
     @Value("${application.security.secure_cookies}")
-    public boolean SHOULD_COOKIES_BE_SECURE = true;
+    public boolean shouldCookiesBeSecure = true;
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
     private final JwtService jwtService;
@@ -90,7 +90,7 @@ public class JwtFilter extends AbstractAuthenticationProcessingFilter {
         String newAccessToken = getNewAccessFromRefreshToken(request, expiredTokenClaims)
                 .orElseThrow(() -> new AccountExpiredException("Refresh Token expirado"));
         Cookie cookie = new Cookie(ACCESS_TOKEN_NAME, newAccessToken);
-        cookie.setSecure(SHOULD_COOKIES_BE_SECURE);
+        cookie.setSecure(shouldCookiesBeSecure);
         cookie.setPath(ApplicationConfig.API_V1);
         response.addCookie(cookie);
         return newAccessToken;

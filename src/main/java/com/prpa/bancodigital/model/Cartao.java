@@ -27,12 +27,13 @@ public abstract class Cartao {
     public static final int YEARS_TO_EXPIRE = 4;
     private static final Boolean DEFAULT_INITIAL_STATUS = false;
     public static final String SEM_LIMITE = "Sem limite";
+    private static final Random random = new Random();
 
     protected Long id;
     protected String numero;
     protected LocalDate vencimento;
     protected String ccv;
-    protected Boolean ativo;
+    protected boolean ativo;
     protected TipoCartao tipo;
     protected BigDecimal limiteDiario;
     protected BigDecimal limiteCredito;
@@ -43,13 +44,13 @@ public abstract class Cartao {
     @JsonIgnore
     protected ContaBancaria conta;
 
-    public Cartao() {
+    protected Cartao() {
         this.ativo = DEFAULT_INITIAL_STATUS;
         this.limiteDiario = ILIMITADO;
         this.limiteCredito = ILIMITADO;
     }
 
-    public Cartao(Long id, String numero, LocalDate vencimento, String ccv, String senha, ContaBancaria conta) {
+    protected Cartao(Long id, String numero, LocalDate vencimento, String ccv, String senha, ContaBancaria conta) {
         this();
         this.id = id;
         this.vencimento = vencimento;
@@ -60,14 +61,12 @@ public abstract class Cartao {
     }
 
     public static String generateCardNumber() {
-        Random random = new Random();
         final int[] numbers = IntStream.generate(() -> random.nextInt(9)).limit(15).toArray();
         final int luhnDigit = findLuhnDigit(numbers);
         return Arrays.stream(numbers).mapToObj(String::valueOf).collect(Collectors.joining()) + luhnDigit;
     }
 
     public static String generateCCV() {
-        Random random = new Random();
         return IntStream.generate(() -> random.nextInt(9))
                 .limit(3)
                 .mapToObj(String::valueOf)
@@ -120,7 +119,7 @@ public abstract class Cartao {
     public Transacao pay(PagamentoDTO pagamentoDTO) {
         if (!isPasswordCorrect(pagamentoDTO.getSenha()))
             throw new UnauthorizedOperationException("Senha incorreta");
-        if (!getAtivo())
+        if (!isAtivo())
             throw new UnauthorizedOperationException("Este cartão esta inativo");
 
         return getConta().pay(pagamentoDTO);
