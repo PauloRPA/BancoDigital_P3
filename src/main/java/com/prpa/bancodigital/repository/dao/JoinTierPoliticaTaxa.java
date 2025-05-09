@@ -13,6 +13,11 @@ import java.util.Optional;
 public class JoinTierPoliticaTaxa {
 
     public static final String POLITICA_TAXA_JOIN_TIER_TABLE_NAME = "politica_taxa_join_tier";
+
+    public static final String QUERY_PARAM_ID = "id";
+    public static final String QUERY_PARAM_TIER_ID_FK = "tier_id";
+    public static final String QUERY_PARAM_POLITICA_TAXA_ID_FK = "politica_taxa_id";
+
     private final TierDao tierDao;
     private final PoliticaTaxaDao politicaTaxaDao;
     private final JdbcClient jdbcClient;
@@ -27,27 +32,27 @@ public class JoinTierPoliticaTaxa {
 
     public List<Tier> findByPoliticaTaxaId(Long politicaTaxaId) {
         return jdbcClient.sql(resolver.get(tierDao.getTableName(), "findByPoliticaTaxaId"))
-                .param("id", politicaTaxaId)
+                .param(QUERY_PARAM_ID, politicaTaxaId)
                 .query(tierDao.getRowMapper())
                 .list();
     }
 
     public List<PoliticaTaxa> findByTierId(Long tierId) {
         return jdbcClient.sql(resolver.get(politicaTaxaDao.getTableName(), "findByTierId"))
-                .param("id", tierId)
+                .param(QUERY_PARAM_ID, tierId)
                 .query(politicaTaxaDao.getRowMapper())
                 .list();
     }
 
     private void deleteByPoliticaTaxaId(long politicaTaxaId) {
         jdbcClient.sql(resolver.get(getTableName(), "deleteByPoliticaTaxaId"))
-                .param("id", politicaTaxaId)
+                .param(QUERY_PARAM_ID, politicaTaxaId)
                 .update();
     }
 
     private void deleteByTierId(long tierId) {
         jdbcClient.sql(resolver.get(getTableName(), "deleteByTierId"))
-                .param("id", tierId)
+                .param(QUERY_PARAM_ID, tierId)
                 .update();
     }
 
@@ -67,8 +72,8 @@ public class JoinTierPoliticaTaxa {
         for (Tier tier : toSave.getTiers()) {
             if (tier.getId() != null && tierDao.findById(tier.getId()).isPresent()) {
                 jdbcClient.sql(resolver.get(getTableName(), "insert"))
-                        .param("tier_id_fk", tier.getId())
-                        .param("politica_taxa_id_fk", savedId)
+                        .param(QUERY_PARAM_TIER_ID_FK, tier.getId())
+                        .param(QUERY_PARAM_POLITICA_TAXA_ID_FK, savedId)
                         .update();
             }
         }

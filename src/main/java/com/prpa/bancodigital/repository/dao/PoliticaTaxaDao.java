@@ -7,6 +7,7 @@ import com.prpa.bancodigital.model.enums.TipoTaxa;
 import com.prpa.bancodigital.model.enums.UnidadeTaxa;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,8 @@ import static java.util.Objects.requireNonNull;
 public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
 
     public static final String POLITICA_TAXA_TABLE_NAME = "politica_taxa";
+
+    public static final String QUERY_PARAM_NOME = "nome";
 
     public PoliticaTaxaDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         super(jdbcClient, jdbcTemplate, resolver);
@@ -37,8 +40,8 @@ public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
     }
 
     public Optional<PoliticaTaxa> findByNome(String nome) {
-        return jdbcClient.sql(resolver.get(getTableName(), "findByNome"))
-                .param("nome", nome)
+        return sql("findByNome")
+                .param(QUERY_PARAM_NOME, nome)
                 .query(getRowMapper())
                 .optional();
     }
@@ -52,11 +55,8 @@ public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
         if (toSave.getId() != null && findById(toSave.getId()).isPresent())
             return update(toSave);
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        jdbcClient.sql(resolver.get(getTableName(), "insert"))
-                .param("nome", toSave.getNome())
-                .param("quantidade", toSave.getQuantia())
-                .param("tipo_taxa", toSave.getTipoTaxa().name())
-                .param("unidade_quantia", toSave.getUnidade().name())
+        sql("insert")
+                .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
         return mapKeyHolderToPoliticaTaxa(generatedKeyHolder);
     }
@@ -64,11 +64,7 @@ public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
     private PoliticaTaxa update(PoliticaTaxa toUpdate) {
         GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
         jdbcClient.sql(resolver.get(getTableName(), "update"))
-                .param("id", toUpdate.getId())
-                .param("nome", toUpdate.getNome())
-                .param("quantidade", toUpdate.getQuantia())
-                .param("tipo_taxa", toUpdate.getTipoTaxa().name())
-                .param("unidade_quantia", toUpdate.getUnidade().name())
+                .paramSource(new BeanPropertySqlParameterSource(toUpdate))
                 .update(generatedKeyHolder);
         return mapKeyHolderToPoliticaTaxa(generatedKeyHolder);
     }

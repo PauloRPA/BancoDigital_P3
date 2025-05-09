@@ -2,7 +2,7 @@ name: politica_taxa_join_tier
 queries:
   - insert: >-
       insert into politica_taxa_join_tier (tier_id_fk, politica_taxa_id_fk)
-      values (:tier_id_fk, :politica_taxa_id_fk);
+      values (:tier_id, :politica_taxa_id);
   - deleteByPoliticaTaxaId: >-
       delete from politica_taxa_join_tier j
       where j.politica_taxa_id_fk = :id

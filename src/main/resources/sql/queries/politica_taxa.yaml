@@ -1,13 +1,13 @@
 name: politica_taxa
 queries:
-  - insert: insert into politica_taxa (nome, quantidade, tipo_taxa, unidade_quantia) values (:nome, :quantidade, :tipo_taxa, :unidade_quantia);
   - findByNome: select * from politica_taxa where politica_taxa.nome = :nome;
-  - update: >-
-      update politica_taxa p
-      set nome = :nome, quantidade = :quantidade, tipo_taxa = :tipo_taxa, unidade_quantia = :unidade_quantia
-      where p.id = :id;
   - findByTierId: >-
       select p.* from politica_taxa p
       inner join politica_taxa_join_tier j on p.id = j.politica_taxa_id_fk
       inner join tier t on t.id = j.tier_id_fk
       where t.id = :id;
+  - insert: insert into politica_taxa (nome, quantidade, tipo_taxa, unidade_quantia) values (:nome, :quantia, :tipoTaxa.name, :unidade.name);
+  - update: >-
+      update politica_taxa p
+      set nome = :nome, quantidade = :quantidade, tipo_taxa = :tipo_taxa, unidade_quantia = :unidade_quantia
+      where p.id = :id;
