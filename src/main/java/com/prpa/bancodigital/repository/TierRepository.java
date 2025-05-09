@@ -1,7 +1,9 @@
 package com.prpa.bancodigital.repository;
 
+import com.prpa.bancodigital.exception.InvalidDeletionException;
 import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.model.Tier;
+import com.prpa.bancodigital.repository.dao.ClienteDao;
 import com.prpa.bancodigital.repository.dao.JoinTierPoliticaTaxa;
 import com.prpa.bancodigital.repository.dao.PoliticaUsoDao;
 import com.prpa.bancodigital.repository.dao.TierDao;
@@ -18,11 +20,13 @@ public class TierRepository {
     private final TierDao tierDao;
     private final JoinTierPoliticaTaxa joinTierPoliticaTaxa;
     private final PoliticaUsoDao politicaUsoDao;
+    private final ClienteDao clienteDao;
 
-    public TierRepository(TierDao tierDao, JoinTierPoliticaTaxa joinTierPoliticaTaxa, PoliticaUsoDao politicaUsoDao) {
+    public TierRepository(TierDao tierDao, JoinTierPoliticaTaxa joinTierPoliticaTaxa, PoliticaUsoDao politicaUsoDao, ClienteDao clienteDao) {
         this.tierDao = tierDao;
         this.joinTierPoliticaTaxa = joinTierPoliticaTaxa;
         this.politicaUsoDao = politicaUsoDao;
+        this.clienteDao = clienteDao;
     }
 
     public Optional<Tier> findById(long id) {
@@ -65,6 +69,8 @@ public class TierRepository {
     }
 
     public void deleteById(long id) {
+        if (!clienteDao.findByTierId(id).isEmpty())
+            throw new InvalidDeletionException("Existem clientes associados a este Tier");
         joinTierPoliticaTaxa.removeReferencesForTier(id);
         tierDao.deleteById(id);
     }

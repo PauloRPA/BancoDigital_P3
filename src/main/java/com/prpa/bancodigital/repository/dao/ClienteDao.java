@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -26,6 +27,7 @@ public class ClienteDao extends AbstractDao<Cliente> {
     public static final String QUERY_PARAM_NOME = "nome";
     public static final String QUERY_PARAM_CPF = "cpf";
     public static final String QUERY_PARAM_DATA_NASCIMENTO = "dataNascimento";
+    public static final String QUERY_PARAM_TIER = "tier";
 
     public static final String TABLE_COLUMN_ID = "id";
     public static final String TABLE_COLUMN_NOME = "nome";
@@ -108,6 +110,13 @@ public class ClienteDao extends AbstractDao<Cliente> {
                 .dataNascimento(parseLocalDate(fields, TABLE_COLUMN_DATA_NASCIMENTO, DATE_FORMAT))
                 .tier(tier)
                 .build();
+    }
+
+    public List<Cliente> findByTierId(long id) {
+        return sql("findByTier")
+                .param(QUERY_PARAM_TIER, id)
+                .query(getRowMapper())
+                .list();
     }
 
 }
