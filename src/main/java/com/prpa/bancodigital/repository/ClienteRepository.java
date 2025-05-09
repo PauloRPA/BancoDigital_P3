@@ -1,9 +1,11 @@
 package com.prpa.bancodigital.repository;
 
+import com.prpa.bancodigital.exception.InvalidDeletionException;
 import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.dao.ClienteDao;
+import com.prpa.bancodigital.repository.dao.ContaDao;
 import com.prpa.bancodigital.repository.dao.EnderecoDao;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,11 +21,13 @@ public class ClienteRepository {
     private final ClienteDao clienteDao;
     private final EnderecoDao enderecoDao;
     private final TierRepository tierRepository;
+    private final ContaDao contaDao;
 
-    public ClienteRepository(ClienteDao clienteDao, EnderecoDao enderecoDao, TierRepository tierRepository) {
+    public ClienteRepository(ClienteDao clienteDao, EnderecoDao enderecoDao, TierRepository tierRepository, ContaDao contaDao) {
         this.clienteDao = clienteDao;
         this.enderecoDao = enderecoDao;
         this.tierRepository = tierRepository;
+        this.contaDao = contaDao;
     }
 
     public Optional<Cliente> findById(long id) {
@@ -47,6 +51,8 @@ public class ClienteRepository {
     }
 
     public void deleteById(long id) {
+        if (!contaDao.findByClienteId(id).isEmpty())
+            throw new InvalidDeletionException("Existem contas associadas a este Cliente");
         clienteDao.deleteById(id);
     }
 

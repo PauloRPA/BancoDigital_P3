@@ -116,8 +116,12 @@ public class ContaDao extends AbstractDao<ContaBancaria> {
     }
 
     public List<ContaBancaria> findByCliente(Cliente cliente) {
+        return findByClienteId(cliente.getId());
+    }
+
+    public List<ContaBancaria> findByClienteId(long id) {
         return sql("findByCliente")
-                .param(QUERY_PARAM_CLIENTE, cliente.getId())
+                .param(QUERY_PARAM_CLIENTE, id)
                 .query(getRowMapper())
                 .list();
     }
