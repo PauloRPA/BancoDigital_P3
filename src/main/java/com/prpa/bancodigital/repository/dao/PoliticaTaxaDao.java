@@ -58,7 +58,9 @@ public class PoliticaTaxaDao extends AbstractDao<PoliticaTaxa> {
         sql("insert")
                 .paramSource(new BeanPropertySqlParameterSource(toSave))
                 .update(generatedKeyHolder);
-        return mapKeyHolderToPoliticaTaxa(generatedKeyHolder);
+        PoliticaTaxa politicaTaxa = mapKeyHolderToPoliticaTaxa(generatedKeyHolder);
+        politicaTaxa.setTiers(toSave.getTiers());
+        return politicaTaxa;
     }
 
     private PoliticaTaxa update(PoliticaTaxa toUpdate) {

@@ -74,7 +74,10 @@ public class PoliticaTaxaRepository implements Dao<PoliticaTaxa> {
     public List<PoliticaTaxa> findByTiers(Tier tier) {
         if (tier.getId() == null)
             return List.of();
-        return joinTierPoliticaTaxa.findByTierId(tier.getId());
+        List<PoliticaTaxa> byTierId = joinTierPoliticaTaxa.findByTierId(tier.getId());
+        for (PoliticaTaxa politicaTaxa : byTierId)
+            politicaTaxa.addTier(tier);
+        return byTierId;
     }
 
 }
