@@ -1,13 +1,8 @@
 name: cliente
 queries:
-  - findByNome: select * from cliente where cliente.nome = :nome;
-  - findByCpf: select * from cliente where cliente.cpf = :cpf;
-  - findByTier: select * from cliente where cliente.tier_fk = :tier;
-  - findByNomeAndDataNascimento: select * from cliente where cliente.nome = :nome and cliente.data_nascimento = :dataNascimento;
-  - insert: >-
-      insert into cliente (nome, cpf, data_nascimento, endereco_fk, tier_fk)
-      values (:nome, :cpf, :dataNascimento, :endereco.id, :tier.id);
-  - update: >-
-      update cliente c
-      set nome = :nome, cpf = :cpf, data_nascimento = :dataNascimento, endereco_fk = :endereco.id, tier_fk = :tier.id
-      where c.id = :id;
+  - findByNome: select * from public.cliente_find_by_nome_v1(:nome);
+  - findByCpf: select * from public.cliente_find_by_cpf_v1(:cpf);
+  - findByTier: select * from public.cliente_find_by_tier_v1(:tier);
+  - findByNomeAndDataNascimento: select * from public.cliente_find_by_nome_and_data_nascimento_v1(:nome, :dataNascimento);
+  - insert: select * from public.cliente_insert_v1(:nome, :cpf, :dataNascimento, :endereco.id, :tier.id);
+  - update: select * from public.cliente_update_v1(:nome, :cpf, :dataNascimento, :endereco.id, :tier.id, :id);

@@ -1,7 +1,7 @@
 create collation if not exists ignore_accent_case (provider = icu, deterministic = false, locale = 'und-u-ks-level1');
 
 create table if not exists cliente (
-	id serial not null unique,
+	id bigserial not null unique,
     nome varchar not null collate ignore_accent_case,
     cpf varchar not null unique collate ignore_accent_case,
     data_nascimento date not null,
