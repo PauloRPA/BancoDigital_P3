@@ -1,5 +1,5 @@
 create table if not exists bank_user (
-	id serial not null unique,
+	id bigserial not null unique,
   	username varchar not null unique,
   	email varchar not null unique,
   	password  varchar not null unique,
