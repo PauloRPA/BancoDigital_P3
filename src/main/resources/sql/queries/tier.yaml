@@ -1,17 +1,7 @@
 name: tier
 queries:
-  - findByNome: select * from tier where tier.nome = :nome;
-  - insert: insert into tier (nome, politica_uso_fk) values (:nome, :politica_uso_fk);
-  - update: >-
-      update tier t
-      set nome = :nome, politica_uso_fk = :politica_uso_fk
-      where t.id = :id;
-  - findByPoliticaUsoId: >-
-      select t.* from tier t
-      inner join politica_uso p on p.id = t.politica_uso_fk
-      where p.id = :id;
-  - findByPoliticaTaxaId: >-
-      select t.* from politica_taxa p
-      inner join politica_taxa_join_tier j on p.id = j.politica_taxa_id_fk
-      inner join tier t on t.id = j.tier_id_fk
-      where p.id = :id;     
+  - findByNome: select * from public.tier_find_by_nome_v1(:nome);
+  - insert: select * from public.tier_insert_v1(:nome, :politica_uso_fk);
+  - update: select * from public.tier_update_v1(:nome, :politica_uso_fk ,:id);
+  - findByPoliticaUsoId: select * from public.tier_find_by_politica_uso_id_v1(:id);
+  - findByPoliticaTaxaId: select * from public.tier_find_by_politica_taxa_id_v1(:id);
