@@ -1,17 +1,5 @@
 name: endereco
 queries:
-  - insert: >-
-      insert into endereco (cep, complemento, numero, rua, bairro, cidade, estado)
-      values (:cep, :complemento, :numero, :rua, :bairro, :cidade, :estado)
-  - update: >-
-      update endereco e set 
-      cep = :cep, complemento = :complemento, numero = :numero, rua = :rua, bairro = :bairro, cidade = :cidade, estado = :estado
-      where e.id = :id
-  - selectByEndereco: select * from endereco e
-      where e.cep = :cep
-      and e.complemento = :complemento
-      and e.numero = :numero
-      and e.rua = :rua
-      and e.bairro = :bairro
-      and e.cidade = :cidade
-      and e.estado = :estado;
+  - insert: select * from public.endereco_insert_v1(:cep, :complemento, :numero, :rua, :bairro, :cidade, :estado);
+  - update: select * from public.endereco_update_v1(:cep, :complemento, :numero, :rua, :bairro, :cidade, :estado, :id);
+  - selectByEndereco: select * from public.endereco_select_by_endereco_v1(:cep, :complemento, :numero, :rua, :bairro, :cidade, :estado);

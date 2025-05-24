@@ -1,7 +1,7 @@
 create collation if not exists ignore_accent_case (provider = icu, deterministic = false, locale = 'und-u-ks-level1');
 
 create table if not exists endereco (
-	id serial not null unique,
+	id bigserial not null unique,
     cep varchar not null collate ignore_accent_case,
     complemento varchar not null collate ignore_accent_case,
     numero integer not null,
