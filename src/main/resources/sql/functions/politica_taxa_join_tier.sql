@@ -1,3 +1,67 @@
+create or replace function public.politica_taxa_join_tier_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    tier_fk BIGINT,
+    politica_taxa_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from politica_taxa_join_tier;
+END;
+$BODY$;
+
+
+create or replace function public.politica_taxa_join_tier_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    tier_fk BIGINT,
+    politica_taxa_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from politica_taxa_join_tier offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.politica_taxa_join_tier_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    tier_fk BIGINT,
+    politica_taxa_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from politica_taxa_join_tier where politica_taxa_join_tier.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.politica_taxa_join_tier_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    tier_fk BIGINT,
+    politica_taxa_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from politica_taxa_join_tier where politica_taxa_join_tier.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.politica_taxa_join_tier_insert_v1(
     p_tier_fk BIGINT,
     p_politica_taxa_fk BIGINT

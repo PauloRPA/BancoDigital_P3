@@ -1,3 +1,79 @@
+create or replace function public.conta_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    agencia CHARACTER VARYING(255),
+    numero CHARACTER VARYING(255),
+    saldo NUMERIC(38,2),
+    tipo tipo_conta,
+    cliente_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from conta;
+END;
+$BODY$;
+
+
+create or replace function public.conta_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    agencia CHARACTER VARYING(255),
+    numero CHARACTER VARYING(255),
+    saldo NUMERIC(38,2),
+    tipo tipo_conta,
+    cliente_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from conta offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.conta_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    agencia CHARACTER VARYING(255),
+    numero CHARACTER VARYING(255),
+    saldo NUMERIC(38,2),
+    tipo tipo_conta,
+    cliente_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from conta where conta.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.conta_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    agencia CHARACTER VARYING(255),
+    numero CHARACTER VARYING(255),
+    saldo NUMERIC(38,2),
+    tipo tipo_conta,
+    cliente_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from conta where conta.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.conta_find_by_agencia_v1(
     p_agencia CHARACTER VARYING(255)
 )

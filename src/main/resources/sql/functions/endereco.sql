@@ -1,3 +1,87 @@
+create or replace function public.endereco_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    cep CHARACTER VARYING(255),
+    complemento CHARACTER VARYING(255),
+    numero INTEGER,
+    rua CHARACTER VARYING(255),
+    bairro CHARACTER VARYING(255),
+    cidade CHARACTER VARYING(255),
+    estado CHARACTER VARYING(255)
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from endereco;
+END;
+$BODY$;
+
+
+create or replace function public.endereco_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    cep CHARACTER VARYING(255),
+    complemento CHARACTER VARYING(255),
+    numero INTEGER,
+    rua CHARACTER VARYING(255),
+    bairro CHARACTER VARYING(255),
+    cidade CHARACTER VARYING(255),
+    estado CHARACTER VARYING(255)
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from endereco offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.endereco_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    cep CHARACTER VARYING(255),
+    complemento CHARACTER VARYING(255),
+    numero INTEGER,
+    rua CHARACTER VARYING(255),
+    bairro CHARACTER VARYING(255),
+    cidade CHARACTER VARYING(255),
+    estado CHARACTER VARYING(255)
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from endereco where endereco.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.endereco_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    cep CHARACTER VARYING(255),
+    complemento CHARACTER VARYING(255),
+    numero INTEGER,
+    rua CHARACTER VARYING(255),
+    bairro CHARACTER VARYING(255),
+    cidade CHARACTER VARYING(255),
+    estado CHARACTER VARYING(255)
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from endereco where endereco.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.endereco_insert_v1(
     p_cep CHARACTER VARYING(255),
     p_complemento CHARACTER VARYING(255),

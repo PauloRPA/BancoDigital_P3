@@ -1,3 +1,95 @@
+create or replace function public.cartao_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    numero CHARACTER VARYING(255),
+    vencimento DATE,
+    ccv CHARACTER VARYING(255),
+    ativo BOOLEAN,
+    senha CHARACTER VARYING(255),
+    limite_credito NUMERIC(38,2),
+    limite_diario NUMERIC(38,2),
+    tipo tipo_cartao,
+    conta_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from cartao;
+END;
+$BODY$;
+
+
+create or replace function public.cartao_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    numero CHARACTER VARYING(255),
+    vencimento DATE,
+    ccv CHARACTER VARYING(255),
+    ativo BOOLEAN,
+    senha CHARACTER VARYING(255),
+    limite_credito NUMERIC(38,2),
+    limite_diario NUMERIC(38,2),
+    tipo tipo_cartao,
+    conta_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from cartao offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.cartao_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    numero CHARACTER VARYING(255),
+    vencimento DATE,
+    ccv CHARACTER VARYING(255),
+    ativo BOOLEAN,
+    senha CHARACTER VARYING(255),
+    limite_credito NUMERIC(38,2),
+    limite_diario NUMERIC(38,2),
+    tipo tipo_cartao,
+    conta_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from cartao where cartao.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.cartao_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    numero CHARACTER VARYING(255),
+    vencimento DATE,
+    ccv CHARACTER VARYING(255),
+    ativo BOOLEAN,
+    senha CHARACTER VARYING(255),
+    limite_credito NUMERIC(38,2),
+    limite_diario NUMERIC(38,2),
+    tipo tipo_cartao,
+    conta_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from cartao where cartao.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.cartao_find_by_numero_v1(
     p_numero CHARACTER VARYING(255)
 )

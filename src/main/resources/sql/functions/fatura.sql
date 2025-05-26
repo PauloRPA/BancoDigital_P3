@@ -1,3 +1,83 @@
+create or replace function public.fatura_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    abertura DATE,
+    fechamento DATE,
+    valor NUMERIC(38,2),
+    taxa_utilizacao_cobrada BOOLEAN,
+    pago BOOLEAN,
+    cartao_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from fatura;
+END;
+$BODY$;
+
+
+create or replace function public.fatura_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    abertura DATE,
+    fechamento DATE,
+    valor NUMERIC(38,2),
+    taxa_utilizacao_cobrada BOOLEAN,
+    pago BOOLEAN,
+    cartao_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from fatura offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.fatura_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    abertura DATE,
+    fechamento DATE,
+    valor NUMERIC(38,2),
+    taxa_utilizacao_cobrada BOOLEAN,
+    pago BOOLEAN,
+    cartao_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from fatura where fatura.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.fatura_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    abertura DATE,
+    fechamento DATE,
+    valor NUMERIC(38,2),
+    taxa_utilizacao_cobrada BOOLEAN,
+    pago BOOLEAN,
+    cartao_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from fatura where fatura.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.fatura_find_by_cartao_v1(
     p_cartao_fk BIGINT
 )

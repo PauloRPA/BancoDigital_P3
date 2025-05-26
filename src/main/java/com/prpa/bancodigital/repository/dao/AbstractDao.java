@@ -9,13 +9,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.JdbcClient;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-
-import static java.util.Objects.isNull;
 
 @Getter
 public abstract class AbstractDao<T> implements Dao<T> {
@@ -66,7 +61,8 @@ public abstract class AbstractDao<T> implements Dao<T> {
         return new PageImpl<>(jdbcClient.sql(query)
                 .param(QUERY_PARAM_OFFSET, page.getOffset())
                 .param(QUERY_PARAM_SIZE, page.getPageSize())
-                .query(getRowMapper()).list());
+                .query(getRowMapper())
+                .list());
     }
 
     @Override
@@ -74,16 +70,8 @@ public abstract class AbstractDao<T> implements Dao<T> {
         String query = resolver.get(GENERIC_QUERY, "deleteById").formatted(getTableName());
         jdbcClient.sql(query)
                 .param(QUERY_PARAM_ID, id)
-                .update();
-    }
-
-    protected static LocalDate parseLocalDate(Map<String, Object> fields, String fieldName, String dateFormat) {
-        return LocalDate.from(DateTimeFormatter.ofPattern(dateFormat).parse(fields.get(fieldName).toString()));
-    }
-
-    protected static Long parseId(Map<String, Object> fields, String fieldName) {
-        Object fieldValue = fields.get(fieldName);
-        return isNull(fieldValue) ? null : Long.parseLong(fieldValue.toString());
+                .query()
+                .rowSet();
     }
 
     protected JdbcClient.StatementSpec sql(String queryName) {

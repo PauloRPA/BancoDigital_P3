@@ -1,3 +1,75 @@
+create or replace function public.bank_user_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    username CHARACTER VARYING(255),
+    email CHARACTER VARYING(255),
+    password CHARACTER VARYING(255), 
+    roles CHARACTER VARYING(255)[]
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from bank_user;
+END;
+$BODY$;
+
+
+create or replace function public.bank_user_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    username CHARACTER VARYING(255),
+    email CHARACTER VARYING(255),
+    password CHARACTER VARYING(255), 
+    roles CHARACTER VARYING(255)[]
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from bank_user offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.bank_user_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    username CHARACTER VARYING(255),
+    email CHARACTER VARYING(255),
+    password CHARACTER VARYING(255), 
+    roles CHARACTER VARYING(255)[]
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from bank_user where bank_user.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.bank_user_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    username CHARACTER VARYING(255),
+    email CHARACTER VARYING(255),
+    password CHARACTER VARYING(255), 
+    roles CHARACTER VARYING(255)[]
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from bank_user where bank_user.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.bank_user_find_by_username_v1(
     p_username CHARACTER VARYING(255)
 )

@@ -1,3 +1,79 @@
+create or replace function public.cliente_find_all_v1()
+RETURNS TABLE(
+    id BIGINT,
+    nome CHARACTER VARYING(255),
+    cpf CHARACTER VARYING(255),
+    data_nascimento DATE,
+    endereco_fk BIGINT,
+    tier_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from cliente;
+END;
+$BODY$;
+
+
+create or replace function public.cliente_find_all_pageable_v1(
+    p_offset BIGINT, 
+    p_size BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    nome CHARACTER VARYING(255),
+    cpf CHARACTER VARYING(255),
+    data_nascimento DATE,
+    endereco_fk BIGINT,
+    tier_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from cliente offset p_offset limit p_size;
+END;
+$BODY$;
+
+
+create or replace function public.cliente_find_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    nome CHARACTER VARYING(255),
+    cpf CHARACTER VARYING(255),
+    data_nascimento DATE,
+    endereco_fk BIGINT,
+    tier_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    RETURN QUERY select * from cliente where cliente.id = p_id;
+END;
+$BODY$;
+
+
+create or replace function public.cliente_delete_by_id_v1(
+    p_id BIGINT
+)
+RETURNS TABLE(
+    id BIGINT,
+    nome CHARACTER VARYING(255),
+    cpf CHARACTER VARYING(255),
+    data_nascimento DATE,
+    endereco_fk BIGINT,
+    tier_fk BIGINT
+)
+LANGUAGE 'plpgsql'
+AS $BODY$
+BEGIN
+    delete from cliente where cliente.id = p_id;
+END;
+$BODY$;
+
+
+
 create or replace function public.cliente_find_by_nome_v1(
     p_nome CHARACTER VARYING(255)
 )
