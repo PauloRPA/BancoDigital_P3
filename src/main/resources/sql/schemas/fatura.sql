@@ -1,5 +1,5 @@
 create table if not exists fatura (
-	id serial not null unique,
+	id bigserial not null unique,
 	abertura date not null,
 	fechamento date not null,
 	valor numeric(38,2) not null,
