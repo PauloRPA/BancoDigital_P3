@@ -7,22 +7,12 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.simple.JdbcClient;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Component;
-
-import java.math.BigDecimal;
-import java.util.Map;
-
-import static java.util.Objects.requireNonNull;
 
 @Component
 public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
 
     public static final String POLITICA_USO_TABLE_NAME = "politica_uso";
-
-    public static final String TABLE_COLUMN_ID = "id";
-    public static final String TABLE_COLUMN_LIMITE_CREDITO = "limite_credito";
-    public static final String TABLE_COLUMN_LIMITE_DIARIO_USO = "limite_diario_uso";
 
     public PoliticaUsoDao(JdbcClient jdbcClient, JdbcTemplate jdbcTemplate, QueryResolver resolver) {
         super(jdbcClient, jdbcTemplate, resolver);
@@ -42,28 +32,17 @@ public class PoliticaUsoDao extends AbstractDao<PoliticaUso> {
     public PoliticaUso save(PoliticaUso toSave) {
         if (toSave.getId() != null && findById(toSave.getId()).isPresent())
             return update(toSave);
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        sql("insert")
+        return sql("insert")
                 .paramSource(new BeanPropertySqlParameterSource(toSave))
-                .update(generatedKeyHolder);
-        return mapKeyHolderToPoliticaUso(generatedKeyHolder);
+                .query(getRowMapper())
+                .single();
     }
 
     private PoliticaUso update(PoliticaUso toSave) {
-        GeneratedKeyHolder generatedKeyHolder = new GeneratedKeyHolder();
-        sql("update")
+        return sql("update")
                 .paramSource(new BeanPropertySqlParameterSource(toSave))
-                .update(generatedKeyHolder);
-        return mapKeyHolderToPoliticaUso(generatedKeyHolder);
+                .query(getRowMapper())
+                .single();
     }
 
-    private static PoliticaUso mapKeyHolderToPoliticaUso(GeneratedKeyHolder generatedKeyHolder) {
-        Map<String, Object> fields = generatedKeyHolder.getKeys();
-        requireNonNull(fields);
-        return PoliticaUso.builder()
-                .id(parseId(fields, TABLE_COLUMN_ID))
-                .limiteCredito(((BigDecimal) fields.get(TABLE_COLUMN_LIMITE_CREDITO)))
-                .limiteDiario(((BigDecimal) fields.get(TABLE_COLUMN_LIMITE_DIARIO_USO)))
-                .build();
-    }
 }

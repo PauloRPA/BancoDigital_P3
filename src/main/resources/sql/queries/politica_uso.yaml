@@ -1,8 +1,5 @@
 name: politica_uso
 queries:
-  - insert: insert into politica_uso (limite_credito, limite_diario_uso) values (:limite_credito, :limite_diario_uso);
-  - update: >-
-      update politica_uso p
-      set limite_credito = :limite_credito, limite_diario_uso = :limite_diario_uso
-      where p.id = :id;
-  - findByTierId: select p.* from politica_uso p inner join tier t on p.id = t.politica_uso_fk where t.id = :id;
+  - insert: select * from public.politica_uso_insert_v1(:limiteCredito, :limiteDiario);
+  - update: select * from public.politica_uso_update_v1(:limiteCredito, :limiteDiario, :id);
+  - findByTierId: select * from public.politica_uso_find_by_tier_id_v1(:id);
