@@ -1,17 +1,18 @@
 package com.prpa.bancodigital.config;
 
-import com.prpa.bancodigital.security.config.JwtAuthenticationProvider;
-import com.prpa.bancodigital.security.config.JwtFilter;
-import com.prpa.bancodigital.security.model.BankUser;
-import com.prpa.bancodigital.security.model.Role;
-import com.prpa.bancodigital.security.repository.BankUserRepository;
-import com.prpa.bancodigital.security.service.BankUserService;
-import com.prpa.bancodigital.security.service.JwtService;
+import com.prpa.bancodigital.config.security.JwtAuthenticationProvider;
+import com.prpa.bancodigital.config.security.JwtFilter;
+import com.prpa.bancodigital.model.BankUser;
+import com.prpa.bancodigital.model.Role;
+import com.prpa.bancodigital.repository.BankUserRepository;
+import com.prpa.bancodigital.service.BankUserService;
+import com.prpa.bancodigital.service.JwtService;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +32,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -45,6 +45,15 @@ public class SecurityConfig {
     public static final String REFRESH_TOKEN_NAME = "refresh-token";
 
     private static final String[] WHITE_LIST = {"/error/**", "/auth/**"};
+
+    @Value("${application.default.user}")
+    private String defaultUser;
+
+    @Value("${application.default.password}")
+    private String defaultPassword;
+
+    @Value("${application.default.email}")
+    private String defaultEmail;
 
     private final BankUserService bankUserService;
     private final JwtService jwtService;
@@ -101,7 +110,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    @Profile("dev")
+    @Profile("pgdev || h2dev")
     public WebSecurityCustomizer ignoreH2() {
         return web -> web.ignoring()
                 .requestMatchers(new AntPathRequestMatcher("/h2-console/**"))
@@ -112,18 +121,15 @@ public class SecurityConfig {
     @Bean
     public CommandLineRunner insertDefaultUserAndPassword(PasswordEncoder encoder, BankUserRepository bankUserRepository) {
         return args -> {
-            if (bankUserRepository.existsByRoles(List.of(Role.ROLE_ADMIN)))
+            if (bankUserRepository.findByUsername(defaultUser).isPresent())
                 return;
-            String username = "admin",
-                    email = "admin@admin.com",
-                    password = "admin";
             String message = """
                     GENERATED USERNAME AND PASSWORD:
                     USERNAME: %s
                     PASSWORD: %s
-                    """.formatted(username, password);
+                    """.formatted(defaultUser, defaultPassword);
 
-            bankUserRepository.save(new BankUser(null, username, email, encoder.encode(password), Arrays.stream(Role.values()).toList()));
+            bankUserRepository.save(new BankUser(null, defaultUser, defaultEmail, encoder.encode(defaultPassword), Arrays.stream(Role.values()).toList()));
             log.info(message);
         };
     }

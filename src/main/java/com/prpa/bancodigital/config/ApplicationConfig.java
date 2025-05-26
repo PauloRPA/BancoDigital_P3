@@ -18,22 +18,19 @@ import java.util.TimeZone;
 @Configuration
 public class ApplicationConfig {
 
-    @Value("${application.name}")
-    public static String BANK_NAME = "";
-
     @Value("${application.timezone.zone_id}")
-    public String TIMEZONE;
+    public String timezone;
 
     @Value("${application.external.viacep.timeout_in_millis}")
-    public long TIMEOUT_MILLIS;
+    public long timeoutMillis;
 
     public static final String API_V1 = "/api/v1";
 
     @Bean
     public RestTemplate getRestTemplate(RestTemplateBuilder restTemplateBuilder) {
         return restTemplateBuilder
-                .connectTimeout(Duration.ofMillis(TIMEOUT_MILLIS))
-                .readTimeout(Duration.ofMillis(TIMEOUT_MILLIS))
+                .connectTimeout(Duration.ofMillis(timeoutMillis))
+                .readTimeout(Duration.ofMillis(timeoutMillis))
                 .build();
     }
 
@@ -44,9 +41,9 @@ public class ApplicationConfig {
 
     @PostConstruct
     public void setTimeZone() {
-        log.info("Definindo timezone padrão para: {}", TIMEZONE);
-        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of(TIMEZONE)));
-        log.info("Timezone: {} definida", TIMEZONE);
+        log.info("Definindo timezone padrão para: {}", timezone);
+        TimeZone.setDefault(TimeZone.getTimeZone(ZoneId.of(timezone)));
+        log.info("Timezone: {} definida", timezone);
     }
 
 

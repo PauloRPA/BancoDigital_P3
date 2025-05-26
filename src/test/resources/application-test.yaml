@@ -1,0 +1,44 @@
+logging:
+  level:
+    com:
+      prpa: ${LOG_APPLICATION:DEBUG}
+    org:
+      springframework:
+        root: ${LOG_ROOT:INFO}
+        web: ${LOG_WEB:INFO}
+        security: ${LOG_SEC:INFO}
+        transaction:
+          interceptor: ${LOG_TRANSACTION:INFO}
+
+application:
+  security:
+    secret: ${SECRET:123}
+    secure_cookies: false
+  aop:
+    logging: true
+  repository:
+    query:
+      path: /test_sql/queries
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:dev
+    username: dev
+    password:
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath*:test_sql/data/**
+      schema-locations: classpath*:test_sql/schemas/**
+
+  h2:
+    console:
+      enabled: true
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html

@@ -26,4 +26,13 @@ public enum TipoCartao {
         }
         return Optional.empty();
     }
+
+    public static Optional<TipoCartao> fromName(String tipo) {
+        for (TipoCartao value : values()) {
+            if (value.name().equalsIgnoreCase(tipo))
+                return Optional.of(value);
+        }
+        return Optional.empty();
+    }
+
 }

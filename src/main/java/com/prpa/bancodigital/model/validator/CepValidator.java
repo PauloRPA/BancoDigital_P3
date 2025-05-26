@@ -30,10 +30,7 @@ public class CepValidator implements ConstraintValidator<Cep, String> {
                 .map(String::valueOf)
                 .collect(Collectors.joining());
 
-        if (!nonDigits.isBlank())
-            return false;
-
-        return true;
+        return nonDigits.isBlank();
     }
 
 }

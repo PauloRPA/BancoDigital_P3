@@ -3,6 +3,7 @@ package com.prpa.bancodigital.model.dtos;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.prpa.bancodigital.model.Transacao;
 import com.prpa.bancodigital.model.enums.TipoTransacao;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Setter
 @Getter
+@AllArgsConstructor
 public class TransacaoDTO {
 
     private String name;
@@ -28,19 +30,16 @@ public class TransacaoDTO {
     private Boolean processed;
     private List<String> reprovalReasons;
 
-    public TransacaoDTO(String name, BigDecimal amount, TipoTransacao type, ZonedDateTime createdTimestamp, ZonedDateTime doneTimestamp, Boolean processed, Boolean approved, List<String> reprovalReasons) {
-        this.name = name;
-        this.amount = amount;
-        this.type = type;
-        this.createdTimestamp = createdTimestamp;
-        this.doneTimestamp = doneTimestamp;
-        this.processed = processed;
-        this.approved = approved;
-        this.reprovalReasons = reprovalReasons;
-    }
-
     public static TransacaoDTO from(Transacao transaction) {
-        return new TransacaoDTO(transaction.getName(), transaction.getAmount(), transaction.getType(), transaction.getCreatedTimestamp(), transaction.getDoneTimestamp().orElse(null), transaction.isProcessed(), transaction.isApproved(), transaction.getReprovalReasons());
+        return new TransacaoDTO(
+                transaction.getName(),
+                transaction.getAmount(),
+                transaction.getType(),
+                transaction.getCreatedTimestamp(),
+                transaction.getDoneTimestamp().orElse(null),
+                transaction.isProcessed(),
+                transaction.isApproved(),
+                transaction.getReprovalReasons());
     }
 
 }

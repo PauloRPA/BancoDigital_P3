@@ -1,0 +1,11 @@
+name: cartao
+queries:
+  - findByNumero: select * from cartao c where c.numero = :numero;
+  - findByConta: select * from cartao c where c.conta_fk = :conta;
+  - insert: >-
+      insert into cartao (numero, vencimento, ccv, ativo, senha, limite_credito, limite_diario, tipo, conta_fk)
+      values (:numero, :vencimento, :ccv, :ativo, :senha, :limiteCredito, :limiteDiario, :tipo.name, :conta.id);
+  - update: >-
+      update cartao c
+      set numero = :numero, vencimento = :vencimento, ccv = :ccv, ativo = :ativo, senha = :senha, tipo = :tipo.name, conta_fk = :conta.id, limite_credito = :limiteCredito, limite_diario = :limiteDiario
+      where c.id = :id;

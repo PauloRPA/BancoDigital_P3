@@ -1,0 +1,4 @@
+name: bank_user
+queries:
+  - findByUsername: select * from bank_user where bank_user.username = :username;
+  - insert: insert into bank_user (username, email, password, roles) values (:username, :email, :password, :roles );

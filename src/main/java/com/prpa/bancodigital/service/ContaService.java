@@ -30,6 +30,7 @@ import static com.prpa.bancodigital.model.enums.UnidadeTaxa.FIXO;
 public class ContaService {
 
     private final ContaBancariaRepository contaBancariaRepository;
+    private static final Random random = new Random();
 
     public ContaService(ContaBancariaRepository contaBancariaRepository) {
         this.contaBancariaRepository = contaBancariaRepository;
@@ -65,8 +66,8 @@ public class ContaService {
         try {
             conta = (ContaBancaria) tipoConta
                     .getContaBancariaClass()
-                    .getDeclaredConstructor(new Class[0])
-                    .newInstance(new Object[0]);
+                    .getDeclaredConstructor()
+                    .newInstance();
             conta.setNumero(accountNumber);
             conta.setAgencia(accountAgency);
             conta.setCliente(cliente);
@@ -85,7 +86,6 @@ public class ContaService {
     }
 
     private String generateNumberSequence(int size) {
-        Random random = new Random();
         return IntStream.generate(() -> random.nextInt(0, 10))
                 .limit(size)
                 .mapToObj(String::valueOf)

@@ -1,0 +1,44 @@
+logging:
+  level:
+    com:
+      prpa: ${LOG_APPLICATION:DEBUG}
+    org:
+      springframework:
+        root: ${LOG_ROOT:INFO}
+        web: ${LOG_WEB:INFO}
+        security: ${LOG_SEC:INFO}
+        transaction:
+          interceptor: ${LOG_TRANSACTION:INFO}
+
+application:
+  default:
+    user: ${DEFAULT_USER:admin}
+    password: ${DEFAULT_PASSWORD:admin}
+    email: ${DEFAULT_EMAIL:admin@admin.com}
+  security:
+    secret: ${SECRET:123}
+    secure_cookies: false
+  aop:
+    logging: true
+  repository:
+    query:
+      path: /sql/queries
+
+spring:
+  datasource:
+    url: jdbc:postgresql://${PG_HOST:localhost}:${PG_PORT:5432}/${PG_SCHEMA:dev}
+    username: ${PG_USERNAME}
+    password: ${PG_PASSWORD}
+
+  sql:
+    init:
+      mode: always
+      data-locations: classpath*:sql/data/politica_uso.sql,classpath*:sql/data/tier.sql,classpath*:sql/data/**
+      schema-locations: classpath*:sql/schemas/politica_uso.sql,classpath*:sql/schemas/tier.sql,classpath*:sql/schemas/endereco.sql,classpath*:sql/schemas/cliente.sql,classpath*:sql/schemas/conta.sql,classpath*:sql/schemas/**
+
+springdoc:
+  api-docs:
+    enabled: true
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
