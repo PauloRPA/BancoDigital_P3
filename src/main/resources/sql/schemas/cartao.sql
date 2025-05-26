@@ -33,7 +33,7 @@ end;
 
 -- Cria tabela cartao
 create table if not exists cartao (
-	id serial not null unique,
+	id bigserial not null unique,
 	numero varchar not null,
 	vencimento date not null,
 	ccv varchar not null,
