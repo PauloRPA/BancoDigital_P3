@@ -1,16 +1,6 @@
 name: politica_taxa_join_tier
 queries:
-  - insert: >-
-      insert into politica_taxa_join_tier (tier_id_fk, politica_taxa_id_fk)
-      values (:tier_id, :politica_taxa_id);
-  - deleteByPoliticaTaxaId: >-
-      delete from politica_taxa_join_tier j
-      where j.politica_taxa_id_fk = :id
-  - deleteByTierId: >-
-      delete from politica_taxa_join_tier j
-      where j.tier_id_fk = :id
-  - findByTierId: >-
-      select p.* from politica_taxa p
-      inner join politica_taxa_join_tier j on p.id = j.politica_taxa_id_fk
-      inner join tier t on t.id = j.tier_id_fk
-      where t.id = :id;
+  - insert: select * from public.politica_taxa_join_tier_insert_v1(:tier_id, :politica_taxa_id);
+  - deleteByPoliticaTaxaId: select public.politica_taxa_join_tier_delete_by_politica_taxa_id_v1(:id);
+  - deleteByTierId: select public.politica_taxa_join_tier_delete_by_tier_id_v1(:id);
+  - findByTierId: select * from public.politica_taxa_join_tier_find_by_tier_id_v1(:id);

@@ -59,7 +59,7 @@ end;
 
 -- Cria tabela politica_taxa
 create table if not exists politica_taxa (
-	id serial not null unique,
+	id bigserial not null unique,
 	nome varchar not null unique,
 	quantidade numeric(38,2) not null,
 	tipo_taxa tipo_taxa not null,

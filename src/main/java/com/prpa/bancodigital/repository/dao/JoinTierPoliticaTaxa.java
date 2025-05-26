@@ -47,13 +47,15 @@ public class JoinTierPoliticaTaxa {
     private void deleteByPoliticaTaxaId(long politicaTaxaId) {
         jdbcClient.sql(resolver.get(getTableName(), "deleteByPoliticaTaxaId"))
                 .param(QUERY_PARAM_ID, politicaTaxaId)
-                .update();
+                .query()
+                .rowSet();
     }
 
     private void deleteByTierId(long tierId) {
         jdbcClient.sql(resolver.get(getTableName(), "deleteByTierId"))
                 .param(QUERY_PARAM_ID, tierId)
-                .update();
+                .query()
+                .rowSet();
     }
 
     public void removeReferencesForTier(long id) {
@@ -74,7 +76,8 @@ public class JoinTierPoliticaTaxa {
                 jdbcClient.sql(resolver.get(getTableName(), "insert"))
                         .param(QUERY_PARAM_TIER_ID_FK, tier.getId())
                         .param(QUERY_PARAM_POLITICA_TAXA_ID_FK, savedId)
-                        .update();
+                        .query()
+                        .rowSet();
             }
         }
     }
