@@ -33,7 +33,7 @@ end;
 
 -- Cria tabela conta
 create table if not exists conta (
-	id serial not null unique,
+	id bigserial not null unique,
   	agencia varchar not null,
 	numero varchar not null,
 	saldo numeric(38,2) not null,
