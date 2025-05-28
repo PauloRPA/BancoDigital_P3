@@ -19,11 +19,18 @@ application:
     secure_cookies: false
   aop:
     logging: true
+  default:
+    user: ${DEFAULT_USER:admin}
+    password: ${DEFAULT_PASSWORD:admin}
+    email: ${DEFAULT_EMAIL:admin@admin.com}
+  repository:
+    query:
+      path: /sql/queries
 
 spring:
   datasource:
 #    url: jdbc:h2:file:./dev
-    url: jdbc:h2:mem:dev
+    url: jdbc:h2:mem:dev;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
     username: dev
     password:
 

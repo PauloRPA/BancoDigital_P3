@@ -1,58 +1,65 @@
 package com.prpa.bancodigital.repository;
 
-import com.prpa.bancodigital.config.repository.QueryResolver;
-import com.prpa.bancodigital.config.repository.SpringYamlQueryResolver;
 import com.prpa.bancodigital.model.PoliticaUso;
 import com.prpa.bancodigital.repository.dao.PoliticaUsoDao;
+import com.prpa.bancodigital.repository.dao.mapper.PoliticaUsoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.ActiveProfiles;
-import org.yaml.snakeyaml.Yaml;
 
 import java.math.BigDecimal;
+import java.util.List;
 
+import static com.prpa.bancodigital.repository.dao.PoliticaUsoDao.POLITICA_USO_TABLE_NAME;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @JdbcTest
-@ActiveProfiles("test")
-public class PoliticaUsoDaoTest {
+@ActiveProfiles("h2dev")
+public class PoliticaUsoDaoTest extends DaoTest<PoliticaUso> {
 
-    @Autowired
-    private JdbcClient client;
-
-    @Autowired
-    private JdbcTemplate template;
-
-    @Value("${application.repository.query.path}")
-    public String QUERY_PATH;
+    public static final String INSERT_QUERY_NAME = "insert";
+    public static final String FIND_BY_ID_QUERY_NAME = "findById";
 
     private PoliticaUsoDao politicaUsoDao;
 
+    @Override
     @BeforeEach
-    void setUp() {
-        QueryResolver resolver = new SpringYamlQueryResolver(new Yaml(), QUERY_PATH);
+    protected void setUp() {
+        super.setUp();
         politicaUsoDao = new PoliticaUsoDao(client, template, resolver);
     }
 
+    @Override
+    protected String getTableName() {
+        return "politica_uso";
+    }
+
     @Test
-    public void whenFindAllOnPoliticaUsoDaoShouldReturnTheThreeRequiredValues() {
+    void whenFindAllOnPoliticaUsoDaoShouldReturnTheThreeRequiredValues() {
+        when(mappedQuerySpec.list()).thenReturn(List.of(new PoliticaUso(), new PoliticaUso(), new PoliticaUso()));
         assertEquals(3, politicaUsoDao.findAll().size());
     }
 
     @Test
-    public void whenSavePoliticaUsoShouldSucceed() {
+    void whenSavePoliticaUsoShouldSucceed() {
         final long expectedId = 4L;
         BigDecimal expectedLimiteDiario = BigDecimal.valueOf(10);
         BigDecimal expectedLimiteCredito = BigDecimal.valueOf(0.5);
-        PoliticaUso saved = politicaUsoDao.save(new PoliticaUso(expectedId, expectedLimiteDiario, expectedLimiteCredito));
-        assertEquals(expectedId, saved.getId());
-        assertEquals(expectedLimiteDiario, saved.getLimiteDiario());
-        assertEquals(expectedLimiteCredito, saved.getLimiteCredito());
+        PoliticaUso toSave = new PoliticaUso(expectedId, expectedLimiteDiario, expectedLimiteCredito);
+
+        when(mappedQuerySpec.single())
+                .thenReturn(toSave);
+        politicaUsoDao.save(toSave);
+        verify(client, times(1))
+                .sql(resolveGeneric(FIND_BY_ID_QUERY_NAME));
+        verify(client, times(1))
+                .sql(resolver.get(POLITICA_USO_TABLE_NAME, INSERT_QUERY_NAME));
+        verify(spec, times(2))
+                .query(any(PoliticaUsoMapper.class));
+        verify(mappedQuerySpec, times(1)).single();
     }
 
 }

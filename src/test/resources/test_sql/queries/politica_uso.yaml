@@ -1,3 +1,0 @@
-name: politica_uso
-queries:
-  - insert: insert into politica_uso (limite_credito, limite_diario_uso) values (:limite_credito, :limite_diario_uso);
