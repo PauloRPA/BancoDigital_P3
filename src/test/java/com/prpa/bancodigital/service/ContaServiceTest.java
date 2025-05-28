@@ -25,11 +25,10 @@ import java.util.Set;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class ContaServiceTest {
+class ContaServiceTest {
 
     @Mock
     private Cliente clienteMock;
@@ -58,7 +57,7 @@ public class ContaServiceTest {
 
     @Test
     @DisplayName("Deve criar uma nova conta bancaria com sucesso")
-    public void whenNewAccountIsValidShouldReturnNewContaBancaria() {
+    void whenNewAccountIsValidShouldReturnNewContaBancaria() {
         when(newContaBancariaDTOMock.getTipo()).thenReturn(TipoConta.CONTA_CORRENTE.name());
         when(contaBancariaRepository.save(any())).thenReturn(contaBancariaMock);
 
@@ -66,12 +65,12 @@ public class ContaServiceTest {
         assertThat(newContaBancaria).isEqualTo(contaBancariaMock);
         verify(contaBancariaRepository, times(1)).existsByNumero(any());
         verify(contaBancariaRepository, times(1)).existsByAgencia(any());
-        verify(contaBancariaRepository, times(1)).findByCliente(eq(clienteMock));
+        verify(contaBancariaRepository, times(1)).findByCliente(clienteMock);
     }
 
     @Test
     @DisplayName("Deve gerar novos números de conta e agencia caso hajam colisões")
-    public void whenNumbersCollideShouldSolveCollisions() {
+    void whenNumbersCollideShouldSolveCollisions() {
         when(newContaBancariaDTOMock.getTipo()).thenReturn(TipoConta.CONTA_CORRENTE.name());
         when(contaBancariaRepository.save(any())).thenReturn(contaBancariaMock);
         when(contaBancariaRepository.existsByNumero(any())).thenReturn(true, true, true, true, false);
@@ -81,12 +80,12 @@ public class ContaServiceTest {
         assertThat(newContaBancaria).isEqualTo(contaBancariaMock);
         verify(contaBancariaRepository, times(5)).existsByNumero(any());
         verify(contaBancariaRepository, times(5)).existsByAgencia(any());
-        verify(contaBancariaRepository, times(1)).findByCliente(eq(clienteMock));
+        verify(contaBancariaRepository, times(1)).findByCliente(clienteMock);
     }
 
     @Test
     @DisplayName("Deve lançar uma exceção caso o usuário ja possua uma conta deste tipo")
-    public void whenUserAccountTypeAlreadyExistsShouldThrow() {
+    void whenUserAccountTypeAlreadyExistsShouldThrow() {
         when(newContaBancariaDTOMock.getTipo()).thenReturn(TipoConta.CONTA_CORRENTE.name());
         when(contaBancariaRepository.findByCliente(clienteMock)).thenReturn(List.of(contaCorrenteMock));
 
@@ -102,12 +101,12 @@ public class ContaServiceTest {
 
     @Test
     @DisplayName("Deve render o de acordo com a taxa vigente")
-    public void whenYieldShouldSuccess() {
+    void whenYieldShouldSuccess() {
         PoliticaTaxa politicaTaxa = new PoliticaTaxa(null, "teste", BigDecimal.valueOf(10), UnidadeTaxa.FIXO, TipoTaxa.RENDIMENTO);
         Transacao transacaoMock = mock(Transacao.class);
         when(contaCorrenteMock.getPoliticas()).thenReturn(List.of(politicaTaxa));
         when(contaCorrenteMock.applyPoliticaTaxa(any())).thenReturn(transacaoMock);
-        when(contaBancariaRepository.findById(any())).thenReturn(Optional.of(contaCorrenteMock));
+        when(contaBancariaRepository.findById(anyLong())).thenReturn(Optional.of(contaCorrenteMock));
 
         List<Transacao> rendimento = contaService.rendimento(1L);
         assertThat(rendimento).singleElement().isEqualTo(transacaoMock);
@@ -115,23 +114,23 @@ public class ContaServiceTest {
 
     @Test
     @DisplayName("Deve filtrar taxas que não são de rendimento corretamente")
-    public void whenYieldShouldFilterFeesSuccessfully() {
+    void whenYieldShouldFilterFeesSuccessfully() {
         PoliticaTaxa politicaTaxaMock = mock(PoliticaTaxa.class);
         when(politicaTaxaMock.getTipoTaxa()).thenReturn(TipoTaxa.MANUTENCAO);
         when(contaCorrenteMock.getPoliticas()).thenReturn(List.of(politicaTaxaMock));
-        when(contaBancariaRepository.findById(any())).thenReturn(Optional.of(contaCorrenteMock));
+        when(contaBancariaRepository.findById(anyLong())).thenReturn(Optional.of(contaCorrenteMock));
 
         assertThatThrownBy(() -> contaService.rendimento(1L)).isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
     @DisplayName("Deve cobrar manutenção o de acordo com a taxa vigente")
-    public void whenChargeFeeShouldSuccess() {
+    void whenChargeFeeShouldSuccess() {
         PoliticaTaxa politicaTaxa = new PoliticaTaxa(null, "teste", BigDecimal.valueOf(10), UnidadeTaxa.FIXO, TipoTaxa.MANUTENCAO);
         Transacao transacaoMock = mock(Transacao.class);
         when(contaCorrenteMock.getPoliticas()).thenReturn(List.of(politicaTaxa));
         when(contaCorrenteMock.applyPoliticaTaxa(any())).thenReturn(transacaoMock);
-        when(contaBancariaRepository.findById(any())).thenReturn(Optional.of(contaCorrenteMock));
+        when(contaBancariaRepository.findById(anyLong())).thenReturn(Optional.of(contaCorrenteMock));
 
         List<Transacao> rendimento = contaService.manutencao(1L);
         assertThat(rendimento).singleElement().isEqualTo(transacaoMock);
@@ -139,11 +138,11 @@ public class ContaServiceTest {
 
     @Test
     @DisplayName("Deve filtrar taxas que não são de manutenção corretamente")
-    public void whenChargeFeeShouldFilterFeesSuccessfully() {
+    void whenChargeFeeShouldFilterFeesSuccessfully() {
         PoliticaTaxa politicaTaxaMock = mock(PoliticaTaxa.class);
         when(politicaTaxaMock.getTipoTaxa()).thenReturn(TipoTaxa.RENDIMENTO);
         when(contaCorrenteMock.getPoliticas()).thenReturn(List.of(politicaTaxaMock));
-        when(contaBancariaRepository.findById(any())).thenReturn(Optional.of(contaCorrenteMock));
+        when(contaBancariaRepository.findById(anyLong())).thenReturn(Optional.of(contaCorrenteMock));
 
         assertThatThrownBy(() -> contaService.manutencao(1L)).isInstanceOf(ResourceNotFoundException.class);
     }
@@ -154,41 +153,42 @@ public class ContaServiceTest {
 
     @Test
     @DisplayName("Deve transferir os valores corretamente")
-    public void whenTransferringMoneyShouldSucceed() {
+    void whenTransferringMoneyShouldSucceed() {
         final long ID = 1L;
-        String NUMERO = "numero2";
-        String AGENCIA = "agencia2";
-        BigDecimal QUANTIA = BigDecimal.valueOf(200);
-        BigDecimal INITAL_BALANCE = BigDecimal.valueOf(1000);
+        String numero = "numero2";
+        String agencia = "agencia2";
+        BigDecimal quantia = BigDecimal.valueOf(200);
+        BigDecimal initialBalance = BigDecimal.valueOf(1000);
 
         when(clienteMock.getTier()).thenReturn(tierMock);
         when(tierMock.getPoliticasTaxa()).thenReturn(Set.of());
 
         ContaCorrente origem = new ContaCorrente(1L, "numero1", "agencia1", clienteMock);
-        origem.deposit(INITAL_BALANCE);
-        ContaPoupanca alvo = new ContaPoupanca(2L, NUMERO, AGENCIA, clienteMock);
+        origem.deposit(initialBalance);
+        ContaPoupanca alvo = new ContaPoupanca(2L, numero, agencia, clienteMock);
 
-        when(contaBancariaRepository.findById(eq(ID))).thenReturn(Optional.of(origem));
-        when(contaBancariaRepository.findByNumeroAndAgencia(eq(NUMERO), eq(AGENCIA)))
+        when(contaBancariaRepository.findById(ID)).thenReturn(Optional.of(origem));
+        when(contaBancariaRepository.findByNumeroAndAgencia(numero, agencia))
                 .thenReturn(Optional.of(alvo));
 
-        contaService.transferirById(ID, new TransferenciaDTO(NUMERO, AGENCIA, QUANTIA));
-        assertThat(origem.getSaldo()).isEqualTo(INITAL_BALANCE.subtract(QUANTIA));
-        assertThat(alvo.getSaldo()).isEqualTo(QUANTIA);
+        contaService.transferirById(ID, new TransferenciaDTO(numero, agencia, quantia));
+        assertThat(origem.getSaldo()).isEqualTo(initialBalance.subtract(quantia));
+        assertThat(alvo.getSaldo()).isEqualTo(quantia);
     }
 
     @Test
     @DisplayName("Não deve permitir a transferencia quando origem e alvo forem iguais")
-    public void whenTransferringMoneyBetweenSameAccountShouldThrow() {
-        final long ID = 1L;
-        String NUMERO = "numero2";
-        String AGENCIA = "agencia2";
+    void whenTransferringMoneyBetweenSameAccountShouldThrow() {
+        final long id = 1L;
+        String numero = "numero2";
+        String agencia = "agencia2";
 
-        when(contaBancariaRepository.findById(eq(ID))).thenReturn(Optional.of(contaCorrenteMock));
-        when(contaBancariaRepository.findByNumeroAndAgencia(eq(NUMERO), eq(AGENCIA)))
+        when(contaBancariaRepository.findById(id)).thenReturn(Optional.of(contaCorrenteMock));
+        when(contaBancariaRepository.findByNumeroAndAgencia(numero, agencia))
                 .thenReturn(Optional.of(contaCorrenteMock));
 
-        assertThatThrownBy(() -> contaService.transferirById(ID, new TransferenciaDTO(NUMERO, AGENCIA, BigDecimal.valueOf(200))))
+        TransferenciaDTO alvo = new TransferenciaDTO(numero, agencia, BigDecimal.valueOf(200));
+        assertThatThrownBy(() -> contaService.transferirById(id, alvo))
                 .isInstanceOf(InvalidInputParameterException.class);
     }
 
@@ -198,41 +198,42 @@ public class ContaServiceTest {
 
     @Test
     @DisplayName("Deve transferir os valores corretamente")
-    public void whenPIXMoneyShouldSucceed() {
+    void whenPIXMoneyShouldSucceed() {
         final long ID = 1L;
-        String NUMERO = "numero2";
-        String AGENCIA = "agencia2";
-        BigDecimal QUANTIA = BigDecimal.valueOf(200);
-        BigDecimal INITAL_BALANCE = BigDecimal.valueOf(1000);
+        String numero = "numero2";
+        String agencia = "agencia2";
+        BigDecimal quantia = BigDecimal.valueOf(200);
+        BigDecimal initalBalance = BigDecimal.valueOf(1000);
 
         when(clienteMock.getTier()).thenReturn(tierMock);
         when(tierMock.getPoliticasTaxa()).thenReturn(Set.of());
 
         ContaCorrente origem = new ContaCorrente(1L, "numero1", "agencia1", clienteMock);
-        origem.deposit(INITAL_BALANCE);
-        ContaPoupanca alvo = new ContaPoupanca(2L, NUMERO, AGENCIA, clienteMock);
+        origem.deposit(initalBalance);
+        ContaPoupanca alvo = new ContaPoupanca(2L, numero, agencia, clienteMock);
 
-        when(contaBancariaRepository.findById(eq(ID))).thenReturn(Optional.of(origem));
-        when(contaBancariaRepository.findByNumeroAndAgencia(eq(NUMERO), eq(AGENCIA)))
+        when(contaBancariaRepository.findById(ID)).thenReturn(Optional.of(origem));
+        when(contaBancariaRepository.findByNumeroAndAgencia(numero, agencia))
                 .thenReturn(Optional.of(alvo));
 
-        contaService.pixById(ID, new TransferenciaDTO(NUMERO, AGENCIA, QUANTIA));
-        assertThat(origem.getSaldo()).isEqualTo(INITAL_BALANCE.subtract(QUANTIA));
-        assertThat(alvo.getSaldo()).isEqualTo(QUANTIA);
+        contaService.pixById(ID, new TransferenciaDTO(numero, agencia, quantia));
+        assertThat(origem.getSaldo()).isEqualTo(initalBalance.subtract(quantia));
+        assertThat(alvo.getSaldo()).isEqualTo(quantia);
     }
 
     @Test
     @DisplayName("Não deve permitir a transferencia quando origem e alvo forem iguais")
-    public void whenPIXMoneyBetweenSameAccountShouldThrow() {
-        final long ID = 1L;
-        String NUMERO = "numero2";
-        String AGENCIA = "agencia2";
+    void whenPIXMoneyBetweenSameAccountShouldThrow() {
+        final long id = 1L;
+        String numero = "numero2";
+        String agencia = "agencia2";
 
-        when(contaBancariaRepository.findById(eq(ID))).thenReturn(Optional.of(contaCorrenteMock));
-        when(contaBancariaRepository.findByNumeroAndAgencia(eq(NUMERO), eq(AGENCIA)))
+        when(contaBancariaRepository.findById(id)).thenReturn(Optional.of(contaCorrenteMock));
+        when(contaBancariaRepository.findByNumeroAndAgencia(numero, agencia))
                 .thenReturn(Optional.of(contaCorrenteMock));
 
-        assertThatThrownBy(() -> contaService.pixById(ID, new TransferenciaDTO(NUMERO, AGENCIA, BigDecimal.valueOf(200))))
+        TransferenciaDTO alvo = new TransferenciaDTO(numero, agencia, BigDecimal.valueOf(200));
+        assertThatThrownBy(() -> contaService.pixById(id, alvo))
                 .isInstanceOf(InvalidInputParameterException.class);
     }
 }

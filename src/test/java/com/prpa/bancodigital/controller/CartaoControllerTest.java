@@ -27,14 +27,13 @@ import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = CartaoController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-public class CartaoControllerTest {
+class CartaoControllerTest {
 
     private static final String CARTAO_MAPPING = API_V1 + "/cartoes";
 
@@ -55,7 +54,7 @@ public class CartaoControllerTest {
 
     @Test
     @DisplayName("Deve aceitar um novo cartão válido corretamente")
-    public void whenPostValidCartaoShouldReturnSuccessfully() throws Exception {
+    void whenPostValidCartaoShouldReturnSuccessfully() throws Exception {
         final long EXPECTED_ID = 1L;
         URI expectedLocation = UriComponentsBuilder.fromPath(CARTAO_MAPPING).path("/{id}").build(EXPECTED_ID);
 
@@ -90,7 +89,7 @@ public class CartaoControllerTest {
 
     @Test
     @DisplayName("Deve retornar um BAD_REQUEST ao desserializar o campo único nomeado boolean inválido")
-    public void whenUserFillSingleFieldInputForBooleanIncorrectlyShouldDeserializeSuccessfully() throws Exception {
+    void whenUserFillSingleFieldInputForBooleanIncorrectlyShouldDeserializeSuccessfully() throws Exception {
         URI requestURI = UriComponentsBuilder.fromPath(CARTAO_MAPPING)
                 .path("/{id}/status").buildAndExpand(1L).toUri();
 
@@ -112,7 +111,7 @@ public class CartaoControllerTest {
 
     @Test
     @DisplayName("Deve desserializar o campo único nomeado boolean válido corretamente")
-    public void whenUserFillSingleFieldInputForBooleanCorrectlyShouldDeserializeSuccessfully() throws Exception {
+    void whenUserFillSingleFieldInputForBooleanCorrectlyShouldDeserializeSuccessfully() throws Exception {
         CartaoCredito cartaoCredito = new CartaoCredito();
         mockContaParaCartao(cartaoCredito);
 
@@ -136,13 +135,13 @@ public class CartaoControllerTest {
                     .andExpect(status().isOk());
         }
 
-        verify(cartaoService, times(2)).setAtivo(eq(1L), eq(true));
-        verify(cartaoService, times(2)).setAtivo(eq(1L), eq(false));
+        verify(cartaoService, times(2)).setAtivo(1L, true);
+        verify(cartaoService, times(2)).setAtivo(1L, false);
     }
 
     @Test
     @DisplayName("Deve retornar um BAD_REQUEST ao desserializar o campo único double nomeado inválido")
-    public void whenUserFillSingleFieldInputForDoubleIncorrectlyShouldDeserializeSuccessfully() throws Exception {
+    void whenUserFillSingleFieldInputForDoubleIncorrectlyShouldDeserializeSuccessfully() throws Exception {
         URI requestURI = UriComponentsBuilder.fromPath(CARTAO_MAPPING)
                 .path("/{id}/limite").buildAndExpand(1L).toUri();
 
@@ -165,7 +164,7 @@ public class CartaoControllerTest {
 
     @Test
     @DisplayName("Deve desserializar o campo único nomeado double válido corretamente")
-    public void whenUserFillSingleFieldInputForDoubleCorrectlyShouldDeserializeSuccessfully() throws Exception {
+    void whenUserFillSingleFieldInputForDoubleCorrectlyShouldDeserializeSuccessfully() throws Exception {
         final double limite = 123.0;
         CartaoCredito cartaoCredito = new CartaoCredito();
         mockContaParaCartao(cartaoCredito);
@@ -180,7 +179,7 @@ public class CartaoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ \"limite\": " + limite + " }"))
                 .andExpect(status().isOk());
-        verify(cartaoService).setLimit(eq(1L), eq(limite));
+        verify(cartaoService).setLimit(1L, limite);
     }
 
 
@@ -204,7 +203,7 @@ public class CartaoControllerTest {
                 .andExpect(jsonPath(jsonTarget + ".numero", equalTo(target.getNumero())))
                 .andExpect(jsonPath(jsonTarget + ".vencimento", equalTo(target.getVencimento().toString())))
                 .andExpect(jsonPath(jsonTarget + ".ccv", equalTo(target.getCcv())))
-                .andExpect(jsonPath(jsonTarget + ".ativo", equalTo(target.getAtivo())));
+                .andExpect(jsonPath(jsonTarget + ".ativo", equalTo(target.isAtivo())));
     }
 
 }

@@ -12,7 +12,6 @@ import com.prpa.bancodigital.model.enums.TipoConta;
 import com.prpa.bancodigital.model.external.cep.CepService;
 import com.prpa.bancodigital.service.ClienteService;
 import com.prpa.bancodigital.service.ContaService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -35,14 +34,13 @@ import static com.prpa.bancodigital.config.ApplicationConfig.API_V1;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = ContaController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-public class ContaControllerTest {
+class ContaControllerTest {
 
     private static final String CONTA_MAPPING = API_V1 + "/contas";
 
@@ -70,24 +68,20 @@ public class ContaControllerTest {
     @Mock
     private ContaPoupanca contaPoupanca;
 
-    @BeforeEach
-    public void setup() {
-    }
-
     // ------------------------------------------
     // GET
     // ------------------------------------------
 
     @Test
     @DisplayName("Busca saldo por ID")
-    public void whenGETFindSaldoByIdTestShould200OK() throws Exception {
+    void whenGETFindSaldoByIdTestShould200OK() throws Exception {
         final int EXPECTED_VALUE = 200;
         final long ID = 1L;
 
         when(contaCorrente.getSaldo())
                 .thenReturn(BigDecimal.valueOf(EXPECTED_VALUE));
 
-        when(contaService.findById(eq(ID)))
+        when(contaService.findById(ID))
                 .thenReturn(contaCorrente);
 
         URI requestURI = UriComponentsBuilder.fromPath(CONTA_MAPPING)
@@ -104,7 +98,7 @@ public class ContaControllerTest {
 
     @Test
     @DisplayName("Post nova conta valida")
-    public void whenPOSTValidContaTestShould201CREATED() throws Exception {
+    void whenPOSTValidContaTestShould201CREATED() throws Exception {
         URI expectedLocation = UriComponentsBuilder.fromPath(CONTA_MAPPING).path("/{id}").build(contaCorrente.getId());
 
         when(contaCorrente.getId()).thenReturn(0L);
@@ -133,12 +127,12 @@ public class ContaControllerTest {
 
     @Test
     @DisplayName("Post nova conta com tipo invalido")
-    public void whenPOSTInvalidTipoContaTestShould400BADREQUEST() throws Exception {
-        String TIPO_VAZIO = "";
-        String TIPO_INEXISTENTE = "CONTA_CORENTE";
+    void whenPOSTInvalidTipoContaTestShould400BADREQUEST() throws Exception {
+        String tipoVazio = "";
+        String tipoInexistente = "CONTA_CORENTE";
         Map<String, String> invalidTypeAndErrorMessage = Map.of(
-                TIPO_VAZIO, "O tipo de conta a ser criada é obrigatório. Use: CONTA_POUPANCA, CONTA_CORRENTE",
-                TIPO_INEXISTENTE, "Este campo deve conter um dos seguintes valores: CONTA_POUPANCA, CONTA_CORRENTE"
+                tipoVazio, "O tipo de conta a ser criada é obrigatório. Use: CONTA_POUPANCA, CONTA_CORRENTE",
+                tipoInexistente, "Este campo deve conter um dos seguintes valores: CONTA_POUPANCA, CONTA_CORRENTE"
         );
 
         URI requestURI = UriComponentsBuilder.fromPath(CONTA_MAPPING).build().toUri();

@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ContaBancariaTest {
+class ContaBancariaTest {
 
     @Mock
     private Cliente clienteMock;
@@ -30,7 +30,7 @@ public class ContaBancariaTest {
     private ContaPoupanca contaPoupanca;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         when(clienteMock.getTier()).thenReturn(tierMock);
         when(tierMock.getPoliticasTaxa()).thenReturn(Set.of());
         contaCorrente = new ContaCorrente(1L, "1111-11", "111-1", clienteMock);
@@ -39,24 +39,24 @@ public class ContaBancariaTest {
 
     @Test
     @DisplayName("Deve depositar um valor na conta bancaria corretamente")
-    public void whenDepositValidNumberShouldSucceed() {
-        final BigDecimal AMOUNT = BigDecimal.valueOf(100);
-        contaCorrente.deposit(AMOUNT);
-        contaPoupanca.deposit(AMOUNT);
+    void whenDepositValidNumberShouldSucceed() {
+        final BigDecimal amount = BigDecimal.valueOf(100);
+        contaCorrente.deposit(amount);
+        contaPoupanca.deposit(amount);
 
-        assertThat(contaCorrente.getSaldo()).isEqualTo(AMOUNT);
-        assertThat(contaPoupanca.getSaldo()).isEqualTo(AMOUNT);
+        assertThat(contaCorrente.getSaldo()).isEqualTo(amount);
+        assertThat(contaPoupanca.getSaldo()).isEqualTo(amount);
     }
 
     @Test
     @DisplayName("Deve sacar um valor na conta bancaria corretamente")
-    public void whenWithdrawValidNumberShouldSucceed() {
-        final BigDecimal AMOUNT = BigDecimal.valueOf(100);
-        contaCorrente.deposit(AMOUNT);
-        contaPoupanca.deposit(AMOUNT);
+    void whenWithdrawValidNumberShouldSucceed() {
+        final BigDecimal amount = BigDecimal.valueOf(100);
+        contaCorrente.deposit(amount);
+        contaPoupanca.deposit(amount);
 
-        contaCorrente.withdraw(AMOUNT);
-        contaPoupanca.withdraw(AMOUNT);
+        contaCorrente.withdraw(amount);
+        contaPoupanca.withdraw(amount);
 
         assertThat(contaCorrente.getSaldo()).isEqualTo(BigDecimal.ZERO);
         assertThat(contaPoupanca.getSaldo()).isEqualTo(BigDecimal.ZERO);
@@ -64,43 +64,43 @@ public class ContaBancariaTest {
 
     @Test
     @DisplayName("Deve render taxa fixa corretamente")
-    public void whenYieldFixedFeeShouldSucceed() {
-        BigDecimal FEE = BigDecimal.valueOf(10);
-        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", FEE, FIXO, RENDIMENTO);
+    void whenYieldFixedFeeShouldSucceed() {
+        BigDecimal fee = BigDecimal.valueOf(10);
+        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", fee, FIXO, RENDIMENTO);
 
         contaCorrente.applyPoliticaTaxa(politicaTeste);
         contaPoupanca.applyPoliticaTaxa(politicaTeste);
 
-        assertThat(contaCorrente.getSaldo()).isEqualTo(FEE);
-        assertThat(contaPoupanca.getSaldo()).isEqualTo(FEE);
+        assertThat(contaCorrente.getSaldo()).isEqualTo(fee);
+        assertThat(contaPoupanca.getSaldo()).isEqualTo(fee);
     }
 
     @Test
     @DisplayName("Deve cobrar taxa fixa corretamente")
-    public void whenChargeFixedFeeShouldSucceed() {
-        final BigDecimal INITIAL_BALANCE = BigDecimal.valueOf(1000);
-        BigDecimal FEE = BigDecimal.valueOf(10);
-        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", FEE, FIXO, MANUTENCAO);
+    void whenChargeFixedFeeShouldSucceed() {
+        final BigDecimal initialBalance = BigDecimal.valueOf(1000);
+        BigDecimal fee = BigDecimal.valueOf(10);
+        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", fee, FIXO, MANUTENCAO);
 
-        contaCorrente.deposit(INITIAL_BALANCE);
-        contaPoupanca.deposit(INITIAL_BALANCE);
+        contaCorrente.deposit(initialBalance);
+        contaPoupanca.deposit(initialBalance);
 
         contaCorrente.applyPoliticaTaxa(politicaTeste);
         contaPoupanca.applyPoliticaTaxa(politicaTeste);
 
-        assertThat(contaCorrente.getSaldo()).isEqualTo(INITIAL_BALANCE.subtract(FEE));
-        assertThat(contaPoupanca.getSaldo()).isEqualTo(INITIAL_BALANCE.subtract(FEE));
+        assertThat(contaCorrente.getSaldo()).isEqualTo(initialBalance.subtract(fee));
+        assertThat(contaPoupanca.getSaldo()).isEqualTo(initialBalance.subtract(fee));
     }
 
     @Test
     @DisplayName("Deve render taxa relativa ao saldo corretamente")
-    public void whenYieldPercentageFeeShouldSucceed() {
-        final BigDecimal INITIAL_BALANCE = BigDecimal.valueOf(100);
-        BigDecimal FEE_PCT = BigDecimal.valueOf(0.10);
-        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", FEE_PCT, PORCENTAGEM, RENDIMENTO);
+    void whenYieldPercentageFeeShouldSucceed() {
+        final BigDecimal initialBalance = BigDecimal.valueOf(100);
+        BigDecimal feePct = BigDecimal.valueOf(0.10);
+        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", feePct, PORCENTAGEM, RENDIMENTO);
 
-        contaCorrente.deposit(INITIAL_BALANCE);
-        contaPoupanca.deposit(INITIAL_BALANCE);
+        contaCorrente.deposit(initialBalance);
+        contaPoupanca.deposit(initialBalance);
 
         contaCorrente.applyPoliticaTaxa(politicaTeste);
         contaPoupanca.applyPoliticaTaxa(politicaTeste);
@@ -111,13 +111,13 @@ public class ContaBancariaTest {
 
     @Test
     @DisplayName("Deve cobrar taxa relativa ao saldo corretamente")
-    public void whenChargePercentageFeeShouldSucceed() {
-        final BigDecimal INITIAL_BALANCE = BigDecimal.valueOf(100);
-        BigDecimal FEE_PCT = BigDecimal.valueOf(0.10);
-        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", FEE_PCT, PORCENTAGEM, MANUTENCAO);
+    void whenChargePercentageFeeShouldSucceed() {
+        final BigDecimal initialBalance = BigDecimal.valueOf(100);
+        BigDecimal feePct = BigDecimal.valueOf(0.10);
+        PoliticaTaxa politicaTeste = new PoliticaTaxa(1L, "Politica teste", feePct, PORCENTAGEM, MANUTENCAO);
 
-        contaCorrente.deposit(INITIAL_BALANCE);
-        contaPoupanca.deposit(INITIAL_BALANCE);
+        contaCorrente.deposit(initialBalance);
+        contaPoupanca.deposit(initialBalance);
 
         contaCorrente.applyPoliticaTaxa(politicaTeste);
         contaPoupanca.applyPoliticaTaxa(politicaTeste);

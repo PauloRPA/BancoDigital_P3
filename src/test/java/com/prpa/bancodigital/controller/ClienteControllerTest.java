@@ -14,6 +14,8 @@ import com.prpa.bancodigital.service.ClienteService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -41,7 +43,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(value = ClienteController.class, excludeAutoConfiguration = SecurityAutoConfiguration.class)
-public class ClienteControllerTest {
+class ClienteControllerTest {
 
     private static final String CLIENTE_MAPPING = API_V1 + "/clientes";
 
@@ -67,7 +69,7 @@ public class ClienteControllerTest {
     private Cliente clienteTeste2;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         tier1 = new Tier(1L, "TIERUM");
         tier2 = new Tier(2L, "TIERDOIS");
 
@@ -97,7 +99,7 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("FindAll retorna todos clientes corretamente")
-    public void whenGETFindAllTestShould200OK() throws Exception {
+    void whenGETFindAllTestShould200OK() throws Exception {
         List<Cliente> whenFindAllClienteService = List.of(clienteTeste1, clienteTeste2);
         when(clienteService.findAll(any())).thenReturn(whenFindAllClienteService);
 
@@ -112,7 +114,7 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("FindAll retorna os clientes corretamente de acordo com a paginação")
-    public void whenGETFindAllWithPaginationTestShould200OK() throws Exception {
+    void whenGETFindAllWithPaginationTestShould200OK() throws Exception {
         final int DEFAULT_PAGE = ClienteController.DEFAULT_PAGE;
         final int DEFAULT_SIZE = ClienteController.DEFAULT_SIZE;
         final int MAX_PAGE_SIZE = ClienteController.MAX_PAGE_SIZE;
@@ -152,7 +154,7 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("FindById o cliente corretamente pelo ID")
-    public void whenGETFindByIdTestShould200OK() throws Exception {
+    void whenGETFindByIdTestShould200OK() throws Exception {
         final long ID = clienteTeste1.getId();
         when(clienteService.findById(ID)).thenReturn(clienteTeste1);
 
@@ -164,11 +166,11 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Post novo cliente valido")
-    public void whenPOSTNewValidClienteTestShould201CREATED() throws Exception {
+    void whenPOSTNewValidClienteTestShould201CREATED() throws Exception {
         URI expectedLocation = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(clienteTeste1.getId());
 
         ClienteDTO clienteTeste1DTO = ClienteDTO.from(clienteTeste1);
-        when(clienteService.newCliente(eq(clienteTeste1DTO.toCliente()))).thenReturn(clienteTeste1);
+        when(clienteService.newCliente(clienteTeste1DTO.toCliente())).thenReturn(clienteTeste1);
 
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
         ResultActions resultActions = mockMvc.perform(post(requestURI)
@@ -181,12 +183,12 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Put mudar cliente existente")
-    public void whenPUTValidClienteTestShould200OK() throws Exception {
+    void whenPUTValidClienteTestShould200OK() throws Exception {
         final long ID_CLIENTE1 = clienteTeste1.getId();
         ClienteDTO clienteTeste2DTO = ClienteDTO.from(clienteTeste2);
 
         clienteTeste2.setId(clienteTeste1.getId());
-        when(clienteService.changeById(eq(ID_CLIENTE1), eq(clienteTeste2DTO.toCliente()))).thenReturn(clienteTeste2);
+        when(clienteService.changeById(ID_CLIENTE1, clienteTeste2DTO.toCliente())).thenReturn(clienteTeste2);
 
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(ID_CLIENTE1);
         ResultActions resultActions = mockMvc.perform(put(requestURI)
@@ -198,7 +200,7 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Deletar cliente que existe")
-    public void whenDELETEClienteIDTestShould200OK() throws Exception {
+    void whenDELETEClienteIDTestShould200OK() throws Exception {
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(1L);
         mockMvc.perform(delete(requestURI))
                 .andExpect(status().isNoContent());
@@ -213,42 +215,42 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Busca um cliente por um ID inexistente")
-    public void whenGETClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
-        final long INVALID_ID = 999999L;
-        String EXPECTED_DETAIL = "Id não encontrado";
+    void whenGETClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
+        final long invalidId = 999999L;
+        String expectedDetail = "Id não encontrado";
 
-        ResourceNotFoundException notFoundException = new ResourceNotFoundException(EXPECTED_DETAIL);
-        when(clienteService.findById(INVALID_ID))
+        ResourceNotFoundException notFoundException = new ResourceNotFoundException(expectedDetail);
+        when(clienteService.findById(invalidId))
                 .thenThrow(notFoundException);
 
-        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(INVALID_ID);
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(invalidId);
         ResultActions resultActions = mockMvc.perform(get(requestURI))
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
 
-        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, EXPECTED_DETAIL);
+        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, expectedDetail);
         testJsonPathEqualsToProblemDetail(expected, resultActions);
     }
 
     @Test
     @DisplayName("Busca um cliente por um ID negativo")
-    public void whenGETClienteByNegativeIDTestShould400BADREQUEST() throws Exception {
-        final long INVALID_ID = -999999L;
-        String EXPECTED_DETAIL = "O parâmetro id deve ser maior ou igual a 0";
+    void whenGETClienteByNegativeIDTestShould400BADREQUEST() throws Exception {
+        final long invalidId = -999999L;
+        String expectedDetail = "O parâmetro id deve ser maior ou igual a 0";
 
-        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(INVALID_ID);
+        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(invalidId);
         ResultActions resultActions = mockMvc.perform(get(requestURI))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
 
-        InvalidInputParameterException invalidInputException = new InvalidInputParameterException(EXPECTED_DETAIL);
-        ProblemDetail expected = problemDetailFromException(requestURI, invalidInputException, EXPECTED_DETAIL);
+        InvalidInputParameterException invalidInputException = new InvalidInputParameterException(expectedDetail);
+        ProblemDetail expected = problemDetailFromException(requestURI, invalidInputException, expectedDetail);
         testJsonPathEqualsToProblemDetail(expected, resultActions);
     }
 
     @Test
     @DisplayName("Busca um cliente por um ID com letras")
-    public void whenGETClienteByIDWithLettersTestShould400BADREQUEST() throws Exception {
+    void whenGETClienteByIDWithLettersTestShould400BADREQUEST() throws Exception {
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build("923sdlfkj");
         mockMvc.perform(get(requestURI))
                 .andExpect(status().isBadRequest())
@@ -256,20 +258,8 @@ public class ClienteControllerTest {
     }
 
     @Test
-    @DisplayName("Busca por todos clientes em uma pagina negativa")
-    public void whenGETAllClientesWithNegativePageTestShouldReturnPage0200OK() throws Exception {
-        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
-        mockMvc.perform(get(requestURI)
-                        .param("page", "-1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
-
-        verify(clienteService).findAll(eq(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE)));
-    }
-
-    @Test
     @DisplayName("Busca por todos clientes em uma pagina muito grande deve retornar vazio")
-    public void whenGETAllClientesEmptyPageTestShouldReturnEmpty200OK() throws Exception {
+    void whenGETAllClientesEmptyPageTestShouldReturnEmpty200OK() throws Exception {
         when(clienteService.findAll(any())).thenReturn(List.of());
 
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
@@ -279,31 +269,24 @@ public class ClienteControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(0)));
 
-        verify(clienteService).findAll(eq(PageRequest.of(1000, ClienteController.DEFAULT_SIZE)));
+        verify(clienteService).findAll(PageRequest.of(1000, ClienteController.DEFAULT_SIZE));
     }
 
-    @Test
-    @DisplayName("Busca por todos clientes em uma pagina de tamanho negativo")
-    public void whenGETAllClientesWithNegativeSizeTestShouldReturnSizeDefault200OK() throws Exception {
+    @ParameterizedTest
+    @CsvSource({
+            "page, -1",
+            "size, -4",
+            "size, 400000",
+    })
+    @DisplayName("Busca por todos clientes em uma paginas inválidas deve retornar valores padrão")
+    void whenGETAllClientesWithInvalidPagesTestShouldReturnPage200OK(String  param, String value) throws Exception {
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
         mockMvc.perform(get(requestURI)
-                        .param("size", "-4"))
+                        .param(param, value))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(APPLICATION_JSON));
 
-        verify(clienteService).findAll(eq(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE)));
-    }
-
-    @Test
-    @DisplayName("Busca por todos clientes em uma pagina de tamanho grande demais deve retornar tamanho padrão")
-    public void whenGETAllClientesWithSizeTooLargeTestShouldReturnSizeDefault200OK() throws Exception {
-        URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
-        mockMvc.perform(get(requestURI)
-                        .param("size", "400000"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(APPLICATION_JSON));
-
-        verify(clienteService).findAll(eq(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE)));
+        verify(clienteService).findAll(PageRequest.of(ClienteController.DEFAULT_PAGE, ClienteController.DEFAULT_SIZE));
     }
 
     // ------------------------------------------
@@ -312,13 +295,13 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Insere um cliente com nome invalido")
-    public void whenPOSTInvalidClienteNomeTestShould400BADREQUEST() throws Exception {
-        String EMPTY_NAME = "";
-        String NAME_TOO_SHORT = "P";
-        String NAME_TOO_LONG = "Paulo".repeat(120);
-        String NAME_INVALID_CHARS = "Paulo 123";
+    void whenPOSTInvalidClienteNomeTestShould400BADREQUEST() throws Exception {
+        String emptyName = "";
+        String nameTooShort = "P";
+        String nameTooLong = "Paulo".repeat(120);
+        String nameInvalidChars = "Paulo 123";
 
-        String[] invalidNames = {EMPTY_NAME, NAME_TOO_SHORT, NAME_TOO_LONG, NAME_INVALID_CHARS};
+        String[] invalidNames = {emptyName, nameTooShort, nameTooLong, nameInvalidChars};
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
         ValidationException validationException = new ValidationException("");
 
@@ -337,12 +320,12 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Insere um cliente com cpf invalido")
-    public void whenPOSTInvalidClienteCPFTestShould400BADREQUEST() throws Exception {
-        String EMPTY_CPF = "";
-        String INVALID_DIGIT = "105.466.338-61";
-        String INVALID_FORMAT = "105.466338-61";
+    void whenPOSTInvalidClienteCPFTestShould400BADREQUEST() throws Exception {
+        String emptyCpf = "";
+        String invalidDigit = "105.466.338-61";
+        String invalidFormat = "105.466338-61";
 
-        String[] invalidNames = {EMPTY_CPF, INVALID_DIGIT, INVALID_FORMAT};
+        String[] invalidNames = {emptyCpf, invalidDigit, invalidFormat};
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).build().toUri();
         ValidationException validationException = new ValidationException("");
 
@@ -365,13 +348,13 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Edita um cliente com nome invalido")
-    public void whenPUTInvalidClienteNomeTestShould400BADREQUEST() throws Exception {
-        String EMPTY_NAME = "";
-        String NAME_TOO_SHORT = "P";
-        String NAME_TOO_LONG = "Paulo".repeat(120);
-        String NAME_INVALID_CHARS = "Paulo 123";
+    void whenPUTInvalidClienteNomeTestShould400BADREQUEST() throws Exception {
+        String emptyName = "";
+        String nameTooShort = "P";
+        String nameTooLong = "Paulo".repeat(120);
+        String nameInvalidChars = "Paulo 123";
 
-        String[] invalidNames = {EMPTY_NAME, NAME_TOO_SHORT, NAME_TOO_LONG, NAME_INVALID_CHARS};
+        String[] invalidNames = {emptyName, nameTooShort, nameTooLong, nameInvalidChars};
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(1L);
         ValidationException validationException = new ValidationException("");
 
@@ -390,12 +373,12 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Edita um cliente com cpf invalido")
-    public void whenPUTInvalidClienteCPFTestShould400BADREQUEST() throws Exception {
-        String EMPTY_CPF = "";
-        String INVALID_DIGIT = "105.466.338-61";
-        String INVALID_FORMAT = "105.466338-61";
+    void whenPUTInvalidClienteCPFTestShould400BADREQUEST() throws Exception {
+        String emptyCpf = "";
+        String invalidDigit = "105.466.338-61";
+        String invalidFormat = "105.466338-61";
 
-        String[] invalidNames = {EMPTY_CPF, INVALID_DIGIT, INVALID_FORMAT};
+        String[] invalidNames = {emptyCpf, invalidDigit, invalidFormat};
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(1L);
         ValidationException validationException = new ValidationException("");
 
@@ -412,15 +395,13 @@ public class ClienteControllerTest {
         }
     }
 
-    // TODO: Testes para verificar como o controller advice responde a erros de validação da entidade a ser salva.
-
     @Test
     @DisplayName("Edita um cliente por um ID inexistente")
-    public void whenPUTClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
+    void whenPUTClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
         final long ID = 1L;
-        String EXPECTED_DETAIL = "Id não encontrado";
+        String expectedDetail = "Id não encontrado";
 
-        ResourceNotFoundException notFoundException = new ResourceNotFoundException(EXPECTED_DETAIL);
+        ResourceNotFoundException notFoundException = new ResourceNotFoundException(expectedDetail);
         when(clienteService.changeById(eq(ID), any())).thenThrow(notFoundException);
 
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(ID);
@@ -430,7 +411,7 @@ public class ClienteControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
 
-        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, EXPECTED_DETAIL);
+        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, expectedDetail);
         testJsonPathEqualsToProblemDetail(expected, resultActions);
     }
 
@@ -440,11 +421,11 @@ public class ClienteControllerTest {
 
     @Test
     @DisplayName("Remove um cliente por um ID inexistente")
-    public void whenDELETEClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
+    void whenDELETEClienteByInvalidIDTestShould404NOTFOUND() throws Exception {
         final long ID = 1L;
-        String EXPECTED_DETAIL = "Id não encontrado";
+        String expectedDetail = "Id não encontrado";
 
-        ResourceNotFoundException notFoundException = new ResourceNotFoundException(EXPECTED_DETAIL);
+        ResourceNotFoundException notFoundException = new ResourceNotFoundException(expectedDetail);
         doThrow(notFoundException).when(clienteService).deleteById(ID);
 
         URI requestURI = UriComponentsBuilder.fromPath(CLIENTE_MAPPING).path("/{id}").build(ID);
@@ -452,7 +433,7 @@ public class ClienteControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(content().contentType(MediaType.APPLICATION_PROBLEM_JSON));
 
-        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, EXPECTED_DETAIL);
+        ProblemDetail expected = problemDetailFromException(requestURI, notFoundException, expectedDetail);
         testJsonPathEqualsToProblemDetail(expected, resultActions);
     }
 

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Random;
@@ -17,23 +16,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
-public class CartaoTest {
-
-    @Mock
-    private ContaBancaria conta;
+class CartaoTest {
 
     private CartaoCredito credito;
-    private CartaoDebito debito;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         credito = new CartaoCredito();
-        debito = new CartaoDebito();
     }
 
     @Test
     @DisplayName("O cartão deve encontrar o digito de Luhn corretamente")
-    public void whenFindLuhnDigitShouldNumberCorrectly() {
+    void whenFindLuhnDigitShouldNumberCorrectly() {
         credito.setNumero("17893729974");
         int[] payload = credito.getNumero()
                 .substring(0, credito.getNumero().length() - 1)
@@ -44,7 +38,7 @@ public class CartaoTest {
 
     @Test
     @DisplayName("O cartão deve validar o digito de Luhn corretamente")
-    public void whenValidateLuhnDigitShouldValidateCorrectly() {
+    void whenValidateLuhnDigitShouldValidateCorrectly() {
         credito.setNumero("5330517927376254");
         int[] payload = credito.getNumero()
                 .substring(0, credito.getNumero().length() - 1)
@@ -55,7 +49,7 @@ public class CartaoTest {
 
     @RepeatedTest(100)
     @DisplayName("O cartão gerar um numero corretamente")
-    public void whenCreateCartaoShouldGenerateNumbersCorrectly() {
+    void whenCreateCartaoShouldGenerateNumbersCorrectly() {
         credito.setNumero(Cartao.generateCardNumber());
         assertThat(Cartao.isCardNumberValid(credito.getNumero())).isTrue();
 
@@ -69,7 +63,7 @@ public class CartaoTest {
 
     @Test
     @DisplayName("O cartão deve salvar e verificar a senha salva e valida corretamente")
-    public void whenSettingPasswordShouldIdentifyCorrectPasswordCorrectly() {
+    void whenSettingPasswordShouldIdentifyCorrectPasswordCorrectly() {
         String password = "senha super secreta";
 
         credito.setSenha(password);
@@ -79,7 +73,7 @@ public class CartaoTest {
 
     @RepeatedTest(100)
     @DisplayName("O cartão deve salvar e verificar a senha salva e invalida corretamente")
-    public void whenSettingPasswordShouldIdentifyIncorrectPasswordCorrectly() {
+    void whenSettingPasswordShouldIdentifyIncorrectPasswordCorrectly() {
         final int PASSWORD_SIZE = 50;
         String dictionary = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 

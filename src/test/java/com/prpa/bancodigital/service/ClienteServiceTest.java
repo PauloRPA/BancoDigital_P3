@@ -5,7 +5,6 @@ import com.prpa.bancodigital.model.Cliente;
 import com.prpa.bancodigital.model.Endereco;
 import com.prpa.bancodigital.model.Tier;
 import com.prpa.bancodigital.repository.ClienteRepository;
-import com.prpa.bancodigital.repository.TierRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,10 +19,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class ClienteServiceTest {
+class ClienteServiceTest {
 
     @Mock
     private ClienteRepository clienteRepository;
@@ -44,7 +44,7 @@ public class ClienteServiceTest {
     private Cliente clienteTeste2;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         tier1 = new Tier(1L, "TIERUM");
         tier2 = new Tier(2L, "TIERDOIS");
 
@@ -70,7 +70,7 @@ public class ClienteServiceTest {
 
     @Test
     @DisplayName("Ao tentar salvar um cliente com nome que ja existe deve lançar uma exceção")
-    public void whenSaveNewClienteWithNomeThatAlreadyExistsShouldThrow() {
+    void whenSaveNewClienteWithNomeThatAlreadyExistsShouldThrow() {
         when(clienteRepository.existsByNome(any())).thenReturn(true);
         assertThrows(ResourceAlreadyExistsException.class, () -> {
             clienteService.newCliente(clienteTeste1);
@@ -79,7 +79,7 @@ public class ClienteServiceTest {
 
     @Test
     @DisplayName("Ao tentar salvar um cliente com cpf que ja existe deve lançar uma exceção")
-    public void whenSaveNewClienteWithCPFThatAlreadyExistsShouldThrow() {
+    void whenSaveNewClienteWithCPFThatAlreadyExistsShouldThrow() {
         when(clienteRepository.existsByCpf(any())).thenReturn(true);
         assertThrows(ResourceAlreadyExistsException.class, () -> {
             clienteService.newCliente(clienteTeste1);
@@ -89,46 +89,38 @@ public class ClienteServiceTest {
 
     @Test
     @DisplayName("Ao tentar editar um cliente com nome que ja existe deve lançar uma exceção")
-    public void whenChangeClienteWithNomeThatAlreadyExistsShouldThrow() {
-        when(clienteRepository.existsById(any())).thenReturn(true);
-        when(clienteRepository.findById(any())).thenReturn(Optional.ofNullable(clienteTeste1));
+    void whenChangeClienteWithNomeThatAlreadyExistsShouldThrow() {
+        when(clienteRepository.existsById(anyLong())).thenReturn(true);
+        when(clienteRepository.findById(anyLong())).thenReturn(Optional.ofNullable(clienteTeste1));
         when(clienteRepository.existsByNome(any())).thenReturn(true);
+        Long clienteId = clienteTeste1.getId();
         assertThrows(ResourceAlreadyExistsException.class, () -> {
-            clienteService.changeById(clienteTeste1.getId(), clienteTeste2);
+            clienteService.changeById(clienteId, clienteTeste2);
         });
     }
 
     @Test
     @DisplayName("Ao tentar editar um cliente com cpf que ja existe deve lançar uma exceção")
-    public void whenChangeClienteWithCPFThatAlreadyExistsShouldThrow() {
-        when(clienteRepository.existsById(any())).thenReturn(true);
-        when(clienteRepository.findById(any())).thenReturn(Optional.ofNullable(clienteTeste1));
+    void whenChangeClienteWithCPFThatAlreadyExistsShouldThrow() {
+        when(clienteRepository.existsById(anyLong())).thenReturn(true);
+        when(clienteRepository.findById(anyLong())).thenReturn(Optional.ofNullable(clienteTeste1));
         when(clienteRepository.existsByCpf(any())).thenReturn(true);
+        Long clienteId = clienteTeste1.getId();
         assertThrows(ResourceAlreadyExistsException.class, () -> {
-            clienteService.changeById(clienteTeste1.getId(), clienteTeste2);
+            clienteService.changeById(clienteId, clienteTeste2);
         });
     }
 
 
     @Test
-    @DisplayName("Ao tentar editar um cliente com nome do próprio cliente sendo editado")
-    public void whenChangeClienteWithItsOwnNameShouldThrow() {
+    @DisplayName("Ao realizar o patch com nome ou cpf de um cliente que existe e este cliente for o mesmo sendo editado, deve prosseguir com sucesso")
+    void whenChangeClienteWithItsOwnNameOrCpfShouldNotThrow() {
         when(tierService.findByNomeIgnoreCase(any())).thenReturn(Optional.of(tier1));
-        when(clienteRepository.existsById(any())).thenReturn(true);
-        when(clienteRepository.findById(any())).thenReturn(Optional.ofNullable(clienteTeste1));
+        when(clienteRepository.existsById(anyLong())).thenReturn(true);
+        when(clienteRepository.findById(anyLong())).thenReturn(Optional.ofNullable(clienteTeste1));
         assertDoesNotThrow(() -> {
             clienteService.changeById(clienteTeste1.getId(), clienteTeste1);
         });
     }
 
-    @Test
-    @DisplayName("Ao tentar editar um cliente com cpf do próprio cliente sendo editado")
-    public void whenChangeClienteWithItsOwnCPFShouldThrow() {
-        when(tierService.findByNomeIgnoreCase(any())).thenReturn(Optional.of(tier1));
-        when(clienteRepository.existsById(any())).thenReturn(true);
-        when(clienteRepository.findById(any())).thenReturn(Optional.ofNullable(clienteTeste1));
-        assertDoesNotThrow(() -> {
-            clienteService.changeById(clienteTeste1.getId(), clienteTeste1);
-        });
-    }
 }
